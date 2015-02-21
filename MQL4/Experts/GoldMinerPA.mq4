@@ -108,6 +108,7 @@ extern string FridayStop                     = "24:00";
 extern bool FridayCloseWins                  = TRUE;
 extern string FridayCloseWinsTime            = "10:00";
 
+extern bool DrawLines                        = FALSE;
 extern bool PrintErrors                      = TRUE;
 extern bool LogToFile                        = FALSE;
 
@@ -127,6 +128,58 @@ bool inited, TradeAllowed, selectedOrderModified, skipPair;
 int ls_arr00[] = {32, 84, 114, 97, 100, 101, 114, 32, 69, 65, 32, 45, 32, 67, 111, 112, 121, 114, 105, 103, 104, 116, 32, 169, 32, 50, 48, 49, 50, 44, 32, 65, 108, 70, 97, 55, 57, 54, 49};
 
 int Current;
+
+//--------------------------------- PIVOTS ----
+double Fhr_day_high=0;
+double Fhr_day_low=0;
+double Fhr_yesterday_high=0;
+double Fhr_yesterday_open=0;
+double Fhr_yesterday_low=0;
+double Fhr_yesterday_close=0;
+double Fhr_today_open=0;
+double Fhr_today_high=0;
+double Fhr_today_low=0;
+double Fhr_P=0;
+double Fhr_Q=0;
+double Fhr_R1,Fhr_R2,Fhr_R3;
+double Fhr_M0,Fhr_M1,Fhr_M2,Fhr_M3,Fhr_M4,Fhr_M5;
+double Fhr_S1,Fhr_S2,Fhr_S3;
+double Fhr_nQ=0;
+double Fhr_nD=0;
+double Fhr_D=0;
+double Fhr_rates_d1[2][6];
+double Fhr_ExtMapBuffer[];
+//---------------------------------
+double D_day_high=0;
+double D_day_low=0;
+double D_yesterday_high=0;
+double D_yesterday_open=0;
+double D_yesterday_low=0;
+double D_yesterday_close=0;
+double D_today_open=0;
+double D_today_high=0;
+double D_today_low=0;
+double D_P=0;
+double D_Q=0;
+double D_R1,D_R2,D_R3;
+double D_M0,D_M1,D_M2,D_M3,D_M4,D_M5;
+double D_S1,D_S2,D_S3;
+double D_nQ=0;
+double D_nD=0;
+double D_D=0;
+double D_rates_d1[2][6];
+double D_ExtMapBuffer[];
+//---------------------------------
+double nearest_support = 0;
+double nearest_resistance = 0;
+double nearest_daily_support = 0;
+double nearest_daily_resistance = 0;
+
+double farest_support = 0;
+double farest_resistance = 0;
+double farest_daily_support = 0;
+double farest_daily_resistance = 0;
+//---------------------------------
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -382,7 +435,7 @@ void OnTick()
       Comment("CRITICAL ERROR -- "+EA_NAME+" Trader : not correctly initialized. Please check input values or conditions!");
       return(-1);
   }
-  
+
 //----
 
    Cnt = 0;
@@ -1087,7 +1140,95 @@ void OnTick()
       if(PrintErrors) Print("WARNING -- "+EA_NAME+" Trader : Closing all winning orders on Friday at ",FridayStart);
       CloseAllWinningOrders();
    }
+  
+   // randomly select pair to Buy
+   ArrayResize(tmpArray,0);
+   if (ArraySize(pairsToBuyAndSellArray) > 0)
+   {
+     size = ArraySize(pairsToBuyAndSellArray);
+     oldSize = ArraySize(tmpArray);
+     ArrayResize(tmpArray,oldSize+size);
+     ArrayCopy(tmpArray,pairsToBuyAndSellArray,oldSize,0,WHOLE_ARRAY);
+   }
+
+   p = (MathRand() % ArraySize(tmpArray));
    
+   string pair = tmpArray[p];
+
+   //-- Pivots, Support/Resistance and Price Alerts
+   //get_pivots(symbol, timeframe);
+   get_NearestAndFarestSR(pair, 0, (iLow(pair, 0, Current + 1)+iHigh(pair, 0, Current + 1))/2.0 );
+   //---
+   
+  //------------------------------------------------------------------------------------------
+   if (DrawLines)
+   {
+   //--- Draw Pivot lines on chart
+      if(ObjectFind("Nearest_Support label") == 0) ObjectDelete("Nearest_Support label");
+       ObjectCreate("Nearest_Support label", OBJ_TEXT, 0, Time[0], nearest_support);
+       ObjectSetText("Nearest_Support label", "Nearest Support @ " +DoubleToStr((iLow(pair, 0, Current + 1)+iHigh(pair, 0, Current + 1))/2.0,4)+ " -> " +DoubleToStr(nearest_support,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Support line") != 0)
+      {
+         ObjectCreate("Nearest_Support line", OBJ_HLINE, 0, Time[0], nearest_support);
+         ObjectSet("Nearest_Support line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Support line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Support line", OBJPROP_COLOR, Blue);
+      }
+      else
+      {
+         ObjectMove("Nearest_Support line", 0, Time[40], nearest_support);
+      }
+   //-----
+      if(ObjectFind("Nearest_Resistance label") == 0) ObjectDelete("Nearest_Resistance label");
+       ObjectCreate("Nearest_Resistance label", OBJ_TEXT, 0, Time[0], nearest_resistance);
+       ObjectSetText("Nearest_Resistance label", "Nearest Resistance @ " +DoubleToStr((iLow(pair, 0, Current + 1)+iHigh(pair, 0, Current + 1))/2.0,4)+ " -> " +DoubleToStr(nearest_resistance,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Resistance line") != 0)
+      {
+         ObjectCreate("Nearest_Resistance line", OBJ_HLINE, 0, Time[0], nearest_resistance);
+         ObjectSet("Nearest_Resistance line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Resistance line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Resistance line", OBJPROP_COLOR, Red);
+      }
+      else
+      {
+         ObjectMove("Nearest_Resistance line", 0, Time[40], nearest_resistance);
+      }
+   //-----
+      if(ObjectFind("Nearest_Daily_Support label") == 0) ObjectDelete("Nearest_Daily_Support label");
+       ObjectCreate("Nearest_Daily_Support label", OBJ_TEXT, 0, Time[0], nearest_daily_support);
+       ObjectSetText("Nearest_Daily_Support label", "Nearest Daily Support @ " +DoubleToStr((iLow(pair, 0, Current + 1)+iHigh(pair, 0, Current + 1))/2.0,4)+ " -> " +DoubleToStr(nearest_daily_support,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Daily_Support line") != 0)
+      {
+         ObjectCreate("Nearest_Daily_Support line", OBJ_HLINE, 0, Time[0], nearest_daily_support);
+         ObjectSet("Nearest_Daily_Support line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Daily_Support line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Daily_Support line", OBJPROP_COLOR, LightBlue);
+      }
+      else
+      {
+         ObjectMove("Nearest_Daily_Support line", 0, Time[40], nearest_daily_support);
+      }
+   //-----
+      if(ObjectFind("Nearest_Daily_Resistance label") == 0) ObjectDelete("Nearest_Daily_Resistance label");
+       ObjectCreate("Nearest_Daily_Resistance label", OBJ_TEXT, 0, Time[0], nearest_daily_resistance);
+       ObjectSetText("Nearest_Daily_Resistance label", "Nearest Daily Resistance @ " +DoubleToStr((iLow(pair, 0, Current + 1)+iHigh(pair, 0, Current + 1))/2.0,4)+ " -> " +DoubleToStr(nearest_daily_resistance,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Daily_Resistance line") != 0)
+      {
+         ObjectCreate("Nearest_Daily_Resistance line", OBJ_HLINE, 0, Time[0], nearest_daily_resistance);
+         ObjectSet("Nearest_Daily_Resistance line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Daily_Resistance line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Daily_Resistance line", OBJPROP_COLOR, LightPink);
+      }
+      else
+      {
+         ObjectMove("Nearest_Daily_Resistance line", 0, Time[40], nearest_daily_resistance);
+      }
+   //-----
+      WindowRedraw();
+   //-----
+   }
+  //------------------------------------------------------------------------------------------
+
    // expert open orders
    if (TradeAllowed == TRUE && Cnt < MaximumNumberTrades)
    {
@@ -2226,24 +2367,12 @@ bool Action_BuyOrSellPair()
 	       // Buy
 	       if (randSignal == 0)
 	       {
-		      // randomly select pair to Buy
-		      ArrayResize(tmpArray,0);
-		      if (ArraySize(pairsToBuyAndSellArray) > 0)
-		      {
-			     size = ArraySize(pairsToBuyAndSellArray);
-			     oldSize = ArraySize(tmpArray);
-			     ArrayResize(tmpArray,oldSize+size);
-			     ArrayCopy(tmpArray,pairsToBuyAndSellArray,oldSize,0,WHOLE_ARRAY);
-		      }
-	   
-		      p = (MathRand() % ArraySize(tmpArray));
-		      
-		      string pair = tmpArray[p];
-	   
+//------
+	    /*
             //+------------------------------------------------------------------+
             //| Variable Begin                                                   |
             //+------------------------------------------------------------------+
-         
+            
             double Buy1_1 = iClose(pair, 0, Current + 1);
             double Buy1_2 = iHigh(pair, 0, Current + 2);
             double Buy2_1 = iClose(pair, 0, Current + 0);
@@ -2265,26 +2394,56 @@ bool Action_BuyOrSellPair()
 				    
 		         return(OpenOrderBuy(pair,true));
             }
+       */
+
+            //+------------------------------------------------------------------+
+            //| Variable Begin                                                   |
+            //+------------------------------------------------------------------+
+            double Buy1_1 = iMA(pair, 0, 50, 0, MODE_EMA, PRICE_CLOSE, Current + 0);
+            double Buy1_2 = iMACD(pair, 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, Current + 0);
+            double Buy2_1 = iRSI(pair, 0, 15, PRICE_CLOSE, Current + 0);
+            double Buy2_2 = iOpen(pair, 0, Current + 0);
+            double Buy3_1 = iClose(pair, 0, Current + 0);
+            double Buy3_2 = MarketInfo(pair, MODE_BID);
+                        
+            double nearest_broken_pivot = EMPTY_VALUE;
+            
+            if (Buy2_2 < nearest_resistance && Buy3_1 > nearest_resistance) {
+               nearest_broken_pivot = nearest_resistance;
+            } else if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_support && Buy3_1 > nearest_support) {
+               nearest_broken_pivot = nearest_resistance;
+            }
+            
+            /*if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_daily_resistance && Buy3_1 > nearest_daily_resistance) {
+               nearest_broken_pivot = nearest_resistance;
+            }*/
+            
+            //+------------------------------------------------------------------+
+            //| Variable End                                                     |
+            //+------------------------------------------------------------------+
+
+            if(
+               //iClose(pair, 0, Current + 1) <= iHigh(pair, 0, Current + 2) && iClose(pair, 0, Current + 0) > iHigh(pair, 0, Current + 1) && iClose(pair, 0, Current + 0) > iHigh(pair, 0, Current + 2)
+               //&&
+               Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot
+              ) {
+				    if(OrderOnPairAlreadyPlaced(pair) && AllowMultiplePurchaseOfPair == FALSE)
+				    {
+					    if(PrintErrors) Print("WARNING - "+EA_NAME+" Trader : Action_BuyOrSellRandomPair random pair ", pair, " not allowed to trade. Orders already placed.");
+					    return(TRUE);
+				    }
+				    
+		         return(OpenOrderBuy(pair,true));
+            }
+//------ 
 	       }
 
           randSignal = 1;
 	       // Sell
 	       if (randSignal == 1)
 	       {
-		      // randomly select pair to Sell
-		      ArrayResize(tmpArray,0);
-		      if (ArraySize(pairsToBuyAndSellArray) > 0)
-		      {
-			     size = ArraySize(pairsToBuyAndSellArray);
-			     oldSize = ArraySize(tmpArray);
-			     ArrayResize(tmpArray,oldSize+size);
-			     ArrayCopy(tmpArray,pairsToBuyAndSellArray,oldSize,0,WHOLE_ARRAY);
-		      }
-	   
-		      p = (MathRand() % ArraySize(tmpArray));
-		      
-		      pair = tmpArray[p];
-	   
+//------
+	    /*	   
             //+------------------------------------------------------------------+
             //| Variable Begin                                                   |
             //+------------------------------------------------------------------+
@@ -2309,9 +2468,49 @@ bool Action_BuyOrSellPair()
 				    }
 				    
 				    return(OpenOrderSell(pair, true));
+            }            
+       */
+            //+------------------------------------------------------------------+
+            //| Variable Begin                                                   |
+            //+------------------------------------------------------------------+
+            double Sell1_1 = iMA(pair, 0, 50, 0, MODE_EMA, PRICE_CLOSE, Current + 0);
+            double Sell1_2 = iMACD(pair, 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, Current + 0);
+            double Sell2_1 = iRSI(pair, 0, 15, PRICE_CLOSE, Current + 0);
+            double Sell2_2 = iOpen(pair, 0, Current + 0);
+            double Sell3_1 = iClose(pair, 0, Current + 0);
+            double Sell3_2 = MarketInfo(pair, MODE_ASK);
+            
+            nearest_broken_pivot = EMPTY_VALUE;
+            
+            if (Sell2_2 > nearest_support && Sell3_1 < nearest_support) {
+               nearest_broken_pivot = nearest_support;
+            } else if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_resistance && Sell3_1 < nearest_resistance) {
+               nearest_broken_pivot = nearest_resistance;
             }
             
+            /*if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_daily_resistance && Sell3_1 < nearest_daily_resistance) {
+               nearest_broken_pivot = nearest_resistance;
+            }*/
+
+            //+------------------------------------------------------------------+
+            //| Variable End                                                     |
+            //+------------------------------------------------------------------+
+
+            if(
+               //iClose(pair, 0, Current + 1) >= iLow(pair, 0, Current + 2) && iClose(pair, 0, Current + 0) < iLow(pair, 0, Current + 1) && iClose(pair, 0, Current + 0) < iLow(pair, 0, Current + 2)
+               //&& 
+               Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot
+              ) {
+				    if(OrderOnPairAlreadyPlaced(pair) && AllowMultiplePurchaseOfPair == FALSE)
+				    {
+					    if(PrintErrors) Print("WARNING - "+EA_NAME+" Trader : Action_BuyOrSellRandomPair random pair ", pair, " not allowed to trade. Orders already placed.");
+					    return(TRUE);
+				    }
+				    
+				    return(OpenOrderSell(pair, true));
+            }
 	       }
+//------ 
 		}
 		// END_Action : _BuyOrSellRandomPair
 		return(FALSE);
@@ -3039,7 +3238,7 @@ bool OpenOrderBuy(string symbol, bool forceOpen=FALSE)
       }
    }
 
-   if (cnt >= MaximumNumberTrades) {return(TRUE);}
+   if (cnt > MaximumNumberTrades) {return(TRUE);}
 
    string strategy = " - ";
 
@@ -3280,3 +3479,284 @@ int RoundClosest(int n, int step)
 	else			n -= step/2;
 	return(n - n%step);
 }
+
+//+------------------------------------------------------------------+
+//| H4 and Daily Support/Resistance and Pivot                        |
+//+------------------------------------------------------------------+
+void get_pivots(string symbol, int timeframe)
+{
+//----------------------------------------------------------------------------- Get new TimeFrame ---------------
+   ArrayCopyRates(Fhr_rates_d1, symbol, timeframe);
+
+   Fhr_yesterday_close = Fhr_rates_d1[1][4];
+   Fhr_yesterday_open = Fhr_rates_d1[1][1];
+   Fhr_today_open = Fhr_rates_d1[0][1];
+   Fhr_yesterday_high = Fhr_rates_d1[1][3];
+   Fhr_yesterday_low = Fhr_rates_d1[1][2];
+   Fhr_day_high = Fhr_rates_d1[0][3];
+   Fhr_day_low = Fhr_rates_d1[0][2];
+
+
+//---- Calculate Pivots
+
+   Fhr_D = (Fhr_day_high - Fhr_day_low);
+   Fhr_Q = (Fhr_yesterday_high - Fhr_yesterday_low);
+   Fhr_P = (Fhr_yesterday_high + Fhr_yesterday_low + Fhr_yesterday_close) / 3;
+   Fhr_R1 = (2*Fhr_P)-Fhr_yesterday_low;
+   Fhr_S1 = (2*Fhr_P)-Fhr_yesterday_high;
+   Fhr_R2 = Fhr_P+(Fhr_yesterday_high - Fhr_yesterday_low);
+   Fhr_S2 = Fhr_P-(Fhr_yesterday_high - Fhr_yesterday_low);
+
+
+   Fhr_R3 = (2*Fhr_P)+(Fhr_yesterday_high-(2*Fhr_yesterday_low));
+   Fhr_M5 = (Fhr_R2+Fhr_R3)/2;
+   // Fhr_R2 = Fhr_P-Fhr_S1+Fhr_R1;
+   Fhr_M4 = (Fhr_R1+Fhr_R2)/2;
+   // Fhr_R1 = (2*Fhr_P)-Fhr_yesterday_low;
+   Fhr_M3 = (Fhr_P+Fhr_R1)/2;
+   // Fhr_P = (Fhr_yesterday_high + Fhr_yesterday_low + Fhr_yesterday_close)/3;
+   Fhr_M2 = (Fhr_P+Fhr_S1)/2;
+   // Fhr_S1 = (2*Fhr_P)-Fhr_yesterday_high;
+   Fhr_M1 = (Fhr_S1+Fhr_S2)/2;
+   // Fhr_S2 = Fhr_P-Fhr_R1+Fhr_S1;
+   Fhr_S3 = (2*Fhr_P)-((2* Fhr_yesterday_high)-Fhr_yesterday_low);
+   Fhr_M0 = (Fhr_S2+Fhr_S3)/2;
+
+   if (Fhr_Q > 5)
+   {
+      Fhr_nQ = Fhr_Q;
+   }
+   else
+   {
+     Fhr_nQ = Fhr_Q*10000;
+   }
+
+   if (Fhr_D > 5)
+   {
+       Fhr_nD = Fhr_D;
+   }
+   else
+   {
+      Fhr_nD = Fhr_D*10000;
+   }
+//----------------------------------------------------------------------------- Get DAY ---------------
+   ArrayCopyRates(D_rates_d1, symbol, 1440);
+
+   D_yesterday_close = D_rates_d1[1][4];
+   D_yesterday_open = D_rates_d1[1][1];
+   D_today_open = D_rates_d1[0][1];
+   D_yesterday_high = D_rates_d1[1][3];
+   D_yesterday_low = D_rates_d1[1][2];
+   D_day_high = D_rates_d1[0][3];
+   D_day_low = D_rates_d1[0][2];
+
+
+//---- Calculate Pivots
+
+   D_D = (D_day_high - D_day_low);
+   D_Q = (D_yesterday_high - D_yesterday_low);
+   D_P = (D_yesterday_high + D_yesterday_low + D_yesterday_close) / 3;
+   D_R1 = (2*D_P)-D_yesterday_low;
+   D_S1 = (2*D_P)-D_yesterday_high;
+   D_R2 = D_P+(D_yesterday_high - D_yesterday_low);
+   D_S2 = D_P-(D_yesterday_high - D_yesterday_low);
+
+
+   D_R3 = (2*D_P)+(D_yesterday_high-(2*D_yesterday_low));
+   D_M5 = (D_R2+D_R3)/2;
+   // D_R2 = D_P-D_S1+D_R1;
+   D_M4 = (D_R1+D_R2)/2;
+   // D_R1 = (2*D_P)-D_yesterday_low;
+   D_M3 = (D_P+D_R1)/2;
+   // D_P = (D_yesterday_high + D_yesterday_low + D_yesterday_close)/3;
+   D_M2 = (D_P+D_S1)/2;
+   // D_S1 = (2*D_P)-D_yesterday_high;
+   D_M1 = (D_S1+D_S2)/2;
+   // D_S2 = D_P-D_R1+D_S1;
+   D_S3 = (2*D_P)-((2* D_yesterday_high)-D_yesterday_low);
+
+   D_M0 = (D_S2+D_S3)/2;
+
+   if (D_Q > 5)
+   {
+      D_nQ = D_Q;
+   }
+   else
+   {
+     D_nQ = D_Q*10000;
+   }
+
+   if (D_D > 5)
+   {
+       D_nD = D_D;
+   }
+   else
+   {
+      D_nD = D_D*10000;
+   }
+}
+
+//--------------------------------------------------------------------- +
+void get_NearestAndFarestSR(string symbol, int timeframe, double price)
+{
+   //-- Pivots, Support/Resistance and Price Alerts
+   get_pivots(symbol, timeframe);
+   //---
+
+   MqlRates RatesBar[];
+   ArraySetAsSeries(RatesBar,true);
+   if(CopyRates(symbol,timeframe,0,20,RatesBar)==20)
+   {
+      double high     = RatesBar[0].high;
+      double point    = MarketInfo(symbol,MODE_POINT);
+      int    digits   = MarketInfo(symbol,MODE_DIGITS);
+      double ask      = MarketInfo(symbol,MODE_ASK);
+      double bid      = MarketInfo(symbol,MODE_BID);
+      double low      = RatesBar[0].low;
+      int    power    = MathPow(10,digits-1);
+      double pipRange = (high-low)*power;
+      double bidRatio = (pipRange > 0 ? ((bid-low)/pipRange*power)*100 : 0);
+             pipRange = (pipRange != 0 ? pipRange : 0.001);
+      //-Fhr
+      if( price >= Fhr_R3 )
+      {
+         nearest_resistance = D_R3;
+         nearest_support = Fhr_R3;
+
+         farest_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_support = Fhr_R1;
+      }
+      else if( price < Fhr_R3 && price >= Fhr_R2 )
+      {
+         nearest_resistance = Fhr_R3;
+         nearest_support = Fhr_R2;
+
+         farest_resistance = D_R3;
+         farest_support = Fhr_S1;
+      }
+      else if( price < Fhr_R2 && price >= Fhr_R1 )
+      {
+         nearest_resistance = Fhr_R2;
+         nearest_support = Fhr_R1;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S1;
+      }
+      else if( price < Fhr_R1 && price >= Fhr_S1 )
+      {
+         nearest_resistance = Fhr_R1;
+         nearest_support = Fhr_S1;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S3;
+      }
+      else if( price < Fhr_S1 && price >= Fhr_S2 )
+      {
+         nearest_resistance = Fhr_S1;
+         nearest_support = Fhr_S2;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S3;
+      }
+      else if( price < Fhr_S2 && price >= Fhr_S3 )
+      {
+         nearest_resistance = Fhr_S2;
+         nearest_support = Fhr_S3;
+
+         farest_resistance = Fhr_S1;
+         farest_support = D_S3;
+      }
+      else
+      {
+         nearest_resistance = Fhr_S3;
+         nearest_support = D_S3;
+
+         farest_resistance = Fhr_S1;
+         farest_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+      }
+      //-D
+      if( price >= D_R3 )
+      {
+         nearest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         nearest_daily_support = D_R3;
+
+         farest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_daily_support = D_R1;
+      }
+      else if( price < D_R3 && price >= D_R2 )
+      {
+         nearest_daily_resistance = D_R3;
+         nearest_daily_support = D_R2;
+
+         farest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_daily_support = D_S1;
+      }
+      else if( price < D_R2 && price >= D_R1 )
+      {
+         nearest_daily_resistance = D_R2;
+         nearest_daily_support = D_R1;
+
+         farest_daily_resistance = D_R3;
+         farest_daily_support = D_S1;
+      }
+      else if( price < D_R1 && price >= D_S1 )
+      {
+         nearest_daily_resistance = D_R1;
+         nearest_daily_support = D_S1;
+
+         farest_daily_resistance = D_R3;
+         farest_daily_support = D_S3;
+      }
+      else if( price < D_S1 && price >= D_S2 )
+      {
+         nearest_daily_resistance = D_S1;
+         nearest_daily_support = D_S2;
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3;
+      }
+      else if( price < D_S2 && price >= D_S3 )
+      {
+         nearest_daily_resistance = D_S2;
+         nearest_daily_support = D_S3;
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+      }
+      else
+      {
+         nearest_daily_resistance = D_S3;
+         nearest_daily_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3 - sqConvertToRealPips(symbol, 2*pipRange);
+      }
+   }
+}
+
+//----------------------------------------------------------------------------
+double sqGetPointPow(string symbol) {
+   double realDigits = MarketInfo(symbol,MODE_DIGITS);
+   if(realDigits > 0 && realDigits != 2 && realDigits != 4) {
+      realDigits -= 1;
+   }
+
+   double gPointPow = MathPow(10, realDigits);
+   return(gPointPow);
+}
+double sqGetPointCoef(string symbol) {
+   double gPointCoef = 1/sqGetPointPow(symbol);
+   return(gPointCoef);
+}
+//----------------------------------------------------------------------------
+double sqConvertToRealPips(string symbol, int value) {
+   return(sqGetPointCoef(symbol) * value);
+}
+
+//----------------------------------------------------------------------------
+
+double sqConvertToPips(string symbol, double value) {
+   return(sqGetPointPow(symbol) * value);
+}
+
+//----------------------------------------------------------------------------

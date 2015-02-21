@@ -22,10 +22,9 @@ extern bool ProTrend         = true;   //[ProTrend] - Laterale segue il Trend o 
 extern bool UltraShock       = true;  //[UltraShock] - Abilita la modalità griglia aggressiva
 extern double UltraShockDistance= 3;   //[UltraShockDistance] - Distanza in pips della maglia
 extern double UltraShockDistMux = 2;   //[UltraShockDistMux] - Moltiplicatore della distanza in pips
-extern double UltraShockSLPerc  = 50;  //[UltraShockSLPerc] - % StopLoss alla quale iniziare a compensare
 extern int UltraMaxOrders    = 10;     //[UltraMaxOrders] - Massimo numero di ordini a mercato
 extern double DDShield       = 20;     //[DDShield] - Massimo DD in a row
-/*extern*/ int FreezeMinutes = PERIOD_D1;
+/*extern*/ int FreezeMinutes = PERIOD_H4;
 /*extern*/ double FreezeLossPerc = 5;
 extern double Lots           = 0.1;    //[Lots] - Lotto fisso se LotPercent = 0
 extern int LotDigits         = 2;      //[LotDigits] - Cifre decimali del Lotto
@@ -89,6 +88,58 @@ extern int Slippage          = 2;      //[Slippage] - Massimo Slippage degli Ord
 /*extern*/ int LittleSpikeMultiplier = 3;
 /*extern*/ int BigSpikeMultiplier = 5;
 
+//--------------------------------- PIVOTS ----
+double Fhr_day_high=0;
+double Fhr_day_low=0;
+double Fhr_yesterday_high=0;
+double Fhr_yesterday_open=0;
+double Fhr_yesterday_low=0;
+double Fhr_yesterday_close=0;
+double Fhr_today_open=0;
+double Fhr_today_high=0;
+double Fhr_today_low=0;
+double Fhr_P=0;
+double Fhr_Q=0;
+double Fhr_R1,Fhr_R2,Fhr_R3;
+double Fhr_M0,Fhr_M1,Fhr_M2,Fhr_M3,Fhr_M4,Fhr_M5;
+double Fhr_S1,Fhr_S2,Fhr_S3;
+double Fhr_nQ=0;
+double Fhr_nD=0;
+double Fhr_D=0;
+double Fhr_rates_d1[2][6];
+double Fhr_ExtMapBuffer[];
+//---------------------------------
+double D_day_high=0;
+double D_day_low=0;
+double D_yesterday_high=0;
+double D_yesterday_open=0;
+double D_yesterday_low=0;
+double D_yesterday_close=0;
+double D_today_open=0;
+double D_today_high=0;
+double D_today_low=0;
+double D_P=0;
+double D_Q=0;
+double D_R1,D_R2,D_R3;
+double D_M0,D_M1,D_M2,D_M3,D_M4,D_M5;
+double D_S1,D_S2,D_S3;
+double D_nQ=0;
+double D_nD=0;
+double D_D=0;
+double D_rates_d1[2][6];
+double D_ExtMapBuffer[];
+//---------------------------------
+double nearest_support = 0;
+double nearest_resistance = 0;
+double nearest_daily_support = 0;
+double nearest_daily_resistance = 0;
+
+double farest_support = 0;
+double farest_resistance = 0;
+double farest_daily_support = 0;
+double farest_daily_resistance = 0;
+//---------------------------------
+
 //---------------------------------------------------------------------------
 
 #define TREND_LATERALE 0
@@ -105,7 +156,7 @@ extern int Slippage          = 2;      //[Slippage] - Massimo Slippage degli Ord
 #define TREND_DECRESCENTE_FORTE 9
 
 //---------------------------------------------------------------------------
- 
+
 int PendingBuy, PendingSell, Buys, Sells, i, Spread, STOPLEVEL;
 double BuyLots, SellLots, PendingBuyLots, PendingSellLots;
 double Focus, Profit, LastProfit, MaxProfit;
@@ -398,18 +449,205 @@ void start()
                double bb1U_20 = iBands(Symbol(),PERIOD_H1,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
                double bb2U_20 = iBands(Symbol(),PERIOD_H1,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
                double bb3U_20 = iBands(Symbol(),PERIOD_H1,20,2,0,PRICE_CLOSE,MODE_UPPER,3);               
-            //-------------------------------------------------------------------------
+              //-------------------------------------------------------------------------
+               //-- Pivots, Support/Resistance and Price Alerts
+               //get_pivots(symbol, timeframe);
+               get_NearestAndFarestSR(Symbol(), 0, (iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0 );
+               //---
+               
+              //------------------------------------------------------------------------------------------
+               if (/*DrawLines*/ false)
+               {
+               //--- Draw Pivot lines on chart
+                  if(ObjectFind("Nearest_Support label") == 0) ObjectDelete("Nearest_Support label");
+                   ObjectCreate("Nearest_Support label", OBJ_TEXT, 0, Time[0], nearest_support);
+                   ObjectSetText("Nearest_Support label", "Nearest Support @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_support,4), 8, "Arial", EMPTY);
+                  if(ObjectFind("Nearest_Support line") != 0)
+                  {
+                     ObjectCreate("Nearest_Support line", OBJ_HLINE, 0, Time[0], nearest_support);
+                     ObjectSet("Nearest_Support line", OBJPROP_STYLE, STYLE_SOLID);
+                     ObjectSet("Nearest_Support line", OBJPROP_WIDTH,2);
+                     ObjectSet("Nearest_Support line", OBJPROP_COLOR, Blue);
+                  }
+                  else
+                  {
+                     ObjectMove("Nearest_Support line", 0, Time[40], nearest_support);
+                  }
+               //-----
+                  if(ObjectFind("Nearest_Resistance label") == 0) ObjectDelete("Nearest_Resistance label");
+                   ObjectCreate("Nearest_Resistance label", OBJ_TEXT, 0, Time[0], nearest_resistance);
+                   ObjectSetText("Nearest_Resistance label", "Nearest Resistance @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_resistance,4), 8, "Arial", EMPTY);
+                  if(ObjectFind("Nearest_Resistance line") != 0)
+                  {
+                     ObjectCreate("Nearest_Resistance line", OBJ_HLINE, 0, Time[0], nearest_resistance);
+                     ObjectSet("Nearest_Resistance line", OBJPROP_STYLE, STYLE_SOLID);
+                     ObjectSet("Nearest_Resistance line", OBJPROP_WIDTH,2);
+                     ObjectSet("Nearest_Resistance line", OBJPROP_COLOR, Red);
+                  }
+                  else
+                  {
+                     ObjectMove("Nearest_Resistance line", 0, Time[40], nearest_resistance);
+                  }
+               //-----
+                  if(ObjectFind("Nearest_Daily_Support label") == 0) ObjectDelete("Nearest_Daily_Support label");
+                   ObjectCreate("Nearest_Daily_Support label", OBJ_TEXT, 0, Time[0], nearest_daily_support);
+                   ObjectSetText("Nearest_Daily_Support label", "Nearest Daily Support @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_daily_support,4), 8, "Arial", EMPTY);
+                  if(ObjectFind("Nearest_Daily_Support line") != 0)
+                  {
+                     ObjectCreate("Nearest_Daily_Support line", OBJ_HLINE, 0, Time[0], nearest_daily_support);
+                     ObjectSet("Nearest_Daily_Support line", OBJPROP_STYLE, STYLE_SOLID);
+                     ObjectSet("Nearest_Daily_Support line", OBJPROP_WIDTH,2);
+                     ObjectSet("Nearest_Daily_Support line", OBJPROP_COLOR, LightBlue);
+                  }
+                  else
+                  {
+                     ObjectMove("Nearest_Daily_Support line", 0, Time[40], nearest_daily_support);
+                  }
+               //-----
+                  if(ObjectFind("Nearest_Daily_Resistance label") == 0) ObjectDelete("Nearest_Daily_Resistance label");
+                   ObjectCreate("Nearest_Daily_Resistance label", OBJ_TEXT, 0, Time[0], nearest_daily_resistance);
+                   ObjectSetText("Nearest_Daily_Resistance label", "Nearest Daily Resistance @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_daily_resistance,4), 8, "Arial", EMPTY);
+                  if(ObjectFind("Nearest_Daily_Resistance line") != 0)
+                  {
+                     ObjectCreate("Nearest_Daily_Resistance line", OBJ_HLINE, 0, Time[0], nearest_daily_resistance);
+                     ObjectSet("Nearest_Daily_Resistance line", OBJPROP_STYLE, STYLE_SOLID);
+                     ObjectSet("Nearest_Daily_Resistance line", OBJPROP_WIDTH,2);
+                     ObjectSet("Nearest_Daily_Resistance line", OBJPROP_COLOR, LightPink);
+                  }
+                  else
+                  {
+                     ObjectMove("Nearest_Daily_Resistance line", 0, Time[40], nearest_daily_resistance);
+                  }
+               //-----
+                  WindowRedraw();
+               //-----
+               }
+              //------------------------------------------------------------------------------------------
+
+
                if( Buys+Sells==0 )
                {
+                  //+------------------------------------------------------------------+
+                  //| Variable Begin                                                   |
+                  //+------------------------------------------------------------------+
+                  double Buy1_1 = iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+                  double Buy1_2 = iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+                  double Buy2_1 = iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0);
+                  double Buy2_2 = iOpen(Symbol(), 0, 0);
+                  double Buy3_1 = iClose(Symbol(), 0, 0);
+                  double Buy3_2 = MarketInfo(Symbol(), MODE_BID);
+                              
+                  double nearest_broken_pivot = EMPTY_VALUE;
+                  
+                  if (Buy2_2 < nearest_resistance && Buy3_1 > nearest_resistance) {
+                     nearest_broken_pivot = nearest_resistance;
+                  } else if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_support && Buy3_1 > nearest_support) {
+                     nearest_broken_pivot = nearest_resistance;
+                  }
+                  //+------------------------------------------------------------------+
+                  //| Variable End                                                     |
+                  //+------------------------------------------------------------------+
+      
+                  if(
+                     OpenLongSignal() 
+                     ||
+                     (
+                        iLow(Symbol(),PERIOD_H1,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+                        iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+                        iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+                        iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                        iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                        iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                        iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+                     )
+                     ||
+                     (iClose(Symbol(), 0, 1) <= iHigh(Symbol(), 0, 2) && iClose(Symbol(), 0, 0) > iHigh(Symbol(), 0, 1) && iClose(Symbol(), 0, 0) > iHigh(Symbol(), 0, 2))
+                     ||
+                     (Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                    ) {
+                     //---
+                     Count();
+                     //---
+                     if(Buys+Sells<=UltraMaxOrders)
+                     {
+                        if(ProTrend)
+                        {
+                           stoploss   = (StopLoss == 0 ? 0 : Bid-(StopLoss)*Point-Spread*Point-STOPLEVEL*Point);
+                           takeprofit = (TakeProfit == 0 ? 0 : Ask+TakeProfit*Point+Spread*Point+STOPLEVEL*Point);
+                           LastOrderTicket=OpenOrder(lot, OP_BUY, stoploss, takeprofit);
+                        }
+                        else
+                        {
+                           stoploss   = (StopLoss == 0 ? 0 : Ask+(StopLoss)*Point+Spread*Point+STOPLEVEL*Point);
+                           takeprofit = (TakeProfit == 0 ? 0 : Bid-TakeProfit*Point-Spread*Point-STOPLEVEL*Point);
+                           LastOrderTicket=OpenOrder(lot, OP_SELL, stoploss, takeprofit);
+                        }
+                     }
+                  }
+
+                  //+------------------------------------------------------------------+
+                  //| Variable Begin                                                   |
+                  //+------------------------------------------------------------------+
+                  double Sell1_1 = iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+                  double Sell1_2 = iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+                  double Sell2_1 = iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0);
+                  double Sell2_2 = iOpen(Symbol(), 0, 0);
+                  double Sell3_1 = iClose(Symbol(), 0, 0);
+                  double Sell3_2 = MarketInfo(Symbol(), MODE_ASK);
+                  
+                  nearest_broken_pivot = EMPTY_VALUE;
+                  
+                  if (Sell2_2 > nearest_support && Sell3_1 < nearest_support) {
+                     nearest_broken_pivot = nearest_support;
+                  } else if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_resistance && Sell3_1 < nearest_resistance) {
+                     nearest_broken_pivot = nearest_resistance;
+                  }
+                  
+                  //+------------------------------------------------------------------+
+                  //| Variable End                                                     |
+                  //+------------------------------------------------------------------+
+      
+                  if(
+                     OpenShortSignal() 
+                     ||
+                     (
+                        iHigh(Symbol(),PERIOD_H1,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+                        iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+                        iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+                        iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                        iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                        iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                        iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+                     )
+                     ||
+                     (iClose(Symbol(), 0, 1) >= iLow(Symbol(), 0, 2) && iClose(Symbol(), 0, 0) < iLow(Symbol(), 0, 1) && iClose(Symbol(), 0, 0) < iLow(Symbol(), 0, 2))
+                     || 
+                     (Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                    ) {
+                     //---
+                     Count();
+                     //---
+                     if(Buys+Sells<=UltraMaxOrders)
+                     {
+                        if(ProTrend)
+                        {
+                           stoploss   = (StopLoss == 0 ? 0 : Ask+(StopLoss)*Point+Spread*Point+STOPLEVEL*Point);
+                           takeprofit = (TakeProfit == 0 ? 0 : Bid-TakeProfit*Point-Spread*Point-STOPLEVEL*Point);
+                           LastOrderTicket=OpenOrder(lot, OP_SELL, stoploss, takeprofit);
+                        }
+                        else
+                        {
+                           stoploss   = (StopLoss == 0 ? 0 : Bid-(StopLoss)*Point-Spread*Point-STOPLEVEL*Point);
+                           takeprofit = (TakeProfit == 0 ? 0 : Ask+TakeProfit*Point+Spread*Point+STOPLEVEL*Point);
+                           LastOrderTicket=OpenOrder(lot, OP_BUY, stoploss, takeprofit);
+                        }
+                     }
+                  }
+
+                 /*
                   //-----------------------------
                   //--- Bollinger Bands
                   //-----------------------------
-                  /*
-                   * double high  = High[i];
-                   * double low   = Low[i];
-                   * double open  = Open[i];
-                   * double close = Close[i];
-                   */
                   //---
                   Count();
                   //---
@@ -585,6 +823,7 @@ void start()
                         LastOrderTicket=OpenOrder(lot, OP_BUY, stoploss, takeprofit);
                      }
                   }
+                 */
                }
             }
          //-----------------------------------------
@@ -654,7 +893,7 @@ void UltraShockRecoveryGrid(double lot)
    
    double DDFromStart                = (AccountEquity()-StartingBalance)*100/StartingBalance;
    double MarketPipDistance          = sqGetMarketPipDistance(Symbol(),MAGICMA);
-   double MaxMarketStopLossThreshold = (/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
+   //double MaxMarketStopLossThreshold = (/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
    
 //----
    double MaxMarketPipDistance       = sqGetMaxMarketPipDistance(Symbol(),MAGICMA);
@@ -666,8 +905,8 @@ void UltraShockRecoveryGrid(double lot)
    if(
       (Profit < 0 && UltraShock ) &&
       (
-         (Sells+Buys > 1 && MaxMarketPipDistance != 0 && MaxMarketPipDistance <= -MaxMarketStopLossThreshold) ||
-         (Sells+Buys == 1 && sqGetOrderPipDistance(Symbol(),OrderTicket()) <= -mux*UltraShockDistance) 
+         //(Sells+Buys > 1 && MaxMarketPipDistance != 0 && MaxMarketPipDistance <= -MaxMarketStopLossThreshold) ||
+         (/*Sells+Buys == 1 &&*/ sqGetOrderPipDistance(Symbol(),OrderTicket()) <= -mux*UltraShockDistance) 
       )
      )
    {
@@ -683,12 +922,14 @@ void UltraShockRecoveryGrid(double lot)
             canOpenBallanceOrders = true;         
          }
          
+         /*
          if( Sells+Buys >= UltraMaxOrders && 
              //orderWinType >= 0 && orderWinType != orderType &&
              MaxMarketPipDistance <= -MaxMarketStopLossThreshold )
          {
             canOpenBallanceOrders = sqClosePositionAtMarket(OrderLots(),Slippage);
          }
+         */
          
          if (canOpenBallanceOrders) 
          {
@@ -696,13 +937,94 @@ void UltraShockRecoveryGrid(double lot)
             Count();
          
             RefreshRates();
+
+            //------------------------------------------------------------------------------------+
+            //LONG
+            //------------------------------------------------------------------------------------+
+            if
+            (
+               (
+                  iLow(Symbol(),PERIOD_H1,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+                  iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+                  iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+                  iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                  iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                  iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                  iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+               )
+               ||
+               (
+                  MarketInfo(Symbol(), MODE_BID)>iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0) &&
+                  iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0) > 0 &&
+                  iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0) > 50 &&
+                  iClose(Symbol(), 0, 1) <= iHigh(Symbol(), 0, 2) && 
+                  iClose(Symbol(), 0, 0) > iHigh(Symbol(), 0, 1) && 
+                  iClose(Symbol(), 0, 0) > iHigh(Symbol(), 0, 2)
+               )
+            )
+            {
+               if(ProTrend)
+               {
+                  stoploss   = (StopLoss == 0 ? 0 : Bid-(StopLoss)*Point-Spread*Point-STOPLEVEL*Point);
+                  takeprofit = (TakeProfit == 0 ? 0 : Ask+TakeProfit*Point+Spread*Point+STOPLEVEL*Point);
+                  LastOrderTicket=OpenOrder(lot, OP_BUY, stoploss, takeprofit);
+               }
+               else
+               {
+                  stoploss   = (StopLoss == 0 ? 0 : Ask+(StopLoss)*Point+Spread*Point+STOPLEVEL*Point);
+                  takeprofit = (TakeProfit == 0 ? 0 : Bid-TakeProfit*Point-Spread*Point-STOPLEVEL*Point);
+                  LastOrderTicket=OpenOrder(lot, OP_SELL, stoploss, takeprofit);
+               }
+            }
    
+            //------------------------------------------------------------------------------------+
+            //SHORT
+            //------------------------------------------------------------------------------------+
+            if
+            (
+              (
+                  iHigh(Symbol(),PERIOD_H1,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+                  iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+                  iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+                  iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                  iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                  iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+                  iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+              )
+              ||
+              (
+                  MarketInfo(Symbol(), MODE_ASK)<iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0) &&
+                  iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0) < 0 &&
+                  iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0) < 50 &&
+                  iClose(Symbol(), 0, 1) >= iLow(Symbol(), 0, 2) && 
+                  iClose(Symbol(), 0, 0) < iLow(Symbol(), 0, 1) && 
+                  iClose(Symbol(), 0, 0) < iLow(Symbol(), 0, 2)
+              )
+            )
+            {
+               if(ProTrend)
+               {
+                  stoploss   = (StopLoss == 0 ? 0 : Ask+(StopLoss)*Point+Spread*Point+STOPLEVEL*Point);
+                  takeprofit = (TakeProfit == 0 ? 0 : Bid-TakeProfit*Point-Spread*Point-STOPLEVEL*Point);
+                  LastOrderTicket=OpenOrder(lot, OP_SELL, stoploss, takeprofit);
+               }
+               else
+               {
+                  stoploss   = (StopLoss == 0 ? 0 : Bid-(StopLoss)*Point-Spread*Point-STOPLEVEL*Point);
+                  takeprofit = (TakeProfit == 0 ? 0 : Ask+TakeProfit*Point+Spread*Point+STOPLEVEL*Point);
+                  LastOrderTicket=OpenOrder(lot, OP_BUY, stoploss, takeprofit);
+               }
+            }
+
    //--------------------
+   /*
             double sma0_50  = iMA(Symbol(),PERIOD_H1,50,0,MODE_SMA,PRICE_CLOSE,0);
             double sma0_200 = iMA(Symbol(),PERIOD_H1,200,0,MODE_SMA,PRICE_CLOSE,0);
             double sma3_50  = iMA(Symbol(),PERIOD_H1,50,0,MODE_SMA,PRICE_CLOSE,3);
             double sma3_200 = iMA(Symbol(),PERIOD_H1,200,0,MODE_SMA,PRICE_CLOSE,3);
+   */
    //--------------------
+   /*
             switch(trend)
             {
                case TREND_DECRESCENTE_FORTE:
@@ -766,6 +1088,7 @@ void UltraShockRecoveryGrid(double lot)
                      }
                   break;
             }
+   */
    //--------------------
          }
       }
@@ -788,7 +1111,7 @@ void UltraShockRecoveryGridUP(double lot)
      div *= DECIMAL_CONVERSION;
    }
 //--------------------
-   double MaxMarketStopLossThreshold = (/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
+   //double MaxMarketStopLossThreshold = (/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
 //--------------------
    double sma0_50  = iMA(Symbol(),PERIOD_H1,50,0,MODE_SMA,PRICE_CLOSE,0);
    double sma0_200 = iMA(Symbol(),PERIOD_H1,200,0,MODE_SMA,PRICE_CLOSE,0);
@@ -839,7 +1162,7 @@ void UltraShockRecoveryGridDOWN(double lot)
      div *= DECIMAL_CONVERSION;
    }
 //--------------------
-   double MaxMarketStopLossThreshold = (/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
+   //double MaxMarketStopLossThreshold = (/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
 //--------------------
    double sma0_50  = iMA(Symbol(),PERIOD_H1,50,0,MODE_SMA,PRICE_CLOSE,0);
    double sma0_200 = iMA(Symbol(),PERIOD_H1,200,0,MODE_SMA,PRICE_CLOSE,0);
@@ -1634,7 +1957,7 @@ void CharlesStatus()
 
    double MaxMarketPipDistance = sqGetMaxMarketPipDistance(Symbol(),MAGICMA);
           MaxMarketPipDistance = (MaxMarketPipDistance == EMPTY_VALUE ? 0 : MaxMarketPipDistance);
-   double MaxMarketStopLossThreshold = -(/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
+   //double MaxMarketStopLossThreshold = -(/*(StopLoss/div)-*/((StopLoss/div)*(UltraShockSLPerc/100)));
 
 //---
    string CommentString="";
@@ -1655,7 +1978,7 @@ void CharlesStatus()
           CommentString,
           "\nBuy=",Buys,"; Sell=", Sells,"; BuyLots=",DoubleToString(BuyLots,2),"; SellLots=",DoubleToString(SellLots,2),
           ";\nPendingSellLots=",DoubleToString(PendingSellLots,2),"; PendingBuyLots=", DoubleToString(PendingBuyLots,2),
-          ";\nMaxMarketPipDistance=",DoubleToString(MaxMarketPipDistance,2),";\MaxMarketStopLossThreshold=",DoubleToString(MaxMarketStopLossThreshold,2),
+          ";\nMaxMarketPipDistance=",DoubleToString(MaxMarketPipDistance,2),//";\MaxMarketStopLossThreshold=",DoubleToString(MaxMarketStopLossThreshold,2),
           ";\nTrend=",strTrend(trend),";\nVolatilità=",strVolatility());
 }
 //---------------------------------------------------------------------------   
@@ -2245,6 +2568,257 @@ return (result);
 }
 
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+//+------------------------------------------------------------------+
+//| H4 and Daily Support/Resistance and Pivot                        |
+//+------------------------------------------------------------------+
+void get_pivots(string symbol, int timeframe)
+{
+//----------------------------------------------------------------------------- Get new TimeFrame ---------------
+   ArrayCopyRates(Fhr_rates_d1, symbol, timeframe);
+
+   Fhr_yesterday_close = Fhr_rates_d1[1][4];
+   Fhr_yesterday_open = Fhr_rates_d1[1][1];
+   Fhr_today_open = Fhr_rates_d1[0][1];
+   Fhr_yesterday_high = Fhr_rates_d1[1][3];
+   Fhr_yesterday_low = Fhr_rates_d1[1][2];
+   Fhr_day_high = Fhr_rates_d1[0][3];
+   Fhr_day_low = Fhr_rates_d1[0][2];
+
+
+//---- Calculate Pivots
+
+   Fhr_D = (Fhr_day_high - Fhr_day_low);
+   Fhr_Q = (Fhr_yesterday_high - Fhr_yesterday_low);
+   Fhr_P = (Fhr_yesterday_high + Fhr_yesterday_low + Fhr_yesterday_close) / 3;
+   Fhr_R1 = (2*Fhr_P)-Fhr_yesterday_low;
+   Fhr_S1 = (2*Fhr_P)-Fhr_yesterday_high;
+   Fhr_R2 = Fhr_P+(Fhr_yesterday_high - Fhr_yesterday_low);
+   Fhr_S2 = Fhr_P-(Fhr_yesterday_high - Fhr_yesterday_low);
+
+
+   Fhr_R3 = (2*Fhr_P)+(Fhr_yesterday_high-(2*Fhr_yesterday_low));
+   Fhr_M5 = (Fhr_R2+Fhr_R3)/2;
+   // Fhr_R2 = Fhr_P-Fhr_S1+Fhr_R1;
+   Fhr_M4 = (Fhr_R1+Fhr_R2)/2;
+   // Fhr_R1 = (2*Fhr_P)-Fhr_yesterday_low;
+   Fhr_M3 = (Fhr_P+Fhr_R1)/2;
+   // Fhr_P = (Fhr_yesterday_high + Fhr_yesterday_low + Fhr_yesterday_close)/3;
+   Fhr_M2 = (Fhr_P+Fhr_S1)/2;
+   // Fhr_S1 = (2*Fhr_P)-Fhr_yesterday_high;
+   Fhr_M1 = (Fhr_S1+Fhr_S2)/2;
+   // Fhr_S2 = Fhr_P-Fhr_R1+Fhr_S1;
+   Fhr_S3 = (2*Fhr_P)-((2* Fhr_yesterday_high)-Fhr_yesterday_low);
+   Fhr_M0 = (Fhr_S2+Fhr_S3)/2;
+
+   if (Fhr_Q > 5)
+   {
+      Fhr_nQ = Fhr_Q;
+   }
+   else
+   {
+     Fhr_nQ = Fhr_Q*10000;
+   }
+
+   if (Fhr_D > 5)
+   {
+       Fhr_nD = Fhr_D;
+   }
+   else
+   {
+      Fhr_nD = Fhr_D*10000;
+   }
+//----------------------------------------------------------------------------- Get DAY ---------------
+   ArrayCopyRates(D_rates_d1, symbol, 1440);
+
+   D_yesterday_close = D_rates_d1[1][4];
+   D_yesterday_open = D_rates_d1[1][1];
+   D_today_open = D_rates_d1[0][1];
+   D_yesterday_high = D_rates_d1[1][3];
+   D_yesterday_low = D_rates_d1[1][2];
+   D_day_high = D_rates_d1[0][3];
+   D_day_low = D_rates_d1[0][2];
+
+
+//---- Calculate Pivots
+
+   D_D = (D_day_high - D_day_low);
+   D_Q = (D_yesterday_high - D_yesterday_low);
+   D_P = (D_yesterday_high + D_yesterday_low + D_yesterday_close) / 3;
+   D_R1 = (2*D_P)-D_yesterday_low;
+   D_S1 = (2*D_P)-D_yesterday_high;
+   D_R2 = D_P+(D_yesterday_high - D_yesterday_low);
+   D_S2 = D_P-(D_yesterday_high - D_yesterday_low);
+
+
+   D_R3 = (2*D_P)+(D_yesterday_high-(2*D_yesterday_low));
+   D_M5 = (D_R2+D_R3)/2;
+   // D_R2 = D_P-D_S1+D_R1;
+   D_M4 = (D_R1+D_R2)/2;
+   // D_R1 = (2*D_P)-D_yesterday_low;
+   D_M3 = (D_P+D_R1)/2;
+   // D_P = (D_yesterday_high + D_yesterday_low + D_yesterday_close)/3;
+   D_M2 = (D_P+D_S1)/2;
+   // D_S1 = (2*D_P)-D_yesterday_high;
+   D_M1 = (D_S1+D_S2)/2;
+   // D_S2 = D_P-D_R1+D_S1;
+   D_S3 = (2*D_P)-((2* D_yesterday_high)-D_yesterday_low);
+
+   D_M0 = (D_S2+D_S3)/2;
+
+   if (D_Q > 5)
+   {
+      D_nQ = D_Q;
+   }
+   else
+   {
+     D_nQ = D_Q*10000;
+   }
+
+   if (D_D > 5)
+   {
+       D_nD = D_D;
+   }
+   else
+   {
+      D_nD = D_D*10000;
+   }
+}
+
+//--------------------------------------------------------------------- +
+void get_NearestAndFarestSR(string symbol, int timeframe, double price)
+{
+   //-- Pivots, Support/Resistance and Price Alerts
+   get_pivots(symbol, timeframe);
+   //---
+
+   MqlRates RatesBar[];
+   ArraySetAsSeries(RatesBar,true);
+   if(CopyRates(symbol,timeframe,0,20,RatesBar)==20)
+   {
+      double high     = RatesBar[0].high;
+      double point    = MarketInfo(symbol,MODE_POINT);
+      int    digits   = MarketInfo(symbol,MODE_DIGITS);
+      double ask      = MarketInfo(symbol,MODE_ASK);
+      double bid      = MarketInfo(symbol,MODE_BID);
+      double low      = RatesBar[0].low;
+      int    power    = MathPow(10,digits-1);
+      double pipRange = (high-low)*power;
+      double bidRatio = (pipRange > 0 ? ((bid-low)/pipRange*power)*100 : 0);
+             pipRange = (pipRange != 0 ? pipRange : 0.001);
+      //-Fhr
+      if( price >= Fhr_R3 )
+      {
+         nearest_resistance = D_R3;
+         nearest_support = Fhr_R3;
+
+         farest_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_support = Fhr_R1;
+      }
+      else if( price < Fhr_R3 && price >= Fhr_R2 )
+      {
+         nearest_resistance = Fhr_R3;
+         nearest_support = Fhr_R2;
+
+         farest_resistance = D_R3;
+         farest_support = Fhr_S1;
+      }
+      else if( price < Fhr_R2 && price >= Fhr_R1 )
+      {
+         nearest_resistance = Fhr_R2;
+         nearest_support = Fhr_R1;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S1;
+      }
+      else if( price < Fhr_R1 && price >= Fhr_S1 )
+      {
+         nearest_resistance = Fhr_R1;
+         nearest_support = Fhr_S1;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S3;
+      }
+      else if( price < Fhr_S1 && price >= Fhr_S2 )
+      {
+         nearest_resistance = Fhr_S1;
+         nearest_support = Fhr_S2;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S3;
+      }
+      else if( price < Fhr_S2 && price >= Fhr_S3 )
+      {
+         nearest_resistance = Fhr_S2;
+         nearest_support = Fhr_S3;
+
+         farest_resistance = Fhr_S1;
+         farest_support = D_S3;
+      }
+      else
+      {
+         nearest_resistance = Fhr_S3;
+         nearest_support = D_S3;
+
+         farest_resistance = Fhr_S1;
+         farest_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+      }
+      //-D
+      if( price >= D_R3 )
+      {
+         nearest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         nearest_daily_support = D_R3;
+
+         farest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_daily_support = D_R1;
+      }
+      else if( price < D_R3 && price >= D_R2 )
+      {
+         nearest_daily_resistance = D_R3;
+         nearest_daily_support = D_R2;
+
+         farest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_daily_support = D_S1;
+      }
+      else if( price < D_R2 && price >= D_R1 )
+      {
+         nearest_daily_resistance = D_R2;
+         nearest_daily_support = D_R1;
+
+         farest_daily_resistance = D_R3;
+         farest_daily_support = D_S1;
+      }
+      else if( price < D_R1 && price >= D_S1 )
+      {
+         nearest_daily_resistance = D_R1;
+         nearest_daily_support = D_S1;
+
+         farest_daily_resistance = D_R3;
+         farest_daily_support = D_S3;
+      }
+      else if( price < D_S1 && price >= D_S2 )
+      {
+         nearest_daily_resistance = D_S1;
+         nearest_daily_support = D_S2;
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3;
+      }
+      else if( price < D_S2 && price >= D_S3 )
+      {
+         nearest_daily_resistance = D_S2;
+         nearest_daily_support = D_S3;
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+      }
+      else
+      {
+         nearest_daily_resistance = D_S3;
+         nearest_daily_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3 - sqConvertToRealPips(symbol, 2*pipRange);
+      }
+   }
+}
 //---------------------------------------------------------------------------
