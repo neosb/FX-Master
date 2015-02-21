@@ -1,0 +1,12 @@
+MaxSlippage=2
+CloseAtError=false
+BreakEvenAtPips=11
+TrailingStopPips=20
+VerboseMode=1
+LotsIfNoMM=0.1
+RiskInPercent=0.0
+MaximumLots=0.0
+LotsDecimals=2.0
+PairSuffix=
+SupportECNBrokers=true
+AllowWeakSignals=false
