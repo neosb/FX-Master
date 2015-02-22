@@ -620,11 +620,7 @@ if (DrawLines)
 //--- Assert 0: close most losing orders
    ProgressiveStopLoss();
 //--- Assert 1: equity protection
-   double DDFromStart = (AccountEquity()-AccountBalance())*100/AccountBalance();
-   if(EquityShield > 0 && DDFromStart <= -EquityShield) {
-      CloseAllOrders(true);
-      spikeAlert = true;
-   }
+   EquityStopLoss();
 //--- Assert 2: Init OrderSelect #15
    int total = GhostOrdersTotal();
    
@@ -2596,6 +2592,40 @@ void ProgressiveStopLoss() {
                }
             }
          }
+      }
+   }
+}
+//----------------------------------------------------------------------------
+void EquityStopLoss() {
+   //double DDFromStart                = (AccountEquity()-StartingBalance)*100/StartingBalance;
+   /*
+      double DDFromStart = (AccountEquity()-AccountBalance())*100/AccountBalance();
+      if(EquityShield > 0 && DDFromStart <= -EquityShield) {
+         CloseAllOrders(true);
+         spikeAlert = true;
+      }
+   */
+      
+   if (EquityShield > 0 /*&& DDFromStart <= -ProgressiveStopLossPerc*/)
+   {
+      double actualProfit = 0;
+   //--- Assert 2: Init OrderSelect #15
+      int total = GhostOrdersTotal();
+   
+      GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
+      for (int pos_32 = 0; pos_32 < total; pos_32++) {
+         if (GhostOrderSelect(pos_32,SELECT_BY_POS,MODE_TRADES)) {
+            if (GhostOrderMagicNumber() == MagicNumber) {
+               double profit = GhostOrderProfit()+GhostOrderSwap()+GhostOrderCommission();
+               actualProfit += profit;
+            }
+         }
+      }
+
+      if (actualProfit < 0 && (MathAbs(actualProfit)*100/StartingBalance)>=EquityShield)
+      {
+         CloseAllOrders(true);
+         spikeAlert = true;
       }
    }
 }
