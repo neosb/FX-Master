@@ -40,27 +40,27 @@
 //|-----------------------------------------------------------------------------------------|
 //|                 P L U S L I N E X   E X T E R N A L   V A R I A B L E S                 |
 //|-----------------------------------------------------------------------------------------|
-extern   string GhostTerminal           = "GhostTerminal";
-extern   string g1                      = "Mode: 0-Broker; 1-Excel; 2-SqLite";
-extern   int    GhostMode               = 0;
-extern   bool   GhostStatistics         = false;
-extern   string g2                      = "ExpertName: Unique filename";
-extern   string GhostExpertName         = "EA";
-extern   int    GhostRows               = 10;
-extern   int	GhostPipLimit			= 10;
-extern   bool   GhostBigText            = false;
-extern   color  GhostMainColor          = White;
-extern   color  GhostBuyColor           = Green;
-extern   color  GhostBuyOPColor         = Lime;
-extern   color  GhostBuySLColor         = Lime;
-extern   color  GhostBuyTPColor         = Lime;
-extern   color  GhostSellColor          = Crimson;
-extern   color  GhostSellOPColor        = Red;
-extern   color  GhostSellSLColor        = Red;
-extern   color  GhostSellTPColor        = Red;
-extern   string g3                      = "Debug: 0-Crit; 1-Core; 2-Detail";
-extern   int    GhostDebug              = 1;
-extern   int    GhostCount              = 1000;
+/*extern*/   string GhostTerminal           = "GhostTerminal";
+/*extern*/   string g1                      = "Mode: 0-Broker; 1-Excel; 2-SqLite";
+/*extern*/   int    GhostMode               = 0;
+/*extern*/   bool   GhostStatistics         = false;
+/*extern*/   string g2                      = "ExpertName: Unique filename";
+/*extern*/   string GhostExpertName         = "EA";
+/*extern*/   int    GhostRows               = 10;
+/*extern*/   int	  GhostPipLimit			  = 10;
+/*extern*/   bool   GhostBigText            = false;
+/*extern*/   color  GhostMainColor          = White;
+/*extern*/   color  GhostBuyColor           = Green;
+/*extern*/   color  GhostBuyOPColor         = Lime;
+/*extern*/   color  GhostBuySLColor         = Lime;
+/*extern*/   color  GhostBuyTPColor         = Lime;
+/*extern*/   color  GhostSellColor          = Crimson;
+/*extern*/   color  GhostSellOPColor        = Red;
+/*extern*/   color  GhostSellSLColor        = Red;
+/*extern*/   color  GhostSellTPColor        = Red;
+/*extern*/   string g3                      = "Debug: 0-Crit; 1-Core; 2-Detail";
+/*extern*/   int    GhostDebug              = 1;
+/*extern*/   int    GhostCount              = 1000;
 
 //|-----------------------------------------------------------------------------------------|
 //|                           I N T E R N A L   V A R I A B L E S                           |

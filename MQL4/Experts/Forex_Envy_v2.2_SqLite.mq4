@@ -1,5 +1,5 @@
 //+-----------------------------------------------------------------------------------+
-//|                                                        Forex_Envy_v2.2_SqLite.mq4 |
+//|                                                        Forex_Envy_v4.0_SqLite.mq4 |
 //|                                              Copyright 2015, Al.Fa.Software Corp. |
 //|                                                               http://www.mql5.com |
 //| Assert History                                                                    |
@@ -17,7 +17,7 @@
 //+-----------------------------------------------------------------------------------+
 #property copyright "Copyright 2015, Al.Fa.Software Corp."
 #property link      "http://www.mql5.com"
-#property version   "1.00"
+#property version   "4.0"
 #property strict
 
 
@@ -45,6 +45,10 @@ extern string EA_Name = "Forex Envy";
 extern string _________ = "Input a unique magic number for each chart";
 extern int MagicNumber = 0;
 extern double BaseLotSize = 0.01;
+extern bool LotStepEnable    = true;
+extern double LotStepValue   = 0.01;
+extern double LotStepFrom    = 500;
+extern double LotStepEvery   = 100;
 extern int ExecutionPoint = 0;
 extern double BasketTakeProfit = 0.0;
 extern int BasketStopLoss = 0;
@@ -169,6 +173,8 @@ extern double BasketTakeProfit_24 = 0.0;
 extern string Level_25 = "";
 extern double Multiplier_25 = 0.0;
 extern double BasketTakeProfit_25 = 0.0;
+extern bool   DrawLines = TRUE;
+/*
 extern string _____ = "SWB indicator settings";
 extern bool Use_SWB_indicator = false;
 extern bool      swb_is_reversed = FALSE;
@@ -189,6 +195,7 @@ extern int       rsi_period=12;
 extern int       rsi_shift=0;
 extern int       lower=30;
 extern int       upper=70;
+*/
 double gd_948;
 bool gi_956 = FALSE;
 bool gi_960 = FALSE;
@@ -250,6 +257,61 @@ double gPoint = 0.0001; // Fix for 3/5 Digits
 int SignalPeriod = PERIOD_H1;
 double Last_TP[2]; // Fix 0.5 to store TP if TCB
 
+double StartingBalance;
+
+//--------------------------------- PIVOTS ----
+double Fhr_day_high=0;
+double Fhr_day_low=0;
+double Fhr_yesterday_high=0;
+double Fhr_yesterday_open=0;
+double Fhr_yesterday_low=0;
+double Fhr_yesterday_close=0;
+double Fhr_today_open=0;
+double Fhr_today_high=0;
+double Fhr_today_low=0;
+double Fhr_P=0;
+double Fhr_Q=0;
+double Fhr_R1,Fhr_R2,Fhr_R3;
+double Fhr_M0,Fhr_M1,Fhr_M2,Fhr_M3,Fhr_M4,Fhr_M5;
+double Fhr_S1,Fhr_S2,Fhr_S3;
+double Fhr_nQ=0;
+double Fhr_nD=0;
+double Fhr_D=0;
+double Fhr_rates_d1[2][6];
+double Fhr_ExtMapBuffer[];
+//---------------------------------
+double D_day_high=0;
+double D_day_low=0;
+double D_yesterday_high=0;
+double D_yesterday_open=0;
+double D_yesterday_low=0;
+double D_yesterday_close=0;
+double D_today_open=0;
+double D_today_high=0;
+double D_today_low=0;
+double D_P=0;
+double D_Q=0;
+double D_R1,D_R2,D_R3;
+double D_M0,D_M1,D_M2,D_M3,D_M4,D_M5;
+double D_S1,D_S2,D_S3;
+double D_nQ=0;
+double D_nD=0;
+double D_D=0;
+double D_rates_d1[2][6];
+double D_ExtMapBuffer[];
+//---------------------------------
+double nearest_support = 0;
+double nearest_resistance = 0;
+double nearest_daily_support = 0;
+double nearest_daily_resistance = 0;
+
+double farest_support = 0;
+double farest_resistance = 0;
+double farest_daily_support = 0;
+double farest_daily_resistance = 0;
+//---------------------------------
+
+//---------------------------------------------------------------------------
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -367,6 +429,7 @@ int OnInit()
       Print("Please input valid KEY.");
       Alert("Please input valid KEY.");
    }
+   StartingBalance = AccountBalance();
    GhostFreeSelect(false);
 //---
    return(INIT_SUCCEEDED);
@@ -431,6 +494,9 @@ void OnTick()
    int count_28 = 0;
 //--- Assert 2: Init OrderSelect #15
    int total = GhostOrdersTotal();
+   
+   if (total == 0 && AccountBalance() > StartingBalance) StartingBalance = AccountBalance();
+   
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
    for (int pos_32 = 0; pos_32 < total; pos_32++) {
       if (GhostOrderSelect(pos_32, SELECT_BY_POS, MODE_TRADES)) {
@@ -513,7 +579,7 @@ void OnTick()
          {
             case 1:  // OrderModify Buy
             case 2:  // OrderClose Buy
-               GhostOrderClose( aTicket[i], aLots[i], aClosePrice[i], MarketInfo(Symbol(), MODE_SPREAD), White ); 
+               GhostOrderClose( aTicket[i], aLots[i], aClosePrice[i], MarketInfo(Symbol(), MODE_SPREAD), White );
                break;
             case 3:  // OrderModify Sell
             case 4:  // OrderClose Sell
@@ -1072,7 +1138,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0) {
          else lots_8 = f0_2(gd_1016);
       } else {
          if (f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
-         else lots_8 = NormalizeDouble(BaseLotSize, 2);
+         else lots_8 = NormalizeDouble(LOT(), 2);
       }
       
       // No money check
@@ -1211,7 +1277,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0) {
          else lots_8 = f0_2(gd_1016);
       } else {
          if (f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
-         else lots_8 = NormalizeDouble(BaseLotSize, 2);
+         else lots_8 = NormalizeDouble(LOT(), 2);
       }
       
       // No money check
@@ -1353,9 +1419,9 @@ void f0_15(int ai_0, int ai_unused_4) {
    }
 //--- Assert 1: Free OrderSelect #10
    GhostFreeSelect(false);
-   int li_60 = MathRound(MathLog(order_lots_20 / BaseLotSize) / MathLog(gd_964)) + 1.0;
+   int li_60 = MathRound(MathLog(order_lots_20 / LOT()) / MathLog(gd_964)) + 1.0;
    if (li_60 < 0) li_60 = 0;
-   gd_1016 = NormalizeDouble(BaseLotSize * MathPow(gd_964, li_60), gi_1084);
+   gd_1016 = NormalizeDouble(LOT() * MathPow(gd_964, li_60), gi_1084);
    if (li_60 == 0 && f0_7() == 1) {
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_12();
       else
@@ -1459,6 +1525,172 @@ void f0_15(int ai_0, int ai_unused_4) {
 
 
 int f0_7() { //int signal()
+//----
+  int buy = 1, sell = -1;
+//----
+
+  //-------------------------------------------------------------------------
+   //-- Pivots, Support/Resistance and Price Alerts
+   //get_pivots(symbol, timeframe);
+   get_NearestAndFarestSR(Symbol(), 0, (iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0 );
+   //---
+   
+  //------------------------------------------------------------------------------------------
+   if (DrawLines)
+   {
+   //--- Draw Pivot lines on chart
+      if(ObjectFind("Nearest_Support label") == 0) ObjectDelete("Nearest_Support label");
+       ObjectCreate("Nearest_Support label", OBJ_TEXT, 0, Time[0], nearest_support);
+       ObjectSetText("Nearest_Support label", "Nearest Support @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_support,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Support line") != 0)
+      {
+         ObjectCreate("Nearest_Support line", OBJ_HLINE, 0, Time[0], nearest_support);
+         ObjectSet("Nearest_Support line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Support line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Support line", OBJPROP_COLOR, Blue);
+      }
+      else
+      {
+         ObjectMove("Nearest_Support line", 0, Time[40], nearest_support);
+      }
+   //-----
+      if(ObjectFind("Nearest_Resistance label") == 0) ObjectDelete("Nearest_Resistance label");
+       ObjectCreate("Nearest_Resistance label", OBJ_TEXT, 0, Time[0], nearest_resistance);
+       ObjectSetText("Nearest_Resistance label", "Nearest Resistance @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_resistance,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Resistance line") != 0)
+      {
+         ObjectCreate("Nearest_Resistance line", OBJ_HLINE, 0, Time[0], nearest_resistance);
+         ObjectSet("Nearest_Resistance line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Resistance line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Resistance line", OBJPROP_COLOR, Red);
+      }
+      else
+      {
+         ObjectMove("Nearest_Resistance line", 0, Time[40], nearest_resistance);
+      }
+   //-----
+      if(ObjectFind("Nearest_Daily_Support label") == 0) ObjectDelete("Nearest_Daily_Support label");
+       ObjectCreate("Nearest_Daily_Support label", OBJ_TEXT, 0, Time[0], nearest_daily_support);
+       ObjectSetText("Nearest_Daily_Support label", "Nearest Daily Support @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_daily_support,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Daily_Support line") != 0)
+      {
+         ObjectCreate("Nearest_Daily_Support line", OBJ_HLINE, 0, Time[0], nearest_daily_support);
+         ObjectSet("Nearest_Daily_Support line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Daily_Support line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Daily_Support line", OBJPROP_COLOR, LightBlue);
+      }
+      else
+      {
+         ObjectMove("Nearest_Daily_Support line", 0, Time[40], nearest_daily_support);
+      }
+   //-----
+      if(ObjectFind("Nearest_Daily_Resistance label") == 0) ObjectDelete("Nearest_Daily_Resistance label");
+       ObjectCreate("Nearest_Daily_Resistance label", OBJ_TEXT, 0, Time[0], nearest_daily_resistance);
+       ObjectSetText("Nearest_Daily_Resistance label", "Nearest Daily Resistance @ " +DoubleToStr((iLow(Symbol(), 0, 1)+iHigh(Symbol(), 0, 1))/2.0,4)+ " -> " +DoubleToStr(nearest_daily_resistance,4), 8, "Arial", EMPTY);
+      if(ObjectFind("Nearest_Daily_Resistance line") != 0)
+      {
+         ObjectCreate("Nearest_Daily_Resistance line", OBJ_HLINE, 0, Time[0], nearest_daily_resistance);
+         ObjectSet("Nearest_Daily_Resistance line", OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSet("Nearest_Daily_Resistance line", OBJPROP_WIDTH,2);
+         ObjectSet("Nearest_Daily_Resistance line", OBJPROP_COLOR, LightPink);
+      }
+      else
+      {
+         ObjectMove("Nearest_Daily_Resistance line", 0, Time[40], nearest_daily_resistance);
+      }
+   //-----
+      WindowRedraw();
+   //-----
+   }
+  //------------------------------------------------------------------------------------------
+
+
+   //+------------------------------------------------------------------+
+   //| Variable Begin                                                   |
+   //+------------------------------------------------------------------+
+   double Buy1_1 = iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+   double Buy1_2 = iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+   double Buy2_1 = iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0);
+   double Buy2_2 = iOpen(Symbol(), 0, 0);
+   double Buy3_1 = iClose(Symbol(), 0, 0);
+   double Buy3_2 = MarketInfo(Symbol(), MODE_BID);
+               
+   double nearest_broken_pivot = EMPTY_VALUE;
+   
+   if (Buy2_2 < nearest_resistance && Buy3_1 > nearest_resistance) {
+      nearest_broken_pivot = nearest_resistance;
+   } else if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_support && Buy3_1 > nearest_support) {
+      nearest_broken_pivot = nearest_resistance;
+   }
+   //+------------------------------------------------------------------+
+   //| Variable End                                                     |
+   //+------------------------------------------------------------------+
+
+   if(
+      //OpenLongSignal() 
+      //||
+      (
+         iLow(Symbol(),PERIOD_H1,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+         iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+      )
+      //||
+      //(iClose(Symbol(), 0, 1) <= iHigh(Symbol(), 0, 2) && iClose(Symbol(), 0, 0) > iHigh(Symbol(), 0, 1) && iClose(Symbol(), 0, 0) > iHigh(Symbol(), 0, 2))
+      ||
+      (Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+     ) {
+         return(buy);
+     }
+     
+//------------------------------------------------------------------------------------------------------------------------+
+
+   //+------------------------------------------------------------------+
+   //| Variable Begin                                                   |
+   //+------------------------------------------------------------------+
+   double Sell1_1 = iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+   double Sell1_2 = iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+   double Sell2_1 = iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0);
+   double Sell2_2 = iOpen(Symbol(), 0, 0);
+   double Sell3_1 = iClose(Symbol(), 0, 0);
+   double Sell3_2 = MarketInfo(Symbol(), MODE_ASK);
+   
+   nearest_broken_pivot = EMPTY_VALUE;
+   
+   if (Sell2_2 > nearest_support && Sell3_1 < nearest_support) {
+      nearest_broken_pivot = nearest_support;
+   } else if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_resistance && Sell3_1 < nearest_resistance) {
+      nearest_broken_pivot = nearest_resistance;
+   }
+   
+   //+------------------------------------------------------------------+
+   //| Variable End                                                     |
+   //+------------------------------------------------------------------+
+
+   if(
+      //OpenShortSignal() 
+      //||
+      (
+         iHigh(Symbol(),PERIOD_H1,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+         iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+      )
+      //||
+      //(iClose(Symbol(), 0, 1) >= iLow(Symbol(), 0, 2) && iClose(Symbol(), 0, 0) < iLow(Symbol(), 0, 1) && iClose(Symbol(), 0, 0) < iLow(Symbol(), 0, 2))
+      || 
+      (Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+     ) {
+         return(sell);
+     }
+
+/*
   if (!Use_SWB_indicator) {
       double isar_0 = iSAR(NULL, SignalPeriod, gd_1044, gd_1052, 0);
       double ima_8 = iMA(NULL, SignalPeriod, g_period_1028, gi_1032, g_ma_method_1036, g_applied_price_1040, 0);
@@ -1469,7 +1701,6 @@ int f0_7() { //int signal()
       
   ////////////// 0.2b Signal from SWB Grid 4.1.0.7 //////////////////////
   
-  int buy = 1, sell = -1;
   if (swb_is_reversed) {buy = -1; sell = 1;}  
 
   double upBB=iBands(Symbol(),0,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_UPPER,bb_shift);
@@ -1511,6 +1742,8 @@ int f0_7() { //int signal()
      if(rsi>upper) return(sell);
      if(rsi<lower)  return(buy);
   }
+*/
+//----
   return(0);
 }         
          
@@ -1524,7 +1757,7 @@ double SellMinTP() {
       if (OrderMagicNumber() == MagicNumber) {
          if (OrderSymbol() == Symbol()) {
             if (OrderType() == OP_SELL) {
-               if (OrderLots() != BaseLotSize) {
+               if (OrderLots() != LOT()) {
                   if (ld_ret_0 == 0.0) ld_ret_0 = OrderOpenPrice() - NBP * g_point_1204;
                   else
                      if (ld_ret_0 > OrderOpenPrice() - NBP * g_point_1204) ld_ret_0 = OrderOpenPrice() - NBP * g_point_1204;
@@ -1543,7 +1776,7 @@ double BuyMaxTP() {
       if (OrderMagicNumber() == MagicNumber) {
          if (OrderSymbol() == Symbol()) {
             if (OrderType() == OP_BUY) {
-               if (OrderLots() != BaseLotSize) {
+               if (OrderLots() != LOT()) {
                   if (ld_ret_0 == 0.0) ld_ret_0 = OrderOpenPrice() + NBP * g_point_1204;
                   else
                      if (ld_ret_0 < OrderOpenPrice() + NBP * g_point_1204) ld_ret_0 = OrderOpenPrice() + NBP * g_point_1204;
@@ -1615,9 +1848,9 @@ void f0_14(int ai_unused_0, int ai_4) {
    }
 //--- Assert 1: Free OrderSelect #12
    GhostFreeSelect(false);
-   int li_60 = MathRound(MathLog(order_lots_20 / BaseLotSize) / MathLog(gd_964)) + 1.0;
+   int li_60 = MathRound(MathLog(order_lots_20 / LOT()) / MathLog(gd_964)) + 1.0;
    if (li_60 < 0) li_60 = 0;
-   gd_1016 = NormalizeDouble(BaseLotSize * MathPow(gd_964, li_60), gi_1084);
+   gd_1016 = NormalizeDouble(LOT() * MathPow(gd_964, li_60), gi_1084);
    if (li_60 == 0 && f0_7() == -1) {
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_13();
       else
@@ -2022,3 +2255,353 @@ int fun1(string& a0[], int a1, double a2, string a3, int a4)
    return (1);
 }
 
+//---------------------------------------------------------------------------         
+double LOT()
+{
+   RefreshRates();
+
+   double MINLOT = MarketInfo(Symbol(),MODE_MINLOT);
+   double LOT = MINLOT;
+   
+   double DDFromStart = (AccountBalance()-StartingBalance)*100/StartingBalance;
+   
+   LOT = BaseLotSize;
+   
+   LOT = NormalizeDouble(LOT,MarketInfo(Symbol(),MODE_DIGITS));
+
+
+   if(LotStepEnable)
+   {
+      double safeProfit = AccountBalance();
+
+      if (DDFromStart <= -2)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/2;
+      } else if (DDFromStart <= -3)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/3;
+      } else if (DDFromStart <= -5)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/5;
+      } else if (DDFromStart <= -8)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/8;
+      } else if (DDFromStart <= -10)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/10;
+      } else if (DDFromStart <= -13)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/13;
+      } else if (DDFromStart <= -15)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/15;
+      } else if (DDFromStart <= -20)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/20;
+      } else if (DDFromStart <= -50)
+      {
+         safeProfit = AccountBalance() + (StartingBalance - AccountBalance())/50;
+      } else if (DDFromStart <= -60)
+      {
+         safeProfit = AccountBalance() + (AccountBalance()*5.0)/100;
+      }
+
+      double stepValue = ((safeProfit-LotStepFrom)/LotStepEvery)*LotStepValue ;
+      double lotStepValue = NormalizeDouble( ( stepValue - MathMod(stepValue, LotStepValue) ) , MarketInfo(Symbol(),MODE_DIGITS) );;
+      
+      LOT += lotStepValue;
+      //Log(" >>>>>>>>>>>>>>>>>>>>> ",AccountBalance(), " ----------------- ", lotStepValue, " ************** ", LOT );
+   }
+
+   /*double OneLotMargin = MarketInfo(Symbol(),MODE_MARGINREQUIRED);
+   double MarginAmount = AccountEquity(); //this means we want to use 200$ for trade
+   double lotMM = MarginAmount/OneLotMargin;
+   double LotStep = MarketInfo(Symbol(),MODE_LOTSTEP);
+   double LOT = NormalizeDouble(lotMM/LotStep,0)*LotStep;*/
+   
+   if (LOT>MarketInfo(Symbol(),MODE_MAXLOT)) LOT = MarketInfo(Symbol(),MODE_MAXLOT);
+   if (LOT<MINLOT) LOT = MINLOT;
+   if (MINLOT<0.1) LOT = NormalizeDouble(LOT,2); else LOT = NormalizeDouble(LOT,1);
+   
+   return(NormalizeDouble(LOT,MarketInfo(Symbol(),MODE_DIGITS)));
+}
+//----------------------------------------------------------------------------
+double sqGetPointPow(string symbol) {
+   double realDigits = MarketInfo(symbol,MODE_DIGITS);
+   if(realDigits > 0 && realDigits != 2 && realDigits != 4) {
+      realDigits -= 1;
+   }
+
+   double gPointPow = MathPow(10, realDigits);
+   return(gPointPow);
+}
+double sqGetPointCoef(string symbol) {
+   double gPointCoef = 1/sqGetPointPow(symbol);
+   return(gPointCoef);
+}
+//----------------------------------------------------------------------------
+double sqConvertToRealPips(string symbol, int value) {
+   return(sqGetPointCoef(symbol) * value);
+}
+
+//----------------------------------------------------------------------------
+
+double sqConvertToPips(string symbol, double value) {
+   return(sqGetPointPow(symbol) * value);
+}
+
+//---------------------------------------------------------------------------
+//+------------------------------------------------------------------+
+//| H4 and Daily Support/Resistance and Pivot                        |
+//+------------------------------------------------------------------+
+void get_pivots(string symbol, int timeframe)
+{
+//----------------------------------------------------------------------------- Get new TimeFrame ---------------
+   ArrayCopyRates(Fhr_rates_d1, symbol, timeframe);
+
+   Fhr_yesterday_close = Fhr_rates_d1[1][4];
+   Fhr_yesterday_open = Fhr_rates_d1[1][1];
+   Fhr_today_open = Fhr_rates_d1[0][1];
+   Fhr_yesterday_high = Fhr_rates_d1[1][3];
+   Fhr_yesterday_low = Fhr_rates_d1[1][2];
+   Fhr_day_high = Fhr_rates_d1[0][3];
+   Fhr_day_low = Fhr_rates_d1[0][2];
+
+
+//---- Calculate Pivots
+
+   Fhr_D = (Fhr_day_high - Fhr_day_low);
+   Fhr_Q = (Fhr_yesterday_high - Fhr_yesterday_low);
+   Fhr_P = (Fhr_yesterday_high + Fhr_yesterday_low + Fhr_yesterday_close) / 3;
+   Fhr_R1 = (2*Fhr_P)-Fhr_yesterday_low;
+   Fhr_S1 = (2*Fhr_P)-Fhr_yesterday_high;
+   Fhr_R2 = Fhr_P+(Fhr_yesterday_high - Fhr_yesterday_low);
+   Fhr_S2 = Fhr_P-(Fhr_yesterday_high - Fhr_yesterday_low);
+
+
+   Fhr_R3 = (2*Fhr_P)+(Fhr_yesterday_high-(2*Fhr_yesterday_low));
+   Fhr_M5 = (Fhr_R2+Fhr_R3)/2;
+   // Fhr_R2 = Fhr_P-Fhr_S1+Fhr_R1;
+   Fhr_M4 = (Fhr_R1+Fhr_R2)/2;
+   // Fhr_R1 = (2*Fhr_P)-Fhr_yesterday_low;
+   Fhr_M3 = (Fhr_P+Fhr_R1)/2;
+   // Fhr_P = (Fhr_yesterday_high + Fhr_yesterday_low + Fhr_yesterday_close)/3;
+   Fhr_M2 = (Fhr_P+Fhr_S1)/2;
+   // Fhr_S1 = (2*Fhr_P)-Fhr_yesterday_high;
+   Fhr_M1 = (Fhr_S1+Fhr_S2)/2;
+   // Fhr_S2 = Fhr_P-Fhr_R1+Fhr_S1;
+   Fhr_S3 = (2*Fhr_P)-((2* Fhr_yesterday_high)-Fhr_yesterday_low);
+   Fhr_M0 = (Fhr_S2+Fhr_S3)/2;
+
+   if (Fhr_Q > 5)
+   {
+      Fhr_nQ = Fhr_Q;
+   }
+   else
+   {
+     Fhr_nQ = Fhr_Q*10000;
+   }
+
+   if (Fhr_D > 5)
+   {
+       Fhr_nD = Fhr_D;
+   }
+   else
+   {
+      Fhr_nD = Fhr_D*10000;
+   }
+//----------------------------------------------------------------------------- Get DAY ---------------
+   ArrayCopyRates(D_rates_d1, symbol, 1440);
+
+   D_yesterday_close = D_rates_d1[1][4];
+   D_yesterday_open = D_rates_d1[1][1];
+   D_today_open = D_rates_d1[0][1];
+   D_yesterday_high = D_rates_d1[1][3];
+   D_yesterday_low = D_rates_d1[1][2];
+   D_day_high = D_rates_d1[0][3];
+   D_day_low = D_rates_d1[0][2];
+
+
+//---- Calculate Pivots
+
+   D_D = (D_day_high - D_day_low);
+   D_Q = (D_yesterday_high - D_yesterday_low);
+   D_P = (D_yesterday_high + D_yesterday_low + D_yesterday_close) / 3;
+   D_R1 = (2*D_P)-D_yesterday_low;
+   D_S1 = (2*D_P)-D_yesterday_high;
+   D_R2 = D_P+(D_yesterday_high - D_yesterday_low);
+   D_S2 = D_P-(D_yesterday_high - D_yesterday_low);
+
+
+   D_R3 = (2*D_P)+(D_yesterday_high-(2*D_yesterday_low));
+   D_M5 = (D_R2+D_R3)/2;
+   // D_R2 = D_P-D_S1+D_R1;
+   D_M4 = (D_R1+D_R2)/2;
+   // D_R1 = (2*D_P)-D_yesterday_low;
+   D_M3 = (D_P+D_R1)/2;
+   // D_P = (D_yesterday_high + D_yesterday_low + D_yesterday_close)/3;
+   D_M2 = (D_P+D_S1)/2;
+   // D_S1 = (2*D_P)-D_yesterday_high;
+   D_M1 = (D_S1+D_S2)/2;
+   // D_S2 = D_P-D_R1+D_S1;
+   D_S3 = (2*D_P)-((2* D_yesterday_high)-D_yesterday_low);
+
+   D_M0 = (D_S2+D_S3)/2;
+
+   if (D_Q > 5)
+   {
+      D_nQ = D_Q;
+   }
+   else
+   {
+     D_nQ = D_Q*10000;
+   }
+
+   if (D_D > 5)
+   {
+       D_nD = D_D;
+   }
+   else
+   {
+      D_nD = D_D*10000;
+   }
+}
+
+//--------------------------------------------------------------------- +
+void get_NearestAndFarestSR(string symbol, int timeframe, double price)
+{
+   //-- Pivots, Support/Resistance and Price Alerts
+   get_pivots(symbol, timeframe);
+   //---
+
+   MqlRates RatesBar[];
+   ArraySetAsSeries(RatesBar,true);
+   if(CopyRates(symbol,timeframe,0,20,RatesBar)==20)
+   {
+      double high     = RatesBar[0].high;
+      double point    = MarketInfo(symbol,MODE_POINT);
+      int    digits   = MarketInfo(symbol,MODE_DIGITS);
+      double ask      = MarketInfo(symbol,MODE_ASK);
+      double bid      = MarketInfo(symbol,MODE_BID);
+      double low      = RatesBar[0].low;
+      int    power    = MathPow(10,digits-1);
+      double pipRange = (high-low)*power;
+      double bidRatio = (pipRange > 0 ? ((bid-low)/pipRange*power)*100 : 0);
+             pipRange = (pipRange != 0 ? pipRange : 0.001);
+      //-Fhr
+      if( price >= Fhr_R3 )
+      {
+         nearest_resistance = D_R3;
+         nearest_support = Fhr_R3;
+
+         farest_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_support = Fhr_R1;
+      }
+      else if( price < Fhr_R3 && price >= Fhr_R2 )
+      {
+         nearest_resistance = Fhr_R3;
+         nearest_support = Fhr_R2;
+
+         farest_resistance = D_R3;
+         farest_support = Fhr_S1;
+      }
+      else if( price < Fhr_R2 && price >= Fhr_R1 )
+      {
+         nearest_resistance = Fhr_R2;
+         nearest_support = Fhr_R1;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S1;
+      }
+      else if( price < Fhr_R1 && price >= Fhr_S1 )
+      {
+         nearest_resistance = Fhr_R1;
+         nearest_support = Fhr_S1;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S3;
+      }
+      else if( price < Fhr_S1 && price >= Fhr_S2 )
+      {
+         nearest_resistance = Fhr_S1;
+         nearest_support = Fhr_S2;
+
+         farest_resistance = Fhr_R3;
+         farest_support = Fhr_S3;
+      }
+      else if( price < Fhr_S2 && price >= Fhr_S3 )
+      {
+         nearest_resistance = Fhr_S2;
+         nearest_support = Fhr_S3;
+
+         farest_resistance = Fhr_S1;
+         farest_support = D_S3;
+      }
+      else
+      {
+         nearest_resistance = Fhr_S3;
+         nearest_support = D_S3;
+
+         farest_resistance = Fhr_S1;
+         farest_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+      }
+      //-D
+      if( price >= D_R3 )
+      {
+         nearest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         nearest_daily_support = D_R3;
+
+         farest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_daily_support = D_R1;
+      }
+      else if( price < D_R3 && price >= D_R2 )
+      {
+         nearest_daily_resistance = D_R3;
+         nearest_daily_support = D_R2;
+
+         farest_daily_resistance = D_R3 + sqConvertToRealPips(symbol, pipRange);
+         farest_daily_support = D_S1;
+      }
+      else if( price < D_R2 && price >= D_R1 )
+      {
+         nearest_daily_resistance = D_R2;
+         nearest_daily_support = D_R1;
+
+         farest_daily_resistance = D_R3;
+         farest_daily_support = D_S1;
+      }
+      else if( price < D_R1 && price >= D_S1 )
+      {
+         nearest_daily_resistance = D_R1;
+         nearest_daily_support = D_S1;
+
+         farest_daily_resistance = D_R3;
+         farest_daily_support = D_S3;
+      }
+      else if( price < D_S1 && price >= D_S2 )
+      {
+         nearest_daily_resistance = D_S1;
+         nearest_daily_support = D_S2;
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3;
+      }
+      else if( price < D_S2 && price >= D_S3 )
+      {
+         nearest_daily_resistance = D_S2;
+         nearest_daily_support = D_S3;
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+      }
+      else
+      {
+         nearest_daily_resistance = D_S3;
+         nearest_daily_support = D_S3 - sqConvertToRealPips(symbol, pipRange);
+
+         farest_daily_resistance = D_R1;
+         farest_daily_support = D_S3 - sqConvertToRealPips(symbol, 2*pipRange);
+      }
+   }
+}
+//---------------------------------------------------------------------------

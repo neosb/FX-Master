@@ -14,9 +14,9 @@
 //|-----------------------------------------------------------------------------------------|
 //|                 P L U S T U R T L E   E X T E R N A L   V A R I A B L E S               |
 //|-----------------------------------------------------------------------------------------|
-extern bool     TurtleCustomAccount=false;
-extern string   TurtleCustomAccountCurrency="USD";
-extern int      TurtleDebug=0;
+/*extern*/ bool     TurtleCustomAccount=true;
+/*extern*/ string   TurtleCustomAccountCurrency="USD";
+/*extern*/ int      TurtleDebug=0;
 
 //|-----------------------------------------------------------------------------------------|
 //|                           I N T E R N A L   V A R I A B L E S                           |
