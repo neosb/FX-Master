@@ -558,10 +558,6 @@ if (DrawLines)
          return;
       }
    }
-   if (gi_960 == TRUE) {
-      ChickenOutClose(Symbol());
-      return;
-   }
 
 //-----------------------------------
 //--- SPIKE ALERT
@@ -603,7 +599,10 @@ if (DrawLines)
       }
    }
 //-----------------------------------  
-
+   if (gi_960 == TRUE) {
+      ChickenOutClose(Symbol());
+      return;
+   }
    if (FreezeAfterTPScheduler == TRUE) gi_956 = f0_4();
    gsa_92[0] = GhostAccountNumber();
    gsa_92[1] = KEY;
@@ -1532,7 +1531,7 @@ void f0_15(int ai_0, int ai_unused_4) {
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
    for (pos_52 = 0; pos_52 < total; pos_52++) {
       if (GhostOrderSelect(pos_52, SELECT_BY_POS, MODE_TRADES)) {
-         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == OP_BUY) {
+         if (GhostOrderMagicNumber() == MagicNumber /*&& GhostOrderType() == OP_BUY*/) {
             count_56++;
             if (GhostOrderOpenTime() > datetime_8) {
                datetime_8 = GhostOrderOpenTime();
@@ -1557,26 +1556,34 @@ void f0_15(int ai_0, int ai_unused_4) {
       else
          if (ai_0 > 0) f0_12();
    } else {
-      if (UseSignalsNBP && signal == -1) return;
-      else if (order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
+      if (order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
           if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Ask + BasketTakeProfit * g_point_1204;
             nbp_TP = order_open_price_12 + NBP * g_point_1204;
+            if (!UseSignalsNBP || signal == 1) {
+               std_TP = Ask + BasketTakeProfit * g_point_1204;
+               nbp_TP = order_open_price_12 + NBP * g_point_1204;
+            } else if (UseSignalsNBP && signal == -1) {
+               std_TP = Bid - BasketTakeProfit * gPoint;
+               nbp_TP = order_open_price_12 - NBP * gPoint;
+            }
             if (std_TP < nbp_TP) {
                tmp_TP = BuyMaxTP();
+               if (!UseSignalsNBP || signal == 1) tmp_TP = BuyMaxTP();
+               else if (UseSignalsNBP && signal == -1) tmp_TP = SellMinTP();
                if (tmp_TP == 0.0) {
-                  if(UseSignalsNBP && signal == -1) f0_13();
-                  else f0_12(0, std_TP); //Open BUY
+                  if(UseSignalsNBP && signal == -1) f0_13(0, std_TP);
+                  else if(!UseSignalsNBP || signal == 1) f0_12(0, std_TP); //Open BUY
                   return;
                }
                tmp_TP = nbp_TP;
-               if(UseSignalsNBP && signal == -1) f0_13();
-               else f0_12(0, tmp_TP);
+               if(UseSignalsNBP && signal == -1) f0_13(0, tmp_TP);
+               else if(!UseSignalsNBP || signal == 1) f0_12(0, tmp_TP);
                return;
             }
-            if(UseSignalsNBP && signal == -1) f0_13();
-            else f0_12(0, std_TP);
+            if(UseSignalsNBP && signal == -1) f0_13(0, std_TP);
+            else if(!UseSignalsNBP || signal == 1) f0_12(0, std_TP);
             return;
          } // IF NBP TRUE   
  
@@ -1748,10 +1755,10 @@ int signal() {
    if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
       return(sell); //SIGNAL SELL
 
-/*
    //+------------------------------------------------------------------+
    //| Taichi Demarker Signal                                           |
    //+------------------------------------------------------------------+
+/*
    int TimeFrame1=SignalPeriod;
    int TF1Tenkan=9;
    int TF1Kijun=26;
@@ -1825,15 +1832,18 @@ int signal() {
       ) return(sell);
    }
 */
+
 /*
   if (!Use_SWB_indicator) {
+
       if (isar_0 > ima_8) return (-1);
       if (isar_0 < ima_8) return (1);
-      return (0);}
 
+      return (0);}
+*/
       
   ////////////// 0.2b Signal from SWB Grid 4.1.0.7 //////////////////////
-  
+/*
   if (swb_is_reversed) {buy = -1; sell = 1;}  
 */
 
@@ -1968,7 +1978,7 @@ void f0_14(int ai_unused_0, int ai_4) {
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
    for (pos_52 = 0; pos_52 < total; pos_52++) {
       if (GhostOrderSelect(pos_52, SELECT_BY_POS, MODE_TRADES)) {
-         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == OP_SELL) {
+         if (GhostOrderMagicNumber() == MagicNumber /*&& GhostOrderType() == OP_SELL*/) {
             count_56++;
             if (GhostOrderOpenTime() > datetime_8) {
                datetime_8 = GhostOrderOpenTime();
@@ -1993,26 +2003,34 @@ void f0_14(int ai_unused_0, int ai_4) {
       else
          if (ai_4 > 0) f0_13();
    } else {
-      if (UseSignalsNBP && signal == 1) return;
-      else if (Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels) {
+      if (Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Bid - BasketTakeProfit * gPoint;
             nbp_TP = order_open_price_12 - NBP * gPoint;
+            if (!UseSignalsNBP || signal == -1) {
+               std_TP = Bid - BasketTakeProfit * gPoint;
+               nbp_TP = order_open_price_12 - NBP * gPoint;
+            } else if (UseSignalsNBP && signal == 1) {
+               std_TP = Ask + BasketTakeProfit * g_point_1204;
+               nbp_TP = order_open_price_12 + NBP * g_point_1204;
+            }
             if (std_TP > nbp_TP) {
                tmp_TP = SellMinTP();
+               if (!UseSignalsNBP || signal == -1) tmp_TP = SellMinTP();
+               else if (UseSignalsNBP && signal == 1) tmp_TP = BuyMaxTP();
                if (tmp_TP == 0.0) {
-                  if(UseSignalsNBP && signal == 1) f0_12();
-                  else f0_13(0, std_TP); // Open SELL
+                  if(UseSignalsNBP && signal == 1) f0_12(0, std_TP);
+                  else if (!UseSignalsNBP || signal == -1) f0_13(0, std_TP); // Open SELL
                   return;
                }
                tmp_TP = nbp_TP;
-               if(UseSignalsNBP && signal == 1) f0_12();
-               else f0_13(0, tmp_TP);
+               if(UseSignalsNBP && signal == 1) f0_12(0, tmp_TP);
+               else if (!UseSignalsNBP || signal == -1) f0_13(0, tmp_TP);
                return;
             }
-            if(UseSignalsNBP && signal == 1) f0_12();
-            else f0_13(0, std_TP);
+            if(UseSignalsNBP && signal == 1) f0_12(0, std_TP);
+            else if (!UseSignalsNBP || signal == -1) f0_13(0, std_TP);
             return;
          } // IF NBP TRUE  
          
