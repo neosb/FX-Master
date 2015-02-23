@@ -49,8 +49,8 @@ extern double LotStepEvery   = 500;
 extern int ExecutionPoint = 0;
 extern double BasketTakeProfit = 60.0;
 extern int BasketStopLoss = 0;
-extern double EquityShield    = 30;
-extern double ProgressiveStopLossPerc = 0;
+extern double EquityShield    = 20;
+extern double ProgressiveStopLossPerc = 2;
 extern double Multiplier = 1.0;
 extern int MaximumBuyLevels = 0;
 extern int MaximumSellLevels = 0;
@@ -173,7 +173,7 @@ extern string Level_25 = "";
 extern double Multiplier_25 = 0.0;
 extern double BasketTakeProfit_25 = 0.0;
 extern bool   DrawLines = TRUE;
-extern bool   UseSignalsNBP = TRUE;
+extern bool   UseSignalsNBP = FALSE;
 /*
 extern string _____ = "SWB indicator settings";
 extern bool Use_SWB_indicator = false;
@@ -2586,7 +2586,7 @@ void ProgressiveStopLoss() {
                      GhostOrderClose( GhostOrderTicket(), GhostOrderLots(), GhostOrderClosePrice(), MarketInfo(Symbol(), MODE_SPREAD), White );
                   //--- Assert 1: Free OrderSelect #15
                      GhostFreeSelect(false);
-                     //spikeAlert = TRUE;
+                     spikeAlert = TRUE;
                      return;
                   }
                }
