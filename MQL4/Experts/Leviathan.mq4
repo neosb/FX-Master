@@ -566,7 +566,7 @@ if (DrawLines)
 //-----------------------------------
 //--- SPIKE ALERT
    bool spikeDetected = false;
-   if (spikeAlert) spikeDetected = true;
+
    //---
    //double ATRfast = iATR(Symbol(), PERIOD_M15, ATR_Fast_Period, 0);
    //double ATRslow = iATR(Symbol(), PERIOD_M15, ATR_Slow_Period, 0);   
@@ -2586,7 +2586,10 @@ void ProgressiveStopLoss() {
                      GhostOrderClose( GhostOrderTicket(), GhostOrderLots(), GhostOrderClosePrice(), MarketInfo(Symbol(), MODE_SPREAD), White );
                   //--- Assert 1: Free OrderSelect #15
                      GhostFreeSelect(false);
-                     spikeAlert = TRUE;
+                     Alert("ProgressiveStopLossPerc on " + Symbol() + "!");
+                     Log("[ProgressiveStopLossPerc ALERT] - (actualProfit = " + actualProfit + ") - Sleep for "+MinutesToSleep+" minutes ...");
+                     spikeAlert = true;
+                     lastSpikeAlertTime = TimeCurrent();
                      return;
                   }
                }
@@ -2625,7 +2628,10 @@ void EquityStopLoss() {
       if (actualProfit < 0 && (MathAbs(actualProfit)*100/StartingBalance)>=EquityShield)
       {
          CloseAllOrders(true);
+         Alert("EquityStopLoss on " + Symbol() + "!");
+         Log("[EquityStopLoss ALERT] - (actualProfit = " + actualProfit + ") - Sleep for "+MinutesToSleep+" minutes ...");
          spikeAlert = true;
+         lastSpikeAlertTime = TimeCurrent();
       }
    }
 }

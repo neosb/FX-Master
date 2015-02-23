@@ -3156,7 +3156,7 @@ void PopulateDBStatistics()
             int signal = 0;
             //-------------------------------------------------------------------------
             //-- Pivots, Support/Resistance and Price Alerts
-            get_NearestAndFarestSR(Pair, TimeFrame, (iLow(Pair, TimeFrame, 1)+iHigh(Pair, TimeFrame, 1))/2.0 );
+            get_NearestAndFarestSR(Pair, TimeFrame, (iLow(Pair, TimeFrame, 2)+iHigh(Pair, TimeFrame, 2))/2.0 );
             //---
 
             int macdSignal = 0;
@@ -3177,15 +3177,16 @@ void PopulateDBStatistics()
             double Buy1_1 =    iMA(Pair, TimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
             double Buy1_2 =  iMACD(Pair, TimeFrame, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
             double Buy2_1 =   iRSI(Pair, TimeFrame, 15, PRICE_CLOSE, 0);
-            double Buy2_2 =  iOpen(Pair, TimeFrame, 0);
-            double Buy3_1 = iClose(Pair, TimeFrame, 0);
+            double Buy2_2 =  iOpen(Pair, TimeFrame, 1);
+            double Buy2_3 =  iOpen(Pair, TimeFrame, 0);
+            double Buy3_1 = iClose(Pair, TimeFrame, 1);
             double Buy3_2 = MarketInfo(Pair, MODE_BID);
                         
             double nearest_broken_pivot = EMPTY_VALUE;
             
-            if (Buy2_2 < nearest_resistance && Buy3_1 > nearest_resistance) {
+            if (Buy2_2 < nearest_resistance && Buy3_1 > nearest_resistance && Buy2_3 > nearest_resistance) {
                nearest_broken_pivot = nearest_resistance;
-            } else if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_daily_resistance && Buy3_1 > nearest_daily_resistance) {
+            } else if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_daily_resistance && Buy3_1 > nearest_daily_resistance && Buy2_3 > nearest_daily_resistance) {
                nearest_broken_pivot = nearest_resistance;
             }
             
@@ -3195,15 +3196,16 @@ void PopulateDBStatistics()
             double Sell1_1 =    iMA(Pair, TimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
             double Sell1_2 =  iMACD(Pair, TimeFrame, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
             double Sell2_1 =   iRSI(Pair, TimeFrame, 15, PRICE_CLOSE, 0);
-            double Sell2_2 =  iOpen(Pair, TimeFrame, 0);
-            double Sell3_1 = iClose(Pair, TimeFrame, 0);
+            double Sell2_2 =  iOpen(Pair, TimeFrame, 1);
+            double Sell2_3 =  iOpen(Pair, TimeFrame, 0);
+            double Sell3_1 = iClose(Pair, TimeFrame, 1);
             double Sell3_2 = MarketInfo(Pair, MODE_ASK);
             
             nearest_broken_pivot = EMPTY_VALUE;
             
-            if (Sell2_2 > nearest_support && Sell3_1 < nearest_support) {
+            if (Sell2_2 > nearest_support && Sell3_1 < nearest_support && Sell2_3 < nearest_support) {
                nearest_broken_pivot = nearest_support;
-            } else if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_daily_support && Sell3_1 < nearest_daily_support) {
+            } else if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_daily_support && Sell3_1 < nearest_daily_support && Sell2_3 < nearest_daily_support) {
                nearest_broken_pivot = nearest_resistance;
             }
             
