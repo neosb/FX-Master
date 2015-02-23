@@ -3159,6 +3159,18 @@ void PopulateDBStatistics()
             get_NearestAndFarestSR(Pair, TimeFrame, (iLow(Pair, TimeFrame, 1)+iHigh(Pair, TimeFrame, 1))/2.0 );
             //---
 
+            int macdSignal = 0;
+            int macdDatetime = iTime(Pair, TimeFrame, 0);
+            int macdShift = iBarShift(Pair, TimeFrame, macdDatetime - 60 * PERIOD_H1, FALSE);
+            
+            if (iMACD(Pair, TimeFrame, 12, 26, 9, PRICE_CLOSE, MODE_MAIN, macdShift) > iMACD(Pair, TimeFrame, 12, 26, 9, PRICE_CLOSE, MODE_SIGNAL, macdShift)) macdSignal = 2;
+            else macdSignal = 1;
+            
+            double sma0_50  = iMA(Pair, TimeFrame,50,0,MODE_SMA,PRICE_CLOSE,0);
+            double sma0_200 = iMA(Pair, TimeFrame,200,0,MODE_SMA,PRICE_CLOSE,0);
+            double sma1_50  = iMA(Pair, TimeFrame,50,0,MODE_SMA,PRICE_CLOSE,1);
+            double sma1_200 = iMA(Pair, TimeFrame,200,0,MODE_SMA,PRICE_CLOSE,1);
+
             //+------------------------------------------------------------------+
             //| Variable Begin                                                   |
             //+------------------------------------------------------------------+
@@ -3177,7 +3189,7 @@ void PopulateDBStatistics()
                nearest_broken_pivot = nearest_resistance;
             }
             
-            if(Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+            if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
                signal = DIR_LONG; //SIGNAL BUY
             
             double Sell1_1 =    iMA(Pair, TimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
@@ -3195,7 +3207,7 @@ void PopulateDBStatistics()
                nearest_broken_pivot = nearest_resistance;
             }
             
-            if(Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+            if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
                signal = DIR_SHORT; //SIGNAL SELL
 
             //+------------------------------------------------------------------+
