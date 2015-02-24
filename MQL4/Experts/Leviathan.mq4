@@ -1680,8 +1680,10 @@ int signal() {
 //----
    double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,0);
    double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,0);
+   double sma0_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_MEDIAN,0);
    double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,1);
    double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,1);
+   double sma1_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_MEDIAN,1);
 //----
    //0 - MODE_MAIN, 1 - MODE_PLUSDI, 2 - MODE_MINUSDI
    double adx0_14 = iADX(Symbol(),0,14,PRICE_HIGH,MODE_MAIN,0);
@@ -1726,7 +1728,7 @@ int signal() {
       nearest_broken_pivot = nearest_resistance;
    }
    
-   if( (sma0_200 < sma0_50 && sma1_200 < sma1_50 /*&& macdSignal == 2*/) || (Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot) )
+   if( (sma0_600 < sma0_200 && sma1_600 < sma1_200 && sma0_200 < sma0_50 && sma1_200 < sma1_50 /*&& macdSignal == 2*/) || (Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot) )
       return(buy); //SIGNAL BUY
 
    //----
@@ -1764,7 +1766,7 @@ int signal() {
       nearest_broken_pivot = nearest_resistance;
    }
    
-   if( (sma0_200 > sma0_50 && sma1_200 > sma1_50 /*&& macdSignal == 1*/) || (Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot) )
+   if( (sma0_600 > sma0_200 && sma1_600 > sma1_200 && sma0_200 > sma0_50 && sma1_200 > sma1_50 /*&& macdSignal == 1*/) || (Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot) )
       return(sell); //SIGNAL SELL
 
    //----
@@ -2458,6 +2460,7 @@ double LOT()
 
    if(LotStepEnable)
    {
+      /*
       double safeProfit = AccountBalance();
 
       if (DDFromStart <= -2)
@@ -2491,7 +2494,9 @@ double LOT()
       {
          safeProfit = AccountBalance() + (AccountBalance()*5.0)/100;
       }
-
+      */
+      double safeProfit = StartingBalance;
+      
       double stepValue = ((safeProfit-LotStepFrom)/LotStepEvery)*LotStepValue ;
       double lotStepValue = NormalizeDouble( ( stepValue - MathMod(stepValue, LotStepValue) ) , MarketInfo(Symbol(),MODE_DIGITS) );;
       
