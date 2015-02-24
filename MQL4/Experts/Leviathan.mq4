@@ -1531,7 +1531,7 @@ void f0_15(int ai_0, int ai_unused_4) {
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
    for (pos_52 = 0; pos_52 < total; pos_52++) {
       if (GhostOrderSelect(pos_52, SELECT_BY_POS, MODE_TRADES)) {
-         if (GhostOrderMagicNumber() == MagicNumber /*&& GhostOrderType() == OP_BUY*/) {
+         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == OP_BUY) {
             count_56++;
             if (GhostOrderOpenTime() > datetime_8) {
                datetime_8 = GhostOrderOpenTime();
@@ -1975,7 +1975,7 @@ void f0_14(int ai_unused_0, int ai_4) {
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
    for (pos_52 = 0; pos_52 < total; pos_52++) {
       if (GhostOrderSelect(pos_52, SELECT_BY_POS, MODE_TRADES)) {
-         if (GhostOrderMagicNumber() == MagicNumber /*&& GhostOrderType() == OP_SELL*/) {
+         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == OP_SELL) {
             count_56++;
             if (GhostOrderOpenTime() > datetime_8) {
                datetime_8 = GhostOrderOpenTime();
