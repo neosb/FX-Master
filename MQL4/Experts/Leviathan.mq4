@@ -1573,18 +1573,15 @@ void f0_15(int ai_0, int ai_unused_4) {
                if (!UseSignalsNBP || signal != -1) tmp_TP = BuyMaxTP();
                else if (UseSignalsNBP && signal == -1) tmp_TP = SellMinTP();
                if (tmp_TP == 0.0) {
-                  if(UseSignalsNBP && signal == -1) f0_13(0, std_TP);
-                  else if(!UseSignalsNBP || signal != -1) f0_12(0, std_TP); //Open BUY
-                  return;
+                  if(UseSignalsNBP && signal == -1)       {f0_13(0, std_TP); return;}
+                  else if(!UseSignalsNBP || signal != -1) {f0_12(0, std_TP); return;}//Open BUY
                }
                tmp_TP = nbp_TP;
-               if(UseSignalsNBP && signal == -1) f0_13(0, tmp_TP);
-               else if(!UseSignalsNBP || signal != -1) f0_12(0, tmp_TP);
-               return;
+               if(UseSignalsNBP && signal == -1)       {f0_13(0, tmp_TP); return;}
+               else if(!UseSignalsNBP || signal != -1) {f0_12(0, tmp_TP); return;}
             }
-            if(UseSignalsNBP && signal == -1) f0_13(0, std_TP);
-            else if(!UseSignalsNBP || signal != -1) f0_12(0, std_TP);
-            return;
+            if(UseSignalsNBP && signal == -1)       {f0_13(0, std_TP); return;}
+            else if(!UseSignalsNBP || signal != -1) {f0_12(0, std_TP); return;}
          } // IF NBP TRUE   
  
          if (!(f0_12())) return;
@@ -1618,7 +1615,7 @@ void f0_15(int ai_0, int ai_unused_4) {
          aOpenPrice[aCount]   =  GhostOrderOpenPrice();
          aStopLoss[aCount]    =  GhostOrderStopLoss();
          aTakeProfit[aCount]  =  GhostOrderTakeProfit();
-         if (GhostOrderMagicNumber() != MagicNumber || GhostOrderType() != OP_BUY || GhostOrderStopLoss() == order_stoploss_36 || order_stoploss_36 == 0.0 || GhostOrderTakeProfit() == order_takeprofit_28 ||
+         if (GhostOrderMagicNumber() != MagicNumber || GhostOrderType() != cmd_44 || GhostOrderStopLoss() == order_stoploss_36 || order_stoploss_36 == 0.0 || GhostOrderTakeProfit() == order_takeprofit_28 ||
             order_takeprofit_28 == 0.0) continue;
          li_64 = Close_Order_Attempts;
          bool_68 = FALSE;
@@ -2020,18 +2017,15 @@ void f0_14(int ai_unused_0, int ai_4) {
                if (!UseSignalsNBP || signal != 1) tmp_TP = SellMinTP();
                else if (UseSignalsNBP && signal == 1) tmp_TP = BuyMaxTP();
                if (tmp_TP == 0.0) {
-                  if(UseSignalsNBP && signal != 1) f0_12(0, std_TP);
-                  else if (!UseSignalsNBP || signal == -1) f0_13(0, std_TP); // Open SELL
-                  return;
+                  if(UseSignalsNBP && signal != 1)         {f0_12(0, std_TP); return;}
+                  else if (!UseSignalsNBP || signal == -1) {f0_13(0, std_TP); return;} // Open SELL
                }
                tmp_TP = nbp_TP;
-               if(UseSignalsNBP && signal != 1) f0_12(0, tmp_TP);
-               else if (!UseSignalsNBP || signal == -1) f0_13(0, tmp_TP);
-               return;
+               if(UseSignalsNBP && signal != 1)         {f0_12(0, tmp_TP); return;}
+               else if (!UseSignalsNBP || signal == -1) {f0_13(0, tmp_TP); return;}
             }
-            if(UseSignalsNBP && signal != 1) f0_12(0, std_TP);
-            else if (!UseSignalsNBP || signal == -1) f0_13(0, std_TP);
-            return;
+            if(UseSignalsNBP && signal != 1)         {f0_12(0, std_TP); return;}
+            else if (!UseSignalsNBP || signal == -1) {f0_13(0, std_TP); return;}
          } // IF NBP TRUE  
          
          if (!(f0_13())) return;
@@ -2064,7 +2058,7 @@ void f0_14(int ai_unused_0, int ai_4) {
          aOpenPrice[aCount]   =  GhostOrderOpenPrice();
          aStopLoss[aCount]    =  GhostOrderStopLoss();
          aTakeProfit[aCount]  =  GhostOrderTakeProfit();
-         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == OP_SELL) {
+         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == cmd_44) {
             if (GhostOrderTakeProfit() == order_takeprofit_28 || GhostOrderStopLoss() == order_stoploss_36 || order_stoploss_36 == 0.0 || order_takeprofit_28 == 0.0) continue;
             li_64 = Close_Order_Attempts;
             bool_68 = FALSE;
