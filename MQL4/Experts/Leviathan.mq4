@@ -263,7 +263,7 @@ double StartingBalance;
 //--------------------------------- SPIKES ----
 /*extern*/ double ATR_Slow_Period = 60;
 /*extern*/ double ATR_Fast_Period = 1;
-/*extern*/ int MinutesToSleep = PERIOD_D1;
+/*extern*/ int MinutesToSleep = PERIOD_H1;
 /*extern*/ int LittleSpikeMultiplier = 3;
 /*extern*/ int BigSpikeMultiplier = 5;
 bool spikeAlert=false;
@@ -1561,7 +1561,7 @@ void f0_15(int ai_0, int ai_unused_4) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Ask + BasketTakeProfit * g_point_1204;
             nbp_TP = order_open_price_12 + NBP * g_point_1204;
-            if (!UseSignalsNBP || signal == 1) {
+            if (!UseSignalsNBP || signal != -1) {
                std_TP = Ask + BasketTakeProfit * g_point_1204;
                nbp_TP = order_open_price_12 + NBP * g_point_1204;
             } else if (UseSignalsNBP && signal == -1) {
@@ -1570,24 +1570,24 @@ void f0_15(int ai_0, int ai_unused_4) {
             }
             if (std_TP < nbp_TP) {
                tmp_TP = BuyMaxTP();
-               if (!UseSignalsNBP || signal == 1) tmp_TP = BuyMaxTP();
+               if (!UseSignalsNBP || signal != -1) tmp_TP = BuyMaxTP();
                else if (UseSignalsNBP && signal == -1) tmp_TP = SellMinTP();
                if (tmp_TP == 0.0) {
                   if(UseSignalsNBP && signal == -1) f0_13(0, std_TP);
-                  else if(!UseSignalsNBP || signal == 1) f0_12(0, std_TP); //Open BUY
+                  else if(!UseSignalsNBP || signal != -1) f0_12(0, std_TP); //Open BUY
                   return;
                }
                tmp_TP = nbp_TP;
                if(UseSignalsNBP && signal == -1) f0_13(0, tmp_TP);
-               else if(!UseSignalsNBP || signal == 1) f0_12(0, tmp_TP);
+               else if(!UseSignalsNBP || signal != -1) f0_12(0, tmp_TP);
                return;
             }
             if(UseSignalsNBP && signal == -1) f0_13(0, std_TP);
-            else if(!UseSignalsNBP || signal == 1) f0_12(0, std_TP);
+            else if(!UseSignalsNBP || signal != -1) f0_12(0, std_TP);
             return;
          } // IF NBP TRUE   
  
-         if ((!UseSignalsNBP || signal == 1) && !(f0_12())) return;
+         if (!(f0_12())) return;
          return;} // if (ord_op_price - Ask > Execut...
       //}
    }
@@ -2008,7 +2008,7 @@ void f0_14(int ai_unused_0, int ai_4) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Bid - BasketTakeProfit * gPoint;
             nbp_TP = order_open_price_12 - NBP * gPoint;
-            if (!UseSignalsNBP || signal == -1) {
+            if (!UseSignalsNBP || signal != 1) {
                std_TP = Bid - BasketTakeProfit * gPoint;
                nbp_TP = order_open_price_12 - NBP * gPoint;
             } else if (UseSignalsNBP && signal == 1) {
@@ -2017,24 +2017,24 @@ void f0_14(int ai_unused_0, int ai_4) {
             }
             if (std_TP > nbp_TP) {
                tmp_TP = SellMinTP();
-               if (!UseSignalsNBP || signal == -1) tmp_TP = SellMinTP();
+               if (!UseSignalsNBP || signal != 1) tmp_TP = SellMinTP();
                else if (UseSignalsNBP && signal == 1) tmp_TP = BuyMaxTP();
                if (tmp_TP == 0.0) {
-                  if(UseSignalsNBP && signal == 1) f0_12(0, std_TP);
+                  if(UseSignalsNBP && signal != 1) f0_12(0, std_TP);
                   else if (!UseSignalsNBP || signal == -1) f0_13(0, std_TP); // Open SELL
                   return;
                }
                tmp_TP = nbp_TP;
-               if(UseSignalsNBP && signal == 1) f0_12(0, tmp_TP);
+               if(UseSignalsNBP && signal != 1) f0_12(0, tmp_TP);
                else if (!UseSignalsNBP || signal == -1) f0_13(0, tmp_TP);
                return;
             }
-            if(UseSignalsNBP && signal == 1) f0_12(0, std_TP);
+            if(UseSignalsNBP && signal != 1) f0_12(0, std_TP);
             else if (!UseSignalsNBP || signal == -1) f0_13(0, std_TP);
             return;
          } // IF NBP TRUE  
          
-         if ((!UseSignalsNBP || signal == -1) && !(f0_13())) return;
+         if (!(f0_13())) return;
          return;  } // if Bid - ld_12 > ExecutionPoint * g...
       //}
    }
