@@ -3156,7 +3156,7 @@ void PopulateDBStatistics()
             int signal = 0;
             //-------------------------------------------------------------------------
             //-- Pivots, Support/Resistance and Price Alerts
-            get_NearestAndFarestSR(Pair, TimeFrame, (iLow(Pair, TimeFrame, 2)+iHigh(Pair, TimeFrame, 2))/2.0 );
+            get_NearestAndFarestSR(Pair, PERIOD_H4, (iLow(Pair, PERIOD_H4, 2)+iHigh(Pair, PERIOD_H4, 2))/2.0 );
             //---
 
             int macdSignal = 0;
@@ -3174,9 +3174,9 @@ void PopulateDBStatistics()
             //+------------------------------------------------------------------+
             //| Variable Begin                                                   |
             //+------------------------------------------------------------------+
-            double Buy1_1 =    iMA(Pair, TimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
-            double Buy1_2 =  iMACD(Pair, TimeFrame, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
-            double Buy2_1 =   iRSI(Pair, TimeFrame, 15, PRICE_CLOSE, 0);
+            double Buy1_1 =    iMA(Pair, PERIOD_H4, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+            double Buy1_2 =  iMACD(Pair, PERIOD_H4, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+            double Buy2_1 =   iRSI(Pair, PERIOD_H4, 15, PRICE_CLOSE, 0);
             double Buy2_2 =  iOpen(Pair, TimeFrame, 1);
             double Buy2_3 =  iOpen(Pair, TimeFrame, 0);
             double Buy3_1 = iClose(Pair, TimeFrame, 1);
@@ -3193,9 +3193,9 @@ void PopulateDBStatistics()
             if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
                signal = DIR_LONG; //SIGNAL BUY
             
-            double Sell1_1 =    iMA(Pair, TimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
-            double Sell1_2 =  iMACD(Pair, TimeFrame, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
-            double Sell2_1 =   iRSI(Pair, TimeFrame, 15, PRICE_CLOSE, 0);
+            double Sell1_1 =    iMA(Pair, PERIOD_H4, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+            double Sell1_2 =  iMACD(Pair, PERIOD_H4, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+            double Sell2_1 =   iRSI(Pair, PERIOD_H4, 15, PRICE_CLOSE, 0);
             double Sell2_2 =  iOpen(Pair, TimeFrame, 1);
             double Sell2_3 =  iOpen(Pair, TimeFrame, 0);
             double Sell3_1 = iClose(Pair, TimeFrame, 1);
