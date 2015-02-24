@@ -173,12 +173,12 @@ extern string Level_25 = "";
 extern double Multiplier_25 = 0.0;
 extern double BasketTakeProfit_25 = 0.0;
 extern bool   DrawLines = TRUE;
-extern bool   UseSignalsNBP = FALSE;
+/*extern*/ bool   UseSignalsNBP = FALSE;
 /*
 extern string _____ = "SWB indicator settings";
 extern bool Use_SWB_indicator = false;
 extern bool      swb_is_reversed = FALSE;
-*/
+
 extern bool      use_bb=true;
 extern int       bb_period=20;
 extern int       bb_deviation=2;
@@ -196,7 +196,7 @@ extern int       rsi_period=12;
 extern int       rsi_shift=0;
 extern int       lower=30;
 extern int       upper=70;
-
+*/
 double gd_948;
 bool gi_956 = FALSE;
 bool gi_960 = FALSE;
@@ -465,7 +465,7 @@ void OnTick()
 //-------------------------------------------------------------------------
 //-- Pivots, Support/Resistance and Price Alerts
 //get_pivots(symbol, timeframe);
-get_NearestAndFarestSR(Symbol(), PERIOD_H1, (iLow(Symbol(), PERIOD_H1, 2)+iHigh(Symbol(), PERIOD_H1, 2))/2.0 );
+get_NearestAndFarestSR(Symbol(), PERIOD_H4, (iLow(Symbol(), PERIOD_H4, 2)+iHigh(Symbol(), PERIOD_H4, 2))/2.0 );
 //---
 
 //------------------------------------------------------------------------------------------
@@ -1677,10 +1677,10 @@ int signal() {
    if (iMACD(Symbol(), SignalPeriod, 12, 26, 9, PRICE_CLOSE, MODE_MAIN, macdShift) > iMACD(Symbol(), SignalPeriod, 12, 26, 9, PRICE_CLOSE, MODE_SIGNAL, macdShift)) macdSignal = buy;
    else macdSignal = sell;
 //----
-   double sma0_50  = iMA(Symbol(),0,50,0,MODE_EMA,PRICE_MEDIAN,0);
-   double sma0_200 = iMA(Symbol(),0,200,0,MODE_EMA,PRICE_MEDIAN,0);
-   double sma1_50  = iMA(Symbol(),0,50,0,MODE_EMA,PRICE_MEDIAN,1);
-   double sma1_200 = iMA(Symbol(),0,200,0,MODE_EMA,PRICE_MEDIAN,1);
+   double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,0);
+   double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,0);
+   double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,1);
+   double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,1);
 //----
    //0 - MODE_MAIN, 1 - MODE_PLUSDI, 2 - MODE_MINUSDI
    double adx0_14 = iADX(Symbol(),0,14,PRICE_HIGH,MODE_MAIN,0);
@@ -1709,9 +1709,9 @@ int signal() {
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
-   double Buy1_1 =    iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
-   double Buy1_2 =  iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
-   double Buy2_1 =   iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0);
+   double Buy1_1 =    iMA(Symbol(), PERIOD_H4, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+   double Buy1_2 =  iMACD(Symbol(), PERIOD_H4, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+   double Buy2_1 =   iRSI(Symbol(), PERIOD_H4, 15, PRICE_CLOSE, 0);
    double Buy2_2 =  iOpen(Symbol(), 0, 1);
    double Buy2_3 =  iOpen(Symbol(), 0, 0);
    double Buy3_1 = iClose(Symbol(), 0, 1);
@@ -1733,9 +1733,9 @@ int signal() {
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
-   double Sell1_1 =    iMA(Symbol(), 0, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
-   double Sell1_2 =  iMACD(Symbol(), 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
-   double Sell2_1 =   iRSI(Symbol(), 0, 15, PRICE_CLOSE, 0);
+   double Sell1_1 =    iMA(Symbol(), PERIOD_H4, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
+   double Sell1_2 =  iMACD(Symbol(), PERIOD_H4, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
+   double Sell2_1 =   iRSI(Symbol(), PERIOD_H4, 15, PRICE_CLOSE, 0);
    double Sell2_2 =  iOpen(Symbol(), 0, 1);
    double Sell2_3 =  iOpen(Symbol(), 0, 0);
    double Sell3_1 = iClose(Symbol(), 0, 1);
@@ -1843,52 +1843,52 @@ int signal() {
 /*
   if (swb_is_reversed) {buy = -1; sell = 1;}  
 */
-
+/*
   double upBB=iBands(Symbol(),0,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_UPPER,bb_shift);
   double loBB=iBands(Symbol(),0,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_LOWER,bb_shift);
   double stoch=iStochastic(Symbol(),0,k,d,slowing,MODE_SMA,price_field,MODE_SIGNAL,stoch_shift);
   double rsi=iRSI(Symbol(),0,rsi_period,PRICE_CLOSE,rsi_shift);
   if(use_bb && use_stoch && use_rsi)
   {
-     if(High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sell);
-     if(Low[bb_shift]<loBB && stoch<lo_level && rsi<lower)   return(buy);
+     if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sell);
+     if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && Low[bb_shift]<loBB && stoch<lo_level && rsi<lower)   return(buy);
   }
   if(use_bb && use_stoch && !use_rsi)
   {
-     if(High[bb_shift]>upBB && stoch>up_level) return(sell);
-     if(Low[bb_shift]<loBB && stoch<lo_level)   return(buy);
+     if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && High[bb_shift]>upBB && stoch>up_level) return(sell);
+     if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && Low[bb_shift]<loBB && stoch<lo_level)   return(buy);
   }
   if(use_bb && !use_stoch && !use_rsi)
   {
-     if(High[bb_shift]>upBB) return(sell);
-     if(Low[bb_shift]<loBB)   return(buy);
+     if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && High[bb_shift]>upBB) return(sell);
+     if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && Low[bb_shift]<loBB)   return(buy);
   }
   if(!use_bb && use_stoch && use_rsi)
   {
-     if(stoch>up_level && rsi>upper) return(sell);
-     if(stoch<lo_level && rsi<lower)   return(buy);
+     if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && stoch>up_level && rsi>upper) return(sell);
+     if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && stoch<lo_level && rsi<lower)   return(buy);
   }
   if(!use_bb && use_stoch && !use_rsi)
   {
-     if(stoch>up_level) return(sell);
-     if(stoch<lo_level)  return(buy);
+     if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && stoch>up_level) return(sell);
+     if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && stoch<lo_level)  return(buy);
   }
   if(use_bb && !use_stoch && use_rsi)
   {
-     if(High[bb_shift]>upBB && rsi>upper) return(sell);
-     if(Low[bb_shift]<loBB && rsi<lower)   return(buy);
+     if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && High[bb_shift]>upBB && rsi>upper) return(sell);
+     if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && Low[bb_shift]<loBB && rsi<lower)   return(buy);
   }
   if(!use_bb && !use_stoch && use_rsi)
   {
-     if(rsi>upper) return(sell);
-     if(rsi<lower)  return(buy);
+     if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && rsi>upper) return(sell);
+     if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && rsi<lower)  return(buy);
   }
-
+*/
 //----
    HideTestIndicators(TRUE);
 //----   
   return(0);
-}         
+}        
          
 
 // Added 2 functions for NBP: SellMinTP, BuyMaxTP
