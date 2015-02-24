@@ -1,0 +1,6 @@
+
+PHP
+int close_signal 
+
+PHP 
+bool close_signal  
