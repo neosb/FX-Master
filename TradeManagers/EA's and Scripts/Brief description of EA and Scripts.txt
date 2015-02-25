@@ -1,0 +1,13 @@
+Multi purpose trade manager EA: manages open trades, moving the stop loss at points chosen by the user; offers a global open order closure at a pre-chosen profit either in USD or percentage of the account balance; partial close of individual trades. To come - hedge trade facility when an open trade looks like going bad.
+
+Multi purpose trade manager instructions.pdf
+
+Fib retracement:
+All of these do the arithmetic of calculating the mid-point between two fib levels for those of us waiting for, or operating from, the bounce off one level.
+
+Fib waiting pending order setter EA: the bounce hasn't happened yet, so this EA watches until the price reaches a pre-determined level and sends the appropriate pending order. This saves sitting at the computer waiting.
+
+Fib pending long Script and Fib pending short Script: sends the pending orders immediately. Put these in your Scripts folder.
+
+Immediate order opening:
+'Market long by Steve' and 'Market short by Steve'  open a market order immediately. Express stop loss and take profit as either a target market price or pips gain. The default magic number is the same as that of the trade management ea, making it easier to use the ea to manage individual trades.
