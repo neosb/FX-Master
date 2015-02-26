@@ -1556,7 +1556,19 @@ void f0_15(int ai_0, int ai_unused_4) {
       else
          if (ai_0 > 0) f0_12();
    } else {
-      if ((count_56 == 1 || signal == 1) && (!UseSignalsNBP || ( !GlobalVariableCheck("LAST_BUY_H_TICKET") || ticket_48 > GlobalVariableGet("LAST_BUY_H_TICKET") )) && order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
+      if (
+          ( 
+             count_56 == 1 || 
+            (signal ==  1 && count_56 <= MaximumBuyLevels/2) || 
+            (signal == -1 && count_56 > MaximumBuyLevels/2)
+          /*
+             count_56 == 1 || 
+            (signal == 1 && count_56 <= MaximumBuyLevels/4) || 
+            (count_56 > MaximumBuyLevels/4 && count_56 <= MaximumBuyLevels/2) || 
+            (signal == 1 && count_56 >= MaximumBuyLevels/2)
+          */
+          ) && 
+          (!UseSignalsNBP || ( !GlobalVariableCheck("LAST_BUY_H_TICKET") || ticket_48 > GlobalVariableGet("LAST_BUY_H_TICKET") )) && order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
 
           if (!GlobalVariableCheck("LAST_BUY_H_TICKET") || (ticket_48 >= 0 && ticket_48 > GlobalVariableGet("LAST_BUY_H_TICKET"))) GlobalVariableSet("LAST_BUY_H_TICKET", ticket_48);
 
@@ -2032,8 +2044,20 @@ void f0_14(int ai_unused_0, int ai_4) {
       else
          if (ai_4 > 0) f0_13();
    } else {
-      if ((count_56 == 1 || signal == -1) && (!UseSignalsNBP || ( !GlobalVariableCheck("LAST_SELL_H_TICKET") || ticket_48 > GlobalVariableGet("LAST_SELL_H_TICKET") )) && Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels) {
-
+      if (
+          (
+             count_56 == 1 || 
+            (signal == -1 && count_56 <= MaximumSellLevels/2) || 
+            (signal ==  1 && count_56 > MaximumSellLevels/2)
+          /*
+             count_56 == 1 || 
+            (signal == -1 && count_56 <= MaximumSellLevels/4) || 
+            (count_56 > MaximumSellLevels/4 && count_56 <= MaximumSellLevels/2) || 
+            (signal == -1 && count_56 >= MaximumSellLevels/2)
+         */
+         ) && 
+            (!UseSignalsNBP || ( !GlobalVariableCheck("LAST_SELL_H_TICKET") || ticket_48 > GlobalVariableGet("LAST_SELL_H_TICKET") )) && Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels) {
+          
          if (!GlobalVariableCheck("LAST_SELL_H_TICKET") || (ticket_48 >= 0 && ticket_48 > GlobalVariableGet("LAST_SELL_H_TICKET"))) GlobalVariableSet("LAST_SELL_H_TICKET", ticket_48);
          
          if (Negative_Basket_Protection == TRUE) {
