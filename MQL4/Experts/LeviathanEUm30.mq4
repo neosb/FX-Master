@@ -41,31 +41,31 @@ string KEY = "";
 extern string EA_Name                  = "LeviathanEUm30";
 /*extern*/ string _________            = "Input a unique magic number for each chart";
 extern int MagicNumber                 = 1;
-extern double BaseLotSize              = 0.01;
-extern bool LotStepEnable              = true;
-extern double LotStepValue             = 0.01;
-extern double LotStepFrom              = 500;
-extern double LotStepEvery             = 500;
-extern int ExecutionPoint              = 36;
-extern double BasketTakeProfit         = 60.0;
-extern int BasketStopLoss              = 180;
-extern double EquityShield             = 20;
-extern double ProgressiveStopLossPerc  = 0;
-/*extern*/ double Multiplier           = 1.0;
-/*extern*/ int MaximumBuyLevels        = 0;
-/*extern*/ int MaximumSellLevels       = 0;
-/*extern*/ bool EnvyAugmenterOn        = TRUE;
+extern double BaseLotSize = 0.01;
+extern bool LotStepEnable    = FALSE;
+extern double LotStepValue   = 0.01;
+extern double LotStepFrom    = 1000;
+extern double LotStepEvery   = 1000;
+extern int ExecutionPoint = 20;
+extern double BasketTakeProfit = 30.0;
+extern int BasketStopLoss = 180;
+extern double EquityShield    = 0;
+extern double ProgressiveStopLossPerc = 0;
+extern double Multiplier = 0.5;
+extern int MaximumBuyLevels = 12;
+extern int MaximumSellLevels = 12;
+/*extern*/ bool EnvyAugmenterOn = TRUE;
 /*extern*/ bool Negative_Basket_Protection = TRUE;
-/*extern*/ int NBP                     = 0;
-extern int Slippage                    = 3;
+/*extern*/ int NBP = 0;
+extern int Slippage = 0.5;
 string gs_168 = "1234567890123456";
 
-/*extern*/ double BailOutPct           = 100.0;
-/*extern*/ bool Chicken_Out            = FALSE;
-/*extern*/ int Close_Order_Attempts    = 3;
-/*extern*/ bool FreezeAfterTP          = FALSE;
+/*extern*/ double BailOutPct = 100.0;
+/*extern*/ bool Chicken_Out = FALSE;
+/*extern*/ int Close_Order_Attempts = 3;
+/*extern*/ bool FreezeAfterTP = FALSE;
 /*extern*/ bool FreezeAfterTPScheduler = FALSE;
-/*extern*/ bool SupportECN             = TRUE;
+extern bool SupportECN = TRUE;
 /*extern*/ string __________ = "Freeze After TP Scheduler";
 /*extern*/ int SUN_StartHour = 0;
 /*extern*/ int SUN_StartMinute = 0;
@@ -95,90 +95,89 @@ string gs_168 = "1234567890123456";
 /*extern*/ int SAT_StartMinute = 0;
 /*extern*/ int SAT_EndHour = 0;
 /*extern*/ int SAT_EndMinute = 0;
-extern string ____________ = "";
+/*extern*/ string ____________ = "";
 /*extern*/ string EnvyAugmenter = "";
 /*extern*/ string Level_1 = "";
 /*extern*/ double Multiplier_1 = 1.1;
 /*extern*/ double BasketTakeProfit_1 = 0.0;
 /*extern*/ string Level_2 = "";
-/*extern*/ double Multiplier_2 = 1.3;
+/*extern*/ double Multiplier_2 = 1.1;
 /*extern*/ double BasketTakeProfit_2 = 0.0;
 /*extern*/ string Level_3 = "";
-/*extern*/ double Multiplier_3 = 1.55;
+/*extern*/ double Multiplier_3 = 1.51;
 /*extern*/ double BasketTakeProfit_3 = 0.0;
 /*extern*/ string Level_4 = "";
-/*extern*/ double Multiplier_4 = 1.6;
+/*extern*/ double Multiplier_4 = 1.52;
 /*extern*/ double BasketTakeProfit_4 = 0.0;
 /*extern*/ string Level_5 = "";
-/*extern*/ double Multiplier_5 = 1.65;
+/*extern*/ double Multiplier_5 = 1.53;
 /*extern*/ double BasketTakeProfit_5 = 0.0;
 /*extern*/ string Level_6 = "";
-/*extern*/ double Multiplier_6 = 1.7;
+/*extern*/ double Multiplier_6 = 1.54;
 /*extern*/ double BasketTakeProfit_6 = 0.0;
 /*extern*/ string Level_7 = "";
-/*extern*/ double Multiplier_7 = 1.75;
+/*extern*/ double Multiplier_7 = 1.55;
 /*extern*/ double BasketTakeProfit_7 = 0.0;
 /*extern*/ string Level_8 = "";
-/*extern*/ double Multiplier_8 = 1.77;
+/*extern*/ double Multiplier_8 = 1.65;
 /*extern*/ double BasketTakeProfit_8 = 0.0;
 /*extern*/ string Level_9 = "";
-/*extern*/ double Multiplier_9 = 1.8;
+/*extern*/ double Multiplier_9 = 1.66;
 /*extern*/ double BasketTakeProfit_9 = 0.0;
 /*extern*/ string Level_10 = "";
-/*extern*/ double Multiplier_10 = 1.8;
+/*extern*/ double Multiplier_10 = 1.67;
 /*extern*/ double BasketTakeProfit_10 = 0.0;
 /*extern*/ string Level_11 = "";
-/*extern*/ double Multiplier_11 = 1.8;
+/*extern*/ double Multiplier_11 = 1.68;
 /*extern*/ double BasketTakeProfit_11 = 0.0;
 /*extern*/ string Level_12 = "";
-/*extern*/ double Multiplier_12 = 1.79;
+/*extern*/ double Multiplier_12 = 1.69;
 /*extern*/ double BasketTakeProfit_12 = 0.0;
 /*extern*/ string Level_13 = "";
-/*extern*/ double Multiplier_13 = 1.78;
+/*extern*/ double Multiplier_13 = 1.68;
 /*extern*/ double BasketTakeProfit_13 = 0.0;
 /*extern*/ string Level_14 = "";
-/*extern*/ double Multiplier_14 = 1.77;
+/*extern*/ double Multiplier_14 = 1.67;
 /*extern*/ double BasketTakeProfit_14 = 0.0;
 /*extern*/ string Level_15 = "";
-/*extern*/ double Multiplier_15 = 1.76;
+/*extern*/ double Multiplier_15 = 1.66;
 /*extern*/ double BasketTakeProfit_15 = 0.0;
 /*extern*/ string Level_16 = "";
-/*extern*/ double Multiplier_16 = 0.0;
+/*extern*/ double Multiplier_16 = 1.65;
 /*extern*/ double BasketTakeProfit_16 = 0.0;
 /*extern*/ string Level_17 = "";
-/*extern*/ double Multiplier_17 = 0.0;
+/*extern*/ double Multiplier_17 = 1.55;
 /*extern*/ double BasketTakeProfit_17 = 0.0;
 /*extern*/ string Level_18 = "";
-/*extern*/ double Multiplier_18 = 0.0;
+/*extern*/ double Multiplier_18 = 1.54;
 /*extern*/ double BasketTakeProfit_18 = 0.0;
 /*extern*/ string Level_19 = "";
-/*extern*/ double Multiplier_19 = 0.0;
+/*extern*/ double Multiplier_19 = 1.53;
 /*extern*/ double BasketTakeProfit_19 = 0.0;
 /*extern*/ string Level_20 = "";
-/*extern*/ double Multiplier_20 = 0.0;
+/*extern*/ double Multiplier_20 = 1.52;
 /*extern*/ double BasketTakeProfit_20 = 0.0;
 /*extern*/ string Level_21 = "";
-/*extern*/ double Multiplier_21 = 0.0;
+/*extern*/ double Multiplier_21 = 1.51;
 /*extern*/ double BasketTakeProfit_21 = 0.0;
 /*extern*/ string Level_22 = "";
-/*extern*/ double Multiplier_22 = 0.0;
+/*extern*/ double Multiplier_22 = 1.5;
 /*extern*/ double BasketTakeProfit_22 = 0.0;
 /*extern*/ string Level_23 = "";
-/*extern*/ double Multiplier_23 = 0.0;
+/*extern*/ double Multiplier_23 = 1.5;
 /*extern*/ double BasketTakeProfit_23 = 0.0;
 /*extern*/ string Level_24 = "";
-/*extern*/ double Multiplier_24 = 0.0;
+/*extern*/ double Multiplier_24 = 1.5;
 /*extern*/ double BasketTakeProfit_24 = 0.0;
 /*extern*/ string Level_25 = "";
-/*extern*/ double Multiplier_25 = 0.0;
+/*extern*/ double Multiplier_25 = 1.5;
 /*extern*/ double BasketTakeProfit_25 = 0.0;
 extern bool   DrawLines = TRUE;
-/*extern*/ bool   UseSignalsNBP = FALSE;
-/*
-extern string _____ = "SWB indicator settings";
-extern bool Use_SWB_indicator = false;
-extern bool      swb_is_reversed = FALSE;
-*/
+
+/*extern*/ string _____ = "SWB indicator settings";
+/*extern*/ bool Use_SWB_indicator = false;
+/*extern*/ bool      swb_is_reversed = FALSE;
+
 /*extern*/ bool      use_bb=true;
 /*extern*/ int       bb_period=20;
 /*extern*/ int       bb_deviation=2;
@@ -257,6 +256,7 @@ int gLevel[2]; //SE for chart_comment
 double gPoint = 0.0001; // Fix for 3/5 Digits
 int SignalPeriod = PERIOD_H1;
 double Last_TP[2]; // Fix 0.5 to store TP if TCB
+double base_lot;
 
 double StartingBalance;
 
@@ -438,6 +438,7 @@ int OnInit()
       Alert("Please input valid KEY.");
    }
    StartingBalance = AccountBalance();
+   NBP=BasketTakeProfit;
    GhostFreeSelect(false);
 //---
    return(INIT_SUCCEEDED);
@@ -536,7 +537,9 @@ if (DrawLines)
 //-----
 }
 //------------------------------------------------------------------------------------------
-
+   if (base_lot == 0 || GhostOrdersTotal() == 0) {
+      base_lot = LOT();
+   }
 //---
    double order_takeprofit_0;
    double ld_8;
@@ -1236,11 +1239,11 @@ double f0_6(int ai_0) {
    return (0);
 }
 
-int f0_12(bool ai_0 = FALSE, double nbp = 0.0) {
+int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
    int ticket_4;
-   double lots_8;
    int li_48;
    bool bool_52;
+   double lots_8 = 0;
    double ld_16 = 0;
    double ld_24 = 0;
    string ls_32 = "";
@@ -1265,8 +1268,9 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0) {
          if (ai_0) lots_8 = NormalizeDouble(f0_11(1) * gd_1060, 2);
          else lots_8 = f0_2(gd_1016);
       } else {
-         if (f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
-         else lots_8 = NormalizeDouble(LOT(), 2);
+         if (type == OP_SELL && f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
+         else if (type == OP_BUY && f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
+         else lots_8 = NormalizeDouble(base_lot, 2);
       }
       
       // No money check
@@ -1375,11 +1379,11 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0) {
    return (li_ret_40);
 }
 
-int f0_13(bool ai_0 = FALSE, double nbp = 0.0) {
+int f0_13(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_BUY) {
    int ticket_4;
-   double lots_8;
    int li_48;
    bool bool_52;
+   double lots_8 = 0;
    double ld_16 = 0;
    double ld_24 = 0;
    string ls_32 = "";
@@ -1404,8 +1408,9 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0) {
          if (ai_0) lots_8 = NormalizeDouble(f0_11(0) * gd_1060, 2);
          else lots_8 = f0_2(gd_1016);
       } else {
-         if (f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
-         else lots_8 = NormalizeDouble(LOT(), 2);
+         if (type == OP_BUY && f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
+         else if (type == OP_SELL && f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
+         else lots_8 = NormalizeDouble(base_lot, 2);
       }
       
       // No money check
@@ -1525,63 +1530,59 @@ void f0_15(int ai_0, int ai_unused_4) {
    int cmd_44 = -1;
    int ticket_48 = 0;
    int pos_52 = 0;
+   int count_AA = 0;
    int count_56 = 0;
 //--- Assert 2: Init OrderSelect #10
    int   total = GhostOrdersTotal();
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
    for (pos_52 = 0; pos_52 < total; pos_52++) {
       if (GhostOrderSelect(pos_52, SELECT_BY_POS, MODE_TRADES)) {
-         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == OP_BUY) {
-            count_56++;
-            if (GhostOrderOpenTime() > datetime_8) {
-               datetime_8 = GhostOrderOpenTime();
-               order_open_price_12 = GhostOrderOpenPrice();
-               cmd_44 = GhostOrderType();
-               ticket_48 = GhostOrderTicket();
-               order_takeprofit_28 = GhostOrderTakeProfit();
-               order_stoploss_36 = GhostOrderStopLoss();
+         if (GhostOrderMagicNumber() == MagicNumber) {
+            count_AA++;
+            if (GhostOrderType() == OP_BUY) {
+               count_56++;
+               if (GhostOrderOpenTime() > datetime_8) {
+                  datetime_8 = GhostOrderOpenTime();
+                  order_open_price_12 = GhostOrderOpenPrice();
+                  cmd_44 = GhostOrderType();
+                  ticket_48 = GhostOrderTicket();
+                  order_takeprofit_28 = GhostOrderTakeProfit();
+                  order_stoploss_36 = GhostOrderStopLoss();
+               }
+               if (GhostOrderLots() > order_lots_20) order_lots_20 = GhostOrderLots();
             }
-            if (GhostOrderLots() > order_lots_20) order_lots_20 = GhostOrderLots();
          }
       }
    }
 //--- Assert 1: Free OrderSelect #10
    GhostFreeSelect(false);
-   int li_60 = MathRound(MathLog(order_lots_20 / LOT()) / MathLog(gd_964)) + 1.0;
+   int li_60 = MathRound(MathLog(order_lots_20 / base_lot) / MathLog(gd_964)) + 1.0;
    if (li_60 < 0) li_60 = 0;
-   gd_1016 = NormalizeDouble(LOT() * MathPow(gd_964, li_60), gi_1084);
-   int signal = signal();
-   if (li_60 == 0 && signal == 1) {
+   gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
+
+   if (count_AA == 0 && li_60 == 0 && signal() == 1) {
+      if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_12();
       else
          if (ai_0 > 0) f0_12();
    } else {
-      if (order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
+      if (trigger(OP_BUY) > 0 && order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
           if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Ask + BasketTakeProfit * g_point_1204;
             nbp_TP = order_open_price_12 + NBP * g_point_1204;
-            if (!UseSignalsNBP || signal != -1) {
-               std_TP = Ask + BasketTakeProfit * g_point_1204;
-               nbp_TP = order_open_price_12 + NBP * g_point_1204;
-            } else if (UseSignalsNBP && signal == -1) {
-               std_TP = Bid - BasketTakeProfit * gPoint;
-               nbp_TP = order_open_price_12 - NBP * gPoint;
-            }
             if (std_TP < nbp_TP) {
                tmp_TP = BuyMaxTP();
-               if (!UseSignalsNBP || signal != -1) tmp_TP = BuyMaxTP();
-               else if (UseSignalsNBP && signal == -1) tmp_TP = SellMinTP();
                if (tmp_TP == 0.0) {
-                  if(UseSignalsNBP && signal == -1)       {f0_13(0, std_TP); return;}
-                  else if(!UseSignalsNBP || signal != -1) {f0_12(0, std_TP); return;}//Open BUY
+                  f0_12(0, std_TP); //Openbuy
+                  return;
                }
                tmp_TP = nbp_TP;
-               if(UseSignalsNBP && signal == -1)       {f0_13(0, tmp_TP); return;}
-               else if(!UseSignalsNBP || signal != -1) {f0_12(0, tmp_TP); return;}
+               f0_12(0, tmp_TP);
+               return;
             }
-            if(UseSignalsNBP && signal == -1)       {f0_13(0, std_TP); return;}
-            else if(!UseSignalsNBP || signal != -1) {f0_12(0, std_TP); return;}
+            f0_12(0, std_TP);
+            return;
          } // IF NBP TRUE   
  
          if (!(f0_12())) return;
@@ -1661,10 +1662,71 @@ void f0_15(int ai_0, int ai_unused_4) {
    }
 }
 
+int trigger(int pos) {
+//----
+   HideTestIndicators(TRUE);
+//----
+   int sig_trigger = 0;
+//----
+   double isarM30_0 = iSAR(Symbol(), PERIOD_M30, gd_1044, gd_1052, 0);
+   double isarM30_1 = iSAR(Symbol(), PERIOD_M30, gd_1044, gd_1052, 1);
+   double isarH1_0  = iSAR(Symbol(), PERIOD_H1 , gd_1044, gd_1052, 0);
+   double isarH1_1  = iSAR(Symbol(), PERIOD_H1 , gd_1044, gd_1052, 1);
+//----
+   double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,0);
+   double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,0);
+   double sma0_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_MEDIAN,0);
+   double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,1);
+   double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,1);
+   double sma1_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_MEDIAN,1);
+//----
+   // 0 - MODE_MAIN, 1 - MODE_UPPER, 2 - MODE_LOWER
+   double bb0L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
+   double bb1L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,1);
+   double bb2L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,2);
+   double bb3L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,3);
+
+   double bb0M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
+   double bb1M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,1);
+   double bb2M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,2);
+   double bb3M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,3);
+
+   double bb0U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
+   double bb1U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
+   double bb2U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
+   double bb3U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
+//----
+   if (
+      pos == OP_BUY &&
+      sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 &&
+      //MarketInfo(Symbol(), MODE_BID) > isarM30_0 &&
+      //MarketInfo(Symbol(), MODE_BID) > isarH1_0 && 
+      //iOpen(Symbol(), 0, 1) > isarM30_1 && 
+      //iOpen(Symbol(), 0, 1) > isarH1_1 && 
+      MarketInfo(Symbol(), MODE_BID) > bb0L_20 //&&
+      //(Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+   ) {
+      sig_trigger = 1;
+   }
+//----
+   if (
+      pos == OP_SELL &&
+      sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 &&
+      //MarketInfo(Symbol(), MODE_ASK) < isarM30_0 &&
+      //MarketInfo(Symbol(), MODE_ASK) < isarH1_0 && 
+      //iOpen(Symbol(), 0, 1) < isarM30_1 && 
+      //iOpen(Symbol(), 0, 1) < isarH1_1 && 
+      MarketInfo(Symbol(), MODE_ASK) < bb0U_20
+   ) {
+      sig_trigger = 1;
+   }
+//----
+   HideTestIndicators(TRUE);
+//----
+   return (sig_trigger);   
+}
 
 int signal() {
-//----
-   //if(!UseSignalsNBP) return(0);
 //----
    HideTestIndicators(TRUE);
 //----
@@ -1679,8 +1741,10 @@ int signal() {
 //----
    double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,0);
    double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,0);
+   double sma0_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_MEDIAN,0);
    double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_MEDIAN,1);
    double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_MEDIAN,1);
+   double sma1_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_MEDIAN,1);
 //----
    //0 - MODE_MAIN, 1 - MODE_PLUSDI, 2 - MODE_MINUSDI
    double adx0_14 = iADX(Symbol(),0,14,PRICE_HIGH,MODE_MAIN,0);
@@ -1705,7 +1769,20 @@ int signal() {
    double isar_0 = iSAR(Symbol(), SignalPeriod, gd_1044, gd_1052, 0);
    double ima_8 = iMA(Symbol(), SignalPeriod, g_period_1028, gi_1032, g_ma_method_1036, g_applied_price_1040, 0);
 //----
-
+   if
+   (
+      (
+         iLow(Symbol(),PERIOD_H1,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+         iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)>iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+      )
+   ) 
+      return(buy); //SIGNAL BUY
+//----
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
@@ -1725,11 +1802,23 @@ int signal() {
       nearest_broken_pivot = nearest_resistance;
    }
    
-   if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
-      return(buy); //SIGNAL BUY
-     
-//------------------------------------------------------------------------------------------------------------------------+
-
+   if( (sma0_600 < sma0_200 && sma1_600 < sma1_200 && sma0_200 < sma0_50 && sma1_200 < sma1_50 /*&& macdSignal == 2*/) )
+      if (isar_0 < ima_8) return(buy); //SIGNAL BUY
+//----
+   if
+   (
+      (
+         iHigh(Symbol(),PERIOD_H1,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1) && 
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0) && 
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0) &&
+         iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,600,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,200,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)&&iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,1)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,2) &&
+         iMA(Symbol(),PERIOD_H1,14,0,MODE_EMA,PRICE_MEDIAN,0)<iMA(Symbol(),PERIOD_H1,75,0,MODE_EMA,PRICE_MEDIAN,0)
+      )
+   )
+      return(sell); //SIGNAL SELL
+//----
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
@@ -1749,87 +1838,9 @@ int signal() {
       nearest_broken_pivot = nearest_resistance;
    }
    
-   if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
-      return(sell); //SIGNAL SELL
-
-   //+------------------------------------------------------------------+
-   //| Taichi Demarker Signal                                           |
-   //+------------------------------------------------------------------+
-/*
-   int TimeFrame1=SignalPeriod;
-   int TF1Tenkan=9;
-   int TF1Kijun=26;
-   int TF1Senkou=52;
-   int TF1FlatSE=7;
-   int TF1DeMarker=25;
-   int TF1FastMA=14;
-   int TF1SlowMA=25;
-
-   int TimeFrame2=30;
-   int TF2Tenkan=9;
-   int TF2Kijun=26;
-   int TF2Senkou=52;
-   int TF2FlatSE=7;
-   int TF2DeMarker=25;
-   int TF2FastMA=14;
-   int TF2SlowMA=25;
-
-   int TimeFrame3=15;
-   double MinATRRange=5;
-   int ATRPeriod=14;
-
-   double MaxPriceRange=40;
-   int OpenShift=10;
-   
-   double point;
-   if(Digits<4)
-   {
-      point=0.01;
-   }
-   else
-   {
-      point=0.0001;
-   }
-   
-   int limit=1;
-   for(int i=1;i<=limit;i++)
-   {
-      double CTS=iCustom(Symbol(),TimeFrame1,"Cronex Taichi",TF1Tenkan,TF1Kijun,TF1Senkou,TF1FlatSE,0,i);
-      double CTR=iCustom(Symbol(),TimeFrame1,"Cronex Taichi",TF1Tenkan,TF1Kijun,TF1Senkou,TF1FlatSE,1,i);
-      double CTL=iCustom(Symbol(),TimeFrame1,"Cronex Taichi",TF1Tenkan,TF1Kijun,TF1Senkou,TF1FlatSE,2,i);
-      double CTD=iCustom(Symbol(),TimeFrame1,"Cronex Taichi",TF1Tenkan,TF1Kijun,TF1Senkou,TF1FlatSE,3,i);
-      
-      double CDS=iCustom(Symbol(),TimeFrame1,"Cronex DeMarker",TF1DeMarker,TF1FastMA,TF1SlowMA,0,i);
-      double CDR=iCustom(Symbol(),TimeFrame1,"Cronex DeMarker",TF1DeMarker,TF1FastMA,TF1SlowMA,1,i);
-      double CDB=iCustom(Symbol(),TimeFrame1,"Cronex DeMarker",TF1DeMarker,TF1FastMA,TF1SlowMA,2,i);
-      
-      double CTS5=iCustom(Symbol(),TimeFrame2,"Cronex Taichi",TF2Tenkan,TF2Kijun,TF2Senkou,TF2FlatSE,0,i);
-      double CTR5=iCustom(Symbol(),TimeFrame2,"Cronex Taichi",TF2Tenkan,TF2Kijun,TF2Senkou,TF2FlatSE,1,i);
-      double CTL5=iCustom(Symbol(),TimeFrame2,"Cronex Taichi",TF2Tenkan,TF2Kijun,TF2Senkou,TF2FlatSE,2,i);
-      double CTD5=iCustom(Symbol(),TimeFrame2,"Cronex Taichi",TF2Tenkan,TF2Kijun,TF2Senkou,TF2FlatSE,3,i);
-      
-      double CDS5=iCustom(Symbol(),TimeFrame2,"Cronex DeMarker",TF2DeMarker,TF2FastMA,TF2SlowMA,0,i);
-      double CDR5=iCustom(Symbol(),TimeFrame2,"Cronex DeMarker",TF2DeMarker,TF2FastMA,TF2SlowMA,1,i);
-      double CDB5=iCustom(Symbol(),TimeFrame2,"Cronex DeMarker",TF2DeMarker,TF2FastMA,TF2SlowMA,2,i);
-      
-      double ATR=iATR(NULL,TimeFrame3,ATRPeriod,i);
-
-      if(
-         CTS>CTR&&CTS>CTD&&CDS>CDB&&CDB>CDR
-         &&CTS5>CTR5&&CTS5>CTD5&&CDS5>CDB5&&CDB5>CDR5
-         &&(iClose(Symbol(),TimeFrame1,i)-iClose(Symbol(),TimeFrame1,i+OpenShift))<(MaxPriceRange*point)
-         &&ATR>MinATRRange*point
-      ) return(buy);
-
-      if(
-         CTS<CTL&&CTS<CTD&&CDS<CDB&&CDB<CDR
-         &&CTS5<CTL5&&CTS5<CTD5&&CDS5<CDB5&&CDB5<CDR5
-         &&(iClose(Symbol(),TimeFrame1,i+OpenShift)-iClose(Symbol(),TimeFrame1,i))<(MaxPriceRange*point)
-         &&ATR>MinATRRange*point
-      ) return(sell);
-   }
-*/
-
+   if( (sma0_600 > sma0_200 && sma1_600 > sma1_200 && sma0_200 > sma0_50 && sma1_200 > sma1_50 /*&& macdSignal == 1*/) )
+      if (isar_0 > ima_8) return(sell); //SIGNAL SELL
+//---
 /*
   if (!Use_SWB_indicator) {
 
@@ -1837,13 +1848,10 @@ int signal() {
       if (isar_0 < ima_8) return (1);
 
       return (0);}
-*/
       
   ////////////// 0.2b Signal from SWB Grid 4.1.0.7 //////////////////////
-/*
   if (swb_is_reversed) {buy = -1; sell = 1;}  
-*/
-/*
+
   double upBB=iBands(Symbol(),0,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_UPPER,bb_shift);
   double loBB=iBands(Symbol(),0,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_LOWER,bb_shift);
   double stoch=iStochastic(Symbol(),0,k,d,slowing,MODE_SMA,price_field,MODE_SIGNAL,stoch_shift);
@@ -1888,7 +1896,7 @@ int signal() {
    HideTestIndicators(TRUE);
 //----   
   return(0);
-}         
+}        
          
 
 // Added 2 functions for NBP: SellMinTP, BuyMaxTP
@@ -1900,7 +1908,7 @@ double SellMinTP() {
       if (OrderMagicNumber() == MagicNumber) {
          if (OrderSymbol() == Symbol()) {
             if (OrderType() == OP_SELL) {
-               if (OrderLots() != LOT()) {
+               if (OrderLots() != base_lot) {
                   if (ld_ret_0 == 0.0) ld_ret_0 = OrderOpenPrice() - NBP * g_point_1204;
                   else
                      if (ld_ret_0 > OrderOpenPrice() - NBP * g_point_1204) ld_ret_0 = OrderOpenPrice() - NBP * g_point_1204;
@@ -1919,7 +1927,7 @@ double BuyMaxTP() {
       if (OrderMagicNumber() == MagicNumber) {
          if (OrderSymbol() == Symbol()) {
             if (OrderType() == OP_BUY) {
-               if (OrderLots() != LOT()) {
+               if (OrderLots() != base_lot) {
                   if (ld_ret_0 == 0.0) ld_ret_0 = OrderOpenPrice() + NBP * g_point_1204;
                   else
                      if (ld_ret_0 < OrderOpenPrice() + NBP * g_point_1204) ld_ret_0 = OrderOpenPrice() + NBP * g_point_1204;
@@ -1969,63 +1977,59 @@ void f0_14(int ai_unused_0, int ai_4) {
    int cmd_44 = -1;
    int ticket_48 = 0;
    int pos_52 = 0;
+   int count_AA = 0;
    int count_56 = 0;
 //--- Assert 2: Init OrderSelect #12
    int   total = GhostOrdersTotal();
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_TRADES);
    for (pos_52 = 0; pos_52 < total; pos_52++) {
       if (GhostOrderSelect(pos_52, SELECT_BY_POS, MODE_TRADES)) {
-         if (GhostOrderMagicNumber() == MagicNumber && GhostOrderType() == OP_SELL) {
-            count_56++;
-            if (GhostOrderOpenTime() > datetime_8) {
-               datetime_8 = GhostOrderOpenTime();
-               order_open_price_12 = GhostOrderOpenPrice();
-               cmd_44 = GhostOrderType();
-               ticket_48 = GhostOrderTicket();
-               order_takeprofit_28 = GhostOrderTakeProfit();
-               order_stoploss_36 = GhostOrderStopLoss();
+         if (GhostOrderMagicNumber() == MagicNumber) {
+            count_AA++;
+            if (GhostOrderType() == OP_SELL) {
+               count_56++;
+               if (GhostOrderOpenTime() > datetime_8) {
+                  datetime_8 = GhostOrderOpenTime();
+                  order_open_price_12 = GhostOrderOpenPrice();
+                  cmd_44 = GhostOrderType();
+                  ticket_48 = GhostOrderTicket();
+                  order_takeprofit_28 = GhostOrderTakeProfit();
+                  order_stoploss_36 = GhostOrderStopLoss();
+               }
+               if (GhostOrderLots() > order_lots_20) order_lots_20 = GhostOrderLots();
             }
-            if (GhostOrderLots() > order_lots_20) order_lots_20 = GhostOrderLots();
          }
       }
    }
 //--- Assert 1: Free OrderSelect #12
    GhostFreeSelect(false);
-   int li_60 = MathRound(MathLog(order_lots_20 / LOT()) / MathLog(gd_964)) + 1.0;
+   int li_60 = MathRound(MathLog(order_lots_20 / base_lot) / MathLog(gd_964)) + 1.0;
    if (li_60 < 0) li_60 = 0;
-   gd_1016 = NormalizeDouble(LOT() * MathPow(gd_964, li_60), gi_1084);
-   int signal = signal();
-   if (li_60 == 0 && signal == -1) {
+   gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
+
+   if (count_AA == 0 && li_60 == 0 && signal() == -1) {
+      if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_13();
       else
          if (ai_4 > 0) f0_13();
    } else {
-      if (Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels) {
+      if(trigger(OP_SELL) > 0 && Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Bid - BasketTakeProfit * gPoint;
             nbp_TP = order_open_price_12 - NBP * gPoint;
-            if (!UseSignalsNBP || signal != 1) {
-               std_TP = Bid - BasketTakeProfit * gPoint;
-               nbp_TP = order_open_price_12 - NBP * gPoint;
-            } else if (UseSignalsNBP && signal == 1) {
-               std_TP = Ask + BasketTakeProfit * g_point_1204;
-               nbp_TP = order_open_price_12 + NBP * g_point_1204;
-            }
             if (std_TP > nbp_TP) {
                tmp_TP = SellMinTP();
-               if (!UseSignalsNBP || signal != 1) tmp_TP = SellMinTP();
-               else if (UseSignalsNBP && signal == 1) tmp_TP = BuyMaxTP();
                if (tmp_TP == 0.0) {
-                  if(UseSignalsNBP && signal != 1)         {f0_12(0, std_TP); return;}
-                  else if (!UseSignalsNBP || signal == -1) {f0_13(0, std_TP); return;} // Open SELL
+                  f0_13(0, std_TP);
+                  return;
                }
                tmp_TP = nbp_TP;
-               if(UseSignalsNBP && signal != 1)         {f0_12(0, tmp_TP); return;}
-               else if (!UseSignalsNBP || signal == -1) {f0_13(0, tmp_TP); return;}
+               f0_13(0, tmp_TP);
+               return;
             }
-            if(UseSignalsNBP && signal != 1)         {f0_12(0, std_TP); return;}
-            else if (!UseSignalsNBP || signal == -1) {f0_13(0, std_TP); return;}
+            f0_13(0, std_TP);
+            return;
          } // IF NBP TRUE  
          
          if (!(f0_13())) return;
@@ -2425,6 +2429,7 @@ double LOT()
 
    if(LotStepEnable)
    {
+      /*
       double safeProfit = AccountBalance();
 
       if (DDFromStart <= -2)
@@ -2458,7 +2463,9 @@ double LOT()
       {
          safeProfit = AccountBalance() + (AccountBalance()*5.0)/100;
       }
-
+      */
+      double safeProfit = StartingBalance;
+      
       double stepValue = ((safeProfit-LotStepFrom)/LotStepEvery)*LotStepValue ;
       double lotStepValue = NormalizeDouble( ( stepValue - MathMod(stepValue, LotStepValue) ) , MarketInfo(Symbol(),MODE_DIGITS) );;
       
