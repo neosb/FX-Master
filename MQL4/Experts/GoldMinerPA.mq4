@@ -1157,7 +1157,7 @@ void OnTick()
 
    //-- Pivots, Support/Resistance and Price Alerts
    //get_pivots(symbol, timeframe);
-   get_NearestAndFarestSR(pair, 0, (iLow(pair, 0, Current + 1)+iHigh(pair, 0, Current + 1))/2.0 );
+   get_NearestAndFarestSR(pair, 0, (iLow(pair, PERIOD_H4, Current + 1)+iHigh(pair, PERIOD_H4, Current + 1))/2.0 );
    //---
    
   //------------------------------------------------------------------------------------------
@@ -2360,6 +2360,46 @@ bool Action_BuyOrSellPair()
 				if(PrintErrors) Print("ERROR - "+EA_NAME+" Trader : Action_BuyOrSellRandomPair no pair found on pairsToBuyOrSellArray.");
 				return(TRUE);
 		   }
+
+//----
+         HideTestIndicators(FALSE);
+         //+------------------------------------------------------------------+
+         //| Variable Begin                                                   |
+         //+------------------------------------------------------------------+
+         //---- input parameters
+         int             bolPrd     = 20;
+         double          bolDev     = 2.0;
+         int             keltPrd    = 20;
+         double          keltFactor = 1.5;
+         int             momPrd     = 12;
+         //---- indicators
+         double sma0_50  = iMA(pair,0,50,0,MODE_EMA,PRICE_MEDIAN,0);
+         double sma0_200 = iMA(pair,0,200,0,MODE_EMA,PRICE_MEDIAN,0);
+         double sma0_600 = iMA(pair,0,600,0,MODE_EMA,PRICE_MEDIAN,0);
+         double sma1_50  = iMA(pair,0,50,0,MODE_EMA,PRICE_MEDIAN,1);
+         double sma1_200 = iMA(pair,0,200,0,MODE_EMA,PRICE_MEDIAN,1);
+         double sma1_600 = iMA(pair,0,600,0,MODE_EMA,PRICE_MEDIAN,1);
+         double Buy1_1   = iMA(pair,0,50,0,MODE_EMA,PRICE_CLOSE,0);
+         double Buy1_2   = iMACD(pair,0,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
+         double Buy2_1   = iRSI(pair,0,15,PRICE_CLOSE,0);
+         double Buy2_2   = iOpen(pair,0,1);
+         double Buy2_3   = iOpen(pair,0,0);
+         double Buy3_1   = iClose(pair,0,1);
+         double Buy3_2   = MarketInfo(pair,MODE_BID);
+         double Sell1_1  = iMA(pair,0,50,0,MODE_EMA,PRICE_CLOSE,0);
+         double Sell1_2  = iMACD(pair,0,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
+         double Sell2_1  = iRSI(pair,0,15,PRICE_CLOSE,0);
+         double Sell2_2  = iOpen(pair,0,1);
+         double Sell2_3  = iOpen(pair,0,0);
+         double Sell3_1  = iClose(pair,0,1);
+         double Sell3_2  = MarketInfo(pair,MODE_ASK);
+         double diff     = iATR(pair,0,keltPrd,0)*keltFactor;
+		   double std      = iStdDev(pair,0,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
+		   double bbs      = bolDev * std / diff;
+         //+------------------------------------------------------------------+
+         //| Variable End                                                     |
+         //+------------------------------------------------------------------+
+//----
 		   
 	       //randSignal = MathRand() % 2;
 	       randSignal = 0;
@@ -2367,65 +2407,20 @@ bool Action_BuyOrSellPair()
 	       // Buy
 	       if (randSignal == 0)
 	       {
-//------
-	    /*
-            //+------------------------------------------------------------------+
-            //| Variable Begin                                                   |
-            //+------------------------------------------------------------------+
-            
-            double Buy1_1 = iClose(pair, 0, Current + 1);
-            double Buy1_2 = iHigh(pair, 0, Current + 2);
-            double Buy2_1 = iClose(pair, 0, Current + 0);
-            double Buy2_2 = iHigh(pair, 0, Current + 1);
-            double Buy3_1 = iClose(pair, 0, Current + 0);
-            double Buy3_2 = iHigh(pair, 0, Current + 2);
-            
-            //+------------------------------------------------------------------+
-            //| Variable End                                                     |
-            //+------------------------------------------------------------------+
-            
-            if(Buy1_1 <= Buy1_2 && Buy2_1 > Buy2_2 && Buy3_1 > Buy3_2) {
-				    if(OrderOnPairAlreadyPlaced(pair) && AllowMultiplePurchaseOfPair == FALSE)
-				    {
-					    if(PrintErrors) Print("WARNING - "+EA_NAME+" Trader : Action_BuyOrSellRandomPair random pair ", pair, " not allowed to trade. Orders already placed.");
-					    return(TRUE);
-				    }
-				    
-				    
-		         return(OpenOrderBuy(pair,true));
-            }
-       */
-
-            //+------------------------------------------------------------------+
-            //| Variable Begin                                                   |
-            //+------------------------------------------------------------------+
-            double Buy1_1 = iMA(pair, 0, 50, 0, MODE_EMA, PRICE_CLOSE, Current + 0);
-            double Buy1_2 = iMACD(pair, 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, Current + 0);
-            double Buy2_1 = iRSI(pair, 0, 15, PRICE_CLOSE, Current + 0);
-            double Buy2_2 = iOpen(pair, 0, Current + 0);
-            double Buy3_1 = iClose(pair, 0, Current + 0);
-            double Buy3_2 = MarketInfo(pair, MODE_BID);
-                        
-            double nearest_broken_pivot = EMPTY_VALUE;
-            
-            if (Buy2_2 < nearest_resistance && Buy3_1 > nearest_resistance) {
-               nearest_broken_pivot = nearest_resistance;
-            } else if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_support && Buy3_1 > nearest_support) {
-               nearest_broken_pivot = nearest_resistance;
-            }
-            
-            /*if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_daily_resistance && Buy3_1 > nearest_daily_resistance) {
-               nearest_broken_pivot = nearest_resistance;
-            }*/
-            
-            //+------------------------------------------------------------------+
-            //| Variable End                                                     |
-            //+------------------------------------------------------------------+
-
+//------                        
             if(
-               //iClose(pair, 0, Current + 1) <= iHigh(pair, 0, Current + 2) && iClose(pair, 0, Current + 0) > iHigh(pair, 0, Current + 1) && iClose(pair, 0, Current + 0) > iHigh(pair, 0, Current + 2)
-               //&&
-               Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot
+               iOpen(pair,0,1)<=iBands(pair,0,20,2,0,PRICE_CLOSE,MODE_LOWER,1) &&
+               iOpen(pair,0,1)<iOpen(pair,0,0) &&
+               
+               //iOpen(pair,0,0)<=iBands(pair,0,20,2,0,PRICE_CLOSE,MODE_LOWER,0) &&
+               bbs>=1 && 
+               MarketInfo(pair,MODE_ASK)>iBands(pair,0,20,2,0,PRICE_CLOSE,MODE_LOWER,0) &&
+               
+               iCCI(pair,0,14,PRICE_TYPICAL,1)<-70 &&
+               iCCI(pair,0,14,PRICE_TYPICAL,1)<=iCCI(pair,0,14,PRICE_TYPICAL,0) &&
+               
+               iRSI(pair,0,14,PRICE_CLOSE,0)<50 &&
+               iRSI(pair,0,14,PRICE_CLOSE,1)<=iRSI(pair,0,14,PRICE_CLOSE,0)
               ) {
 				    if(OrderOnPairAlreadyPlaced(pair) && AllowMultiplePurchaseOfPair == FALSE)
 				    {
@@ -2443,63 +2438,19 @@ bool Action_BuyOrSellPair()
 	       if (randSignal == 1)
 	       {
 //------
-	    /*	   
-            //+------------------------------------------------------------------+
-            //| Variable Begin                                                   |
-            //+------------------------------------------------------------------+
-            
-            double Sell1_1 = iClose(pair, 0, Current + 1);
-            double Sell1_2 = iLow(pair, 0, Current + 2);
-            double Sell2_1 = iClose(pair, 0, Current + 0);
-            double Sell2_2 = iLow(pair, 0, Current + 1);
-            double Sell3_1 = iClose(pair, 0, Current + 0);
-            double Sell3_2 = iLow(pair, 0, Current + 2);
-            
-            //+------------------------------------------------------------------+
-            //| Variable End                                                     |
-            //+------------------------------------------------------------------+
-
-            if(Sell1_1 >= Sell1_2 && Sell2_1 < Sell2_2 && Sell3_1 < Sell3_2)
-            {
-				    if(OrderOnPairAlreadyPlaced(pair) && AllowMultiplePurchaseOfPair == FALSE)
-				    {
-					    if(PrintErrors) Print("WARNING - "+EA_NAME+" Trader : Action_BuyOrSellRandomPair random pair ", pair, " not allowed to trade. Orders already placed.");
-					    return(TRUE);
-				    }
-				    
-				    return(OpenOrderSell(pair, true));
-            }            
-       */
-            //+------------------------------------------------------------------+
-            //| Variable Begin                                                   |
-            //+------------------------------------------------------------------+
-            double Sell1_1 = iMA(pair, 0, 50, 0, MODE_EMA, PRICE_CLOSE, Current + 0);
-            double Sell1_2 = iMACD(pair, 0, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, Current + 0);
-            double Sell2_1 = iRSI(pair, 0, 15, PRICE_CLOSE, Current + 0);
-            double Sell2_2 = iOpen(pair, 0, Current + 0);
-            double Sell3_1 = iClose(pair, 0, Current + 0);
-            double Sell3_2 = MarketInfo(pair, MODE_ASK);
-            
-            nearest_broken_pivot = EMPTY_VALUE;
-            
-            if (Sell2_2 > nearest_support && Sell3_1 < nearest_support) {
-               nearest_broken_pivot = nearest_support;
-            } else if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_resistance && Sell3_1 < nearest_resistance) {
-               nearest_broken_pivot = nearest_resistance;
-            }
-            
-            /*if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_daily_resistance && Sell3_1 < nearest_daily_resistance) {
-               nearest_broken_pivot = nearest_resistance;
-            }*/
-
-            //+------------------------------------------------------------------+
-            //| Variable End                                                     |
-            //+------------------------------------------------------------------+
-
             if(
-               //iClose(pair, 0, Current + 1) >= iLow(pair, 0, Current + 2) && iClose(pair, 0, Current + 0) < iLow(pair, 0, Current + 1) && iClose(pair, 0, Current + 0) < iLow(pair, 0, Current + 2)
-               //&& 
-               Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot
+               iOpen(pair,0,1)>=iBands(pair,0,20,2,0,PRICE_CLOSE,MODE_UPPER,1) &&
+               iOpen(pair,0,1)>iOpen(pair,0,0) &&
+               
+               //iOpen(pair,0,0)>=iBands(pair,0,20,2,0,PRICE_CLOSE,MODE_UPPER,0) &&
+               bbs>=1 && 
+               MarketInfo(pair,MODE_BID)<iBands(pair,0,20,2,0,PRICE_CLOSE,MODE_UPPER,0) &&
+               
+               iCCI(pair,0,14,PRICE_TYPICAL,1)>70 &&
+               iCCI(pair,0,14,PRICE_TYPICAL,1)>=iCCI(pair,0,14,PRICE_TYPICAL,0) &&
+               
+               iRSI(pair,0,14,PRICE_CLOSE,0)>50 &&
+               iRSI(pair,0,14,PRICE_CLOSE,1)>=iRSI(pair,0,14,PRICE_CLOSE,0)
               ) {
 				    if(OrderOnPairAlreadyPlaced(pair) && AllowMultiplePurchaseOfPair == FALSE)
 				    {
@@ -2509,8 +2460,8 @@ bool Action_BuyOrSellPair()
 				    
 				    return(OpenOrderSell(pair, true));
             }
-	       }
 //------ 
+	       }
 		}
 		// END_Action : _BuyOrSellRandomPair
 		return(FALSE);
@@ -3759,4 +3710,41 @@ double sqConvertToPips(string symbol, double value) {
    return(sqGetPointPow(symbol) * value);
 }
 
+//----------------------------------------------------------------------------
+double LinearRegressionValue(string pair, int timeframe, int Len,int shift) {
+   double SumBars = 0;
+   double SumSqrBars = 0;
+   double SumY = 0;
+   double Sum1 = 0;
+   double Sum2 = 0;
+   double Slope = 0;
+
+   SumBars = Len * (Len-1) * 0.5;
+   SumSqrBars = (Len - 1) * Len * (2 * Len - 1)/6;
+
+  for (int x=0; x<=Len-1;x++) {
+   double HH = iLow(pair,timeframe,x+shift);
+   double LL = iHigh(pair,timeframe,x+shift);
+   for (int y=x; y<=(x+Len)-1; y++) {
+     HH = MathMax(HH, iHigh(pair,timeframe,y+shift));
+     LL = MathMin(LL, iLow(pair,timeframe,y+shift));
+   }
+    Sum1 += x* (iClose(pair,timeframe,x+shift)-((HH+LL)/2 + iMA(pair,timeframe,Len,0,MODE_EMA,PRICE_CLOSE,x+shift))/2);
+    SumY += (iClose(pair,timeframe,x+shift)-((HH+LL)/2 + iMA(pair,timeframe,Len,0,MODE_EMA,PRICE_CLOSE,x+shift))/2);
+  }
+  Sum2 = SumBars * SumY;
+  double Num1 = Len * Sum1 - Sum2;
+  double Num2 = SumBars * SumBars-Len * SumSqrBars;
+
+  if (Num2 != 0.0)  { 
+    Slope = Num1/Num2; 
+  } else { 
+    Slope = 0; 
+  }
+
+  double Intercept = (SumY - Slope*SumBars) /Len;
+  double LinearRegValue = Intercept+Slope * (Len - 1);
+
+  return (LinearRegValue);
+}
 //----------------------------------------------------------------------------
