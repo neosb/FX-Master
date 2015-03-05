@@ -1812,117 +1812,202 @@ int signal() {
   int    BB_Penetration      = 2;
   bool   Use_BB_Direction    = False;
   //-----------------------------------------------------------------
+  bool      use_bb=true;
+  int       bb_period=20;
+  int       bb_deviation=2;
+  int       bb_shift=0;
+  bool      use_stoch=true;
+  int       k=5;
+  int       d=3;
+  int       slowing=3;
+  int       price_field=0;
+  int       stoch_shift=0;
+  int       lo_level=30;
+  int       up_level=70;
+  bool      use_rsi=true;
+  int       rsi_period=12;
+  int       rsi_shift=0;
+  int       lower=30;
+  int       upper=70;
+  //-----------------------------------------------------------------
+
   //Auto Sets
   bool Use_Leviathan_Sig = TRUE;
   if(StringSubstr(Symbol(),0,6)=="EURCAD")
   {
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0) Max_Spread_Open=6; if(Max_Spread_Close==0) Max_Spread_Close=6;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
-  Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0) Max_Spread_Open=6; if(Max_Spread_Close==0) Max_Spread_Close=6;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
+     Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="EURGBP")
   {
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-  Use_WPR=true; WPR_Period=11; WPR_Entry=90; WPR_Exit=40;
-  Use_Fractals=true; MidFractalDist=5; OppositFractalDist=9;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+     Use_WPR=true; WPR_Period=11; WPR_Entry=90; WPR_Exit=40;
+     Use_Fractals=true; MidFractalDist=5; OppositFractalDist=9;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="USDCAD")
   {
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=120; CCI_Exit=125;
-  Use_WPR=true; WPR_Period=10; WPR_Entry=90; WPR_Exit=35;
-  Use_Fractals=true; MidFractalDist=8; OppositFractalDist=11;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=120; CCI_Exit=125;
+     Use_WPR=true; WPR_Period=10; WPR_Entry=90; WPR_Exit=35;
+     Use_Fractals=true; MidFractalDist=8; OppositFractalDist=11;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="EURCHF")
   { 
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=5; if(Max_Spread_Close==0)Max_Spread_Close=5;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-  Use_Fractals=true; MidFractalDist=7; OppositFractalDist=9;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=5; if(Max_Spread_Close==0)Max_Spread_Close=5;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+     Use_Fractals=true; MidFractalDist=7; OppositFractalDist=9;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="USDCHF")
   { 
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
-  Use_Fractals=true; MidFractalDist=6; OppositFractalDist=9;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
+     Use_Fractals=true; MidFractalDist=6; OppositFractalDist=9;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="GBPCHF")
   { 
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-  Use_Fractals=true; MidFractalDist=9; OppositFractalDist=15;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+     Use_Fractals=true; MidFractalDist=9; OppositFractalDist=15;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="GBPCAD")
   {  
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-  Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+     Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="EURUSD")
   {  
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-  Use_WPR=true; WPR_Period=8; WPR_Entry=93; WPR_Exit=42;
-  Use_Fractals=True; MidFractalDist=8; OppositFractalDist=15;
-  Use_MA1=true; MA_Period1=75;
-  Use_MA2=true; MA_Period2=20;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+     Use_WPR=true; WPR_Period=8; WPR_Entry=93; WPR_Exit=42;
+     Use_Fractals=True; MidFractalDist=8; OppositFractalDist=15;
+     Use_MA1=true; MA_Period1=75;
+     Use_MA2=true; MA_Period2=20;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="CADCHF")
   {
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-  Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+     Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
   if(StringSubstr(Symbol(),0,6)=="GBPUSD")
   {  
-  Use_Leviathan_Sig = FALSE;
-  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=125;
-  Use_WPR=true; WPR_Period=12; WPR_Entry=90; WPR_Exit=38;
-  Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
-  Use_MA1=False; MA_Period1=25;
-  Use_MA2_Slope=False; MA_Slope= 5;
+     Use_Leviathan_Sig = FALSE;
+     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=125;
+     Use_WPR=true; WPR_Period=12; WPR_Entry=90; WPR_Exit=38;
+     Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
+     Use_MA1=False; MA_Period1=25;
+     Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="AUDUSD")
+  {  
+      Use_Leviathan_Sig = TRUE;
+      use_bb=true;
+      bb_period=20;
+      bb_deviation=2;
+      bb_shift=0;
+      use_stoch=true;
+      k=5;
+      d=3;
+      slowing=3;
+      price_field=0;
+      stoch_shift=0;
+      lo_level=30;
+      up_level=70;
+      use_rsi=true;
+      rsi_period=12;
+      rsi_shift=0;
+      lower=30;
+      upper=70;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="AUDNZD")
+  {  
+      Use_Leviathan_Sig = TRUE;
+      use_bb=true;
+      bb_period=20;
+      bb_deviation=2;
+      bb_shift=0;
+      use_stoch=true;
+      k=5;
+      d=3;
+      slowing=3;
+      price_field=0;
+      stoch_shift=0;
+      lo_level=30;
+      up_level=70;
+      use_rsi=true;
+      rsi_period=12;
+      rsi_shift=0;
+      lower=30;
+      upper=70;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="NZDUSD")
+  {  
+      Use_Leviathan_Sig = TRUE;
+      use_bb=true;
+      bb_period=20;
+      bb_deviation=2;
+      bb_shift=0;
+      use_stoch=true;
+      k=5;
+      d=3;
+      slowing=3;
+      price_field=0;
+      stoch_shift=0;
+      lo_level=30;
+      up_level=70;
+      use_rsi=true;
+      rsi_period=12;
+      rsi_shift=0;
+      lower=30;
+      upper=70;
   }
   //-----------------------------------------------------------------
 int CCI_Buy_Sig;
@@ -2037,23 +2122,6 @@ int FilterATR;
    int             keltPrd    = 20;
    double          keltFactor = 1.5;
    int             momPrd     = 12;
-   bool            use_bb     = false;
-   int             bb_period  = 20;
-   int             bb_deviation=2;
-   int             bb_shift   = 0;
-   bool            use_stoch  = false;
-   int             k          = 5;
-   int             d          = 3;
-   int             slowing    = 3;
-   int             price_field= 0;
-   int             stoch_shift= 0;
-   int             lo_level   = 30;
-   int             up_level   = 70;
-   bool            use_rsi    = true;
-   int             rsi_period = 14;
-   int             rsi_shift  = 0;
-   int             lower      = 50;
-   int             upper      = 50;
    //---- indicators
    double diff     = iATR(Symbol(),0,keltPrd,0)*keltFactor;
    double std      = iStdDev(Symbol(),0,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
@@ -2104,7 +2172,34 @@ int FilterATR;
    {
       if((Use_Leviathan_Sig==TRUE))
       {
-         return(buy);
+        if(use_bb && use_stoch && use_rsi)
+        {
+           if(Low[bb_shift]<loBB && stoch<lo_level && rsi<lower)   return(buy);
+        }
+        if(use_bb && use_stoch && !use_rsi)
+        {
+           if(Low[bb_shift]<loBB && stoch<lo_level)   return(buy);
+        }
+        if(use_bb && !use_stoch && !use_rsi)
+        {
+           if(Low[bb_shift]<loBB)   return(buy);
+        }
+        if(!use_bb && use_stoch && use_rsi)
+        {
+           if(stoch<lo_level && rsi<lower)   return(buy);
+        }
+        if(!use_bb && use_stoch && !use_rsi)
+        {
+           if(stoch<lo_level)  return(buy);
+        }
+        if(use_bb && !use_stoch && use_rsi)
+        {
+           if(Low[bb_shift]<loBB && rsi<lower)   return(buy);
+        }
+        if(!use_bb && !use_stoch && use_rsi)
+        {
+           if(rsi<lower)  return(buy);
+        }
       }
       else if((CCI_Buy_Sig==1)&&(WPR_Buy_Sig==1)&&(MA_Buy_Sig1==1)&&(MA_Buy_Sig2==1)&&(MA_Slope_Buy_Sig==1)&&(BB_Buy_Sig==1)&&(MA_Dist_Buy_Sig==1)&&(RSI_Buy_Sig==1)) //SIGNAL BUY
       {
@@ -2121,7 +2216,34 @@ int FilterATR;
    {
       if((Use_Leviathan_Sig==TRUE))
       {
-         return(sell);
+        if(use_bb && use_stoch && use_rsi)
+        {
+           if(High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sell);
+        }
+        if(use_bb && use_stoch && !use_rsi)
+        {
+           if(High[bb_shift]>upBB && stoch>up_level) return(sell);
+        }
+        if(use_bb && !use_stoch && !use_rsi)
+        {
+           if(High[bb_shift]>upBB) return(sell);
+        }
+        if(!use_bb && use_stoch && use_rsi)
+        {
+           if(stoch>up_level && rsi>upper) return(sell);
+        }
+        if(!use_bb && use_stoch && !use_rsi)
+        {
+           if(stoch>up_level) return(sell);
+        }
+        if(use_bb && !use_stoch && use_rsi)
+        {
+           if(High[bb_shift]>upBB && rsi>upper) return(sell);
+        }
+        if(!use_bb && !use_stoch && use_rsi)
+        {
+           if(rsi>upper) return(sell);
+        }
       }
       else if((CCI_Sell_Sig==1)&&(WPR_Sell_Sig==1)&&(MA_Sell_Sig1==1)&&(MA_Sell_Sig2==1)&&(MA_Slope_Sell_Sig==1)&&(BB_Sell_Sig==1)&&(MA_Dist_Sell_Sig==1)&&(RSI_Sell_Sig==1))  //SIGNAL SELL
       {
