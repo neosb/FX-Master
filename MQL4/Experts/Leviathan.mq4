@@ -2095,35 +2095,35 @@ int FilterATR;
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
 //----
-   if((Use_Leviathan_Sig==FALSE)&&(CCI_Buy_Sig==1)&&(WPR_Buy_Sig==1)&&(MA_Buy_Sig1==1)&&(MA_Buy_Sig2==1)&&(MA_Slope_Buy_Sig==1)&&(BB_Buy_Sig==1)&&(MA_Dist_Buy_Sig==1)&&(RSI_Buy_Sig==1)) //SIGNAL BUY
+   if
+   (
+      bbs >= 1 && 
+      sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
+      //MarketInfo(Symbol(), MODE_BID) > bb0L_20
+   ) //SIGNAL BUY
    {
-      return(buy);
-   }
-   else if((Use_Leviathan_Sig==TRUE))
-   {
-      if
-      (
-         bbs >= 1 && 
-         sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-         //MarketInfo(Symbol(), MODE_BID) > bb0L_20
-      ) //SIGNAL BUY
+      if((Use_Leviathan_Sig==TRUE))
+      {
+         return(buy);
+      }
+      else if((CCI_Buy_Sig==1)&&(WPR_Buy_Sig==1)&&(MA_Buy_Sig1==1)&&(MA_Buy_Sig2==1)&&(MA_Slope_Buy_Sig==1)&&(BB_Buy_Sig==1)&&(MA_Dist_Buy_Sig==1)&&(RSI_Buy_Sig==1)) //SIGNAL BUY
       {
          return(buy);
       }
    }
 //----
-   if((Use_Leviathan_Sig==FALSE)&&(CCI_Sell_Sig==1)&&(WPR_Sell_Sig==1)&&(MA_Sell_Sig1==1)&&(MA_Sell_Sig2==1)&&(MA_Slope_Sell_Sig==1)&&(BB_Sell_Sig==1)&&(MA_Dist_Sell_Sig==1)&&(RSI_Sell_Sig==1))  //SIGNAL SELL
+   if
+   (
+      bbs >= 1 && 
+      sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
+      //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
+   )  //SIGNAL SELL
    {
-      return(sell);
-   }
-   else if((Use_Leviathan_Sig==TRUE))
-   {
-      if
-      (
-         bbs >= 1 && 
-         sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-         //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
-      )  //SIGNAL SELL
+      if((Use_Leviathan_Sig==TRUE))
+      {
+         return(sell);
+      }
+      else if((CCI_Sell_Sig==1)&&(WPR_Sell_Sig==1)&&(MA_Sell_Sig1==1)&&(MA_Sell_Sig2==1)&&(MA_Slope_Sell_Sig==1)&&(BB_Sell_Sig==1)&&(MA_Dist_Sell_Sig==1)&&(RSI_Sell_Sig==1))  //SIGNAL SELL
       {
          return(sell);
       }
