@@ -337,11 +337,11 @@ int OnInit()
    gi_1212 = FALSE;
    if (Chicken_Out == TRUE) gi_960 = TRUE;
    else gi_960 = FALSE;
-   if (Period() != PERIOD_M30) {
-      Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-      Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-   }
-   updateMagicNumber();
+   //if (Period() != PERIOD_M30) {
+   //   Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //   Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //}
+   //updateMagicNumber();
    MathSrand(ExecutionPoint+BasketTakeProfit*Multiplier); // Fix 0.5 for Un-synk
    gsa_92[0] = GhostAccountNumber();
    gsa_92[1] = KEY;
@@ -548,19 +548,19 @@ if (DrawLines)
    int li_52;
    bool bool_56;
    f0_8();
-   if (IsTesting()) {
-      if (Period() != PERIOD_M30) {
-         Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-         Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-         return;
-      }
-   } else {
-      if (Period() != PERIOD_M30) {
-         Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-         Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-         return;
-      }
-   }
+   //if (IsTesting()) {
+   //   if (Period() != PERIOD_M30) {
+   //      Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      return;
+   //   }
+   //} else {
+   //   if (Period() != PERIOD_M30) {
+   //      Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      return;
+   //   }
+   //}
 
 //-----------------------------------
 //--- SPIKE ALERT
@@ -1755,9 +1755,282 @@ int signal() {
 //----
    int buy = 1, sell = -1;
 //----
+  double Max_Spread_Open     = 0.0;
+  double Max_Spread_Close    = 0.0;
+  string S4="-------ATR and PriceLevel Filter-------";
+  bool   UseATRfilter        = false;
+  int    Atr_Period          = 14;
+  string TypeATRfilterStr    = "1=Lower Level, 2=Higher Level";
+  int    Type_ATR_level      = 1;        
+  double AtrLevel            = 0.0006;
+  bool   UsePriceLevelFilter = true;
+  int    PrvHoursCheck1      = 0;
+  int    PrvHoursCheck2      = 3;
+  string S10="-------CCI Sets-------";
+  bool   Use_CCI             = False;
+  int    CCI_Period          = 10;
+  double CCI_Entry           = 200;
+  double CCI_Exit            = 140;
+  string S11="-------WPR Sets-------";
+  bool   Use_WPR             = true;
+  int    WPR_Period          = 10;
+  double WPR_Entry           = 91;
+  double WPR_Exit            = 40;
+  string S12="-------RSI Sets-------";
+  bool   Use_RSI             = false;
+  int    RSI_Period          = 70;
+  double RSI_Entry           = 50;
+  string S13="-------Fractals Sets-------";
+  bool   Use_Fractals        = true;
+  double MidFractalDist      = 5;
+  double OppositFractalDist  = 10;
+  bool   Show_Fractal_Levels = False;
+  string S14="-------MA Sets-------";
+  bool   Use_MA_Dist         = false;
+  double MA_Dist_Period      = 4;
+  string Mode                = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
+  double MA_Dist_Mode        = 1;
+  double Dist_to_MA          = 4;
+  string S15="-------MA1 Sets-------";
+  bool   Use_MA1             = False;
+  int    MA_Period1          = 75;
+  string Mode1               = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
+  int    MA_Mode1            = 2;
+  string S16="-------MA2 Sets-------";
+  bool   Use_MA2             = False;
+  int    MA_Period2          = 19;
+  string Mode2               = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
+  int    MA_Mode2            = 2;
+  string S17="-------MA2 Slope Sets-------";
+  bool   Use_MA2_Slope       = False;
+  double MA_Slope            = 1;
+  string S18="-------BB Sets-------";
+  bool   Use_BB              = False;
+  int    BB_Period           = 10;
+  int    BB_Dev              = 2;
+  int    BB_Range            = 12;
+  int    BB_Penetration      = 2;
+  bool   Use_BB_Direction    = False;
+  //-----------------------------------------------------------------
+  //Auto Sets
+  bool Use_Leviathan_Sig = TRUE;
+  if(StringSubstr(Symbol(),0,6)=="EURCAD")
+  {
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0) Max_Spread_Open=6; if(Max_Spread_Close==0) Max_Spread_Close=6;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
+  Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="EURGBP")
+  {
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+  Use_WPR=true; WPR_Period=11; WPR_Entry=90; WPR_Exit=40;
+  Use_Fractals=true; MidFractalDist=5; OppositFractalDist=9;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="USDCAD")
+  {
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=120; CCI_Exit=125;
+  Use_WPR=true; WPR_Period=10; WPR_Entry=90; WPR_Exit=35;
+  Use_Fractals=true; MidFractalDist=8; OppositFractalDist=11;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="EURCHF")
+  { 
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=5; if(Max_Spread_Close==0)Max_Spread_Close=5;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+  Use_Fractals=true; MidFractalDist=7; OppositFractalDist=9;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="USDCHF")
+  { 
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
+  Use_Fractals=true; MidFractalDist=6; OppositFractalDist=9;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="GBPCHF")
+  { 
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+  Use_Fractals=true; MidFractalDist=9; OppositFractalDist=15;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="GBPCAD")
+  {  
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+  Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="EURUSD")
+  {  
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+  Use_WPR=true; WPR_Period=8; WPR_Entry=93; WPR_Exit=42;
+  Use_Fractals=True; MidFractalDist=8; OppositFractalDist=15;
+  Use_MA1=true; MA_Period1=75;
+  Use_MA2=true; MA_Period2=20;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="CADCHF")
+  {
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+  Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+  Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //---
+  if(StringSubstr(Symbol(),0,6)=="GBPUSD")
+  {  
+  Use_Leviathan_Sig = FALSE;
+  if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+  Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=125;
+  Use_WPR=true; WPR_Period=12; WPR_Entry=90; WPR_Exit=38;
+  Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
+  Use_MA1=False; MA_Period1=25;
+  Use_MA2_Slope=False; MA_Slope= 5;
+  }
+  //-----------------------------------------------------------------
+int CCI_Buy_Sig;
+int CCI_Sell_Sig;
+int WPR_Buy_Sig;
+int WPR_Sell_Sig;
+int MA_Buy_Sig1;
+int MA_Sell_Sig1;
+int MA_Buy_Sig2;
+int MA_Sell_Sig2;
+int Fractals_Buy_Sig;
+int Fractals_Sell_Sig;  
+int CCI_Exit_Buy_Sig;
+int CCI_Exit_Sell_Sig;
+int WPR_Exit_Buy_Sig;
+int WPR_Exit_Sell_Sig; 
+int MA_Slope_Buy_Sig;               
+int MA_Slope_Sell_Sig;
+int BB_Buy_Sig;               
+int BB_Sell_Sig;
+bool Trade_Pause_Buy_Sig;
+bool Trade_Pause_Sell_Sig;
+int MA_Dist_Buy_Sig;               
+int MA_Dist_Sell_Sig;
+int RSI_Buy_Sig;
+int RSI_Sell_Sig;
+//--------------------------
+double CCI_1; 
+double WPR_1; 
+double MA_1_1; 
+double MA_1_2; 
+double MA_2_1; 
+double MA_2_2; 
+double BB_U_1; 
+double BB_U_2; 
+double BB_U_3; 
+double BB_L_1; 
+double BB_L_2; 
+double BB_L_3; 
+double MA_3_1; 
+double RSI_1; 
+//--------------------------
+int FilterATR;  
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
+  //-----------------------------------------------------------------
+  //digits points
+  double PointsDec=Point;
+  int MultiplierDigit=1;
+  if(MarketInfo(Symbol(), MODE_DIGITS) == 5.0 || MarketInfo(Symbol(), MODE_DIGITS) == 3.0) MultiplierDigit=10;
+  PointsDec*=MultiplierDigit;
+  //-----------------------------------------------------------------
+  FilterATR=0;
+  if(UseATRfilter==true)
+  {
+  switch(Type_ATR_level)
+  {
+  case 1: if(iATR(NULL, 0, Atr_Period, 0) > AtrLevel) FilterATR=1; break;
+  case 2: if(iATR(NULL, 0, Atr_Period, 0) < AtrLevel) FilterATR=1; break;
+  }
+  }
+  if(UseATRfilter==false) FilterATR=1;
+  //-----------------------------------------------------------------
+  //indicators
+  if(Use_CCI) CCI_1 = iCCI(NULL, 0, CCI_Period, PRICE_CLOSE, 0);  
+  if(Use_WPR) WPR_1 = iWPR(NULL, 0, WPR_Period, 0);
+  //---
+  if(Use_MA1) MA_1_1  = iMA(NULL,0,MA_Period1,0,MA_Mode1,PRICE_CLOSE,1);
+  if(Use_MA1) MA_1_2  = iMA(NULL,0,MA_Period1,0,MA_Mode1,PRICE_CLOSE,2);    
+  if(Use_MA2 || Use_MA2_Slope) MA_2_1  = iMA(NULL,0,MA_Period2,0,MA_Mode2,PRICE_CLOSE,1);
+  if(Use_MA2 || Use_MA2_Slope) MA_2_2  = iMA(NULL,0,MA_Period2,0,MA_Mode2,PRICE_CLOSE,2);
+  if(Use_MA_Dist) MA_3_1  = iMA(NULL,0,MA_Dist_Period,0,MA_Dist_Mode,PRICE_CLOSE,1);
+  if(Use_BB) BB_L_1  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,0);
+  if(Use_BB) BB_L_2  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,1); 
+  if(Use_BB) BB_L_3  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,2);    
+  if(Use_BB) BB_U_1  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,0);    
+  if(Use_BB) BB_U_2  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,1);
+  if(Use_BB) BB_U_3  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,2);    
+  if(Use_RSI) RSI_1  = iRSI(NULL, 0, RSI_Period, PRICE_CLOSE, 0);
+  //-----------------------------------------------------------------
+  //trade signals
+  if(!Use_CCI) {CCI_Buy_Sig=1;CCI_Sell_Sig=1;}
+  if(!Use_WPR) {WPR_Buy_Sig=1;WPR_Sell_Sig=1;}  
+  if(!Use_MA1) {MA_Buy_Sig1=1; MA_Sell_Sig1=1;} 
+  if(!Use_MA2) {MA_Buy_Sig2=1; MA_Sell_Sig2=1;}  
+  if(!Use_MA2_Slope) {MA_Slope_Buy_Sig=1; MA_Slope_Sell_Sig=1;}  
+  if(!Use_Fractals) {Fractals_Buy_Sig=1; Fractals_Sell_Sig=1;}
+  if(!Use_BB) {BB_Buy_Sig=1; BB_Sell_Sig=1;}
+  if(!Use_MA_Dist) {MA_Dist_Buy_Sig=1; MA_Dist_Sell_Sig=1;} 
+  if(!Use_RSI) {RSI_Buy_Sig=1; RSI_Sell_Sig=1;}  
+  if(Use_CCI && CCI_1<-CCI_Entry) CCI_Buy_Sig=1;
+  if(Use_CCI && CCI_1>CCI_Entry) CCI_Sell_Sig=1;  
+  if(Use_WPR && WPR_1<-WPR_Entry) WPR_Buy_Sig=1;  
+  if(Use_WPR && WPR_1>-(100-WPR_Entry)) WPR_Sell_Sig=1;  
+  if(Use_MA1 && MA_1_1>MA_1_2)  MA_Buy_Sig1=1;  
+  if(Use_MA1 && MA_1_1<MA_1_2)  MA_Sell_Sig1=1;
+  if(Use_MA2 && MA_2_1>MA_2_2)  MA_Buy_Sig2=1;  
+  if(Use_MA2 && MA_2_1<MA_2_2)  MA_Sell_Sig2=1;  
+  if(Use_MA2_Slope && (MA_2_1-MA_2_2)>=MA_Slope*PointsDec)  MA_Slope_Buy_Sig=1;  
+  if(Use_MA2_Slope && (MA_2_2-MA_2_1)>=MA_Slope*PointsDec)  MA_Slope_Sell_Sig=1;    
+  if(Use_BB && !Use_BB_Direction && Ask<BB_L_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && BB_L_1-Ask>=BB_Penetration*PointsDec) BB_Buy_Sig=1;
+  if(Use_BB && !Use_BB_Direction && Bid>BB_U_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && Bid-BB_U_1>=BB_Penetration*PointsDec) BB_Sell_Sig=1;  
+  if(Use_BB && Use_BB_Direction && Ask<BB_L_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && BB_L_1-Ask>=BB_Penetration*PointsDec && BB_L_1>BB_L_2) BB_Buy_Sig=1;
+  if(Use_BB && Use_BB_Direction && Bid>BB_U_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && Bid-BB_U_1>=BB_Penetration*PointsDec && BB_U_1<BB_U_2) BB_Sell_Sig=1;  
+  if(Use_MA_Dist && Bid-MA_3_1>=Dist_to_MA*PointsDec)  MA_Dist_Sell_Sig=1;   
+  if(Use_RSI && RSI_1>=RSI_Entry)  RSI_Buy_Sig=1;  
+  if(Use_RSI && RSI_1<=(100-RSI_Entry))  RSI_Sell_Sig=1;
    //---- input parameters
    int             bolPrd     = 20;
    double          bolDev     = 2.0;
@@ -1822,80 +2095,38 @@ int signal() {
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
 //----
-   if
-   (
-      bbs >= 1 && 
-      sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      //MarketInfo(Symbol(), MODE_BID) > bb0L_20
-   ) //SIGNAL BUY
+   if((Use_Leviathan_Sig==FALSE)&&(CCI_Buy_Sig==1)&&(WPR_Buy_Sig==1)&&(MA_Buy_Sig1==1)&&(MA_Buy_Sig2==1)&&(MA_Slope_Buy_Sig==1)&&(BB_Buy_Sig==1)&&(MA_Dist_Buy_Sig==1)&&(RSI_Buy_Sig==1)) //SIGNAL BUY
    {
-   return(buy);
-     if(use_bb && use_stoch && use_rsi)
-     {
-        if(Low[bb_shift]<loBB && stoch<lo_level && rsi<lower)   return(buy);
-     }
-     if(use_bb && use_stoch && !use_rsi)
-     {
-        if(Low[bb_shift]<loBB && stoch<lo_level)   return(buy);
-     }
-     if(use_bb && !use_stoch && !use_rsi)
-     {
-        if(Low[bb_shift]<loBB)   return(buy);
-     }
-     if(!use_bb && use_stoch && use_rsi)
-     {
-        if(stoch<lo_level && rsi<lower)   return(buy);
-     }
-     if(!use_bb && use_stoch && !use_rsi)
-     {
-        if(stoch<lo_level)  return(buy);
-     }
-     if(use_bb && !use_stoch && use_rsi)
-     {
-        if(Low[bb_shift]<loBB && rsi<lower)   return(buy);
-     }
-     if(!use_bb && !use_stoch && use_rsi)
-     {
-        if(rsi<lower)  return(buy);
-     }
+      return(buy);
+   }
+   else if((Use_Leviathan_Sig==TRUE))
+   {
+      if
+      (
+         bbs >= 1 && 
+         sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
+         //MarketInfo(Symbol(), MODE_BID) > bb0L_20
+      ) //SIGNAL BUY
+      {
+         return(buy);
+      }
    }
 //----
-   if
-   (
-      bbs >= 1 && 
-      sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
-   )  //SIGNAL SELL
+   if((Use_Leviathan_Sig==FALSE)&&(CCI_Sell_Sig==1)&&(WPR_Sell_Sig==1)&&(MA_Sell_Sig1==1)&&(MA_Sell_Sig2==1)&&(MA_Slope_Sell_Sig==1)&&(BB_Sell_Sig==1)&&(MA_Dist_Sell_Sig==1)&&(RSI_Sell_Sig==1))  //SIGNAL SELL
    {
-   return(sell);
-     if(use_bb && use_stoch && use_rsi)
-     {
-        if(High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sell);
-     }
-     if(use_bb && use_stoch && !use_rsi)
-     {
-        if(High[bb_shift]>upBB && stoch>up_level) return(sell);
-     }
-     if(use_bb && !use_stoch && !use_rsi)
-     {
-        if(High[bb_shift]>upBB) return(sell);
-     }
-     if(!use_bb && use_stoch && use_rsi)
-     {
-        if(stoch>up_level && rsi>upper) return(sell);
-     }
-     if(!use_bb && use_stoch && !use_rsi)
-     {
-        if(stoch>up_level) return(sell);
-     }
-     if(use_bb && !use_stoch && use_rsi)
-     {
-        if(High[bb_shift]>upBB && rsi>upper) return(sell);
-     }
-     if(!use_bb && !use_stoch && use_rsi)
-     {
-        if(rsi>upper) return(sell);
-     }
+      return(sell);
+   }
+   else if((Use_Leviathan_Sig==TRUE))
+   {
+      if
+      (
+         bbs >= 1 && 
+         sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
+         //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
+      )  //SIGNAL SELL
+      {
+         return(sell);
+      }
    }
 //----
    HideTestIndicators(TRUE);
