@@ -571,36 +571,36 @@ if (DrawLines)
    //double ATRslow = iATR(Symbol(), PERIOD_M15, ATR_Slow_Period, 0);   
    //if ( ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
    //---
-   double ATRfast = iATR(Symbol(), 0, ATR_Fast_Period, 0);
-   double ATRslow = iATR(Symbol(), 0, ATR_Slow_Period, 0);   
-   if ( !spikeDetected && ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
-   //---
-   ATRfast = iATR(Symbol(), PERIOD_H1, ATR_Fast_Period, 0);
-   ATRslow = iATR(Symbol(), PERIOD_H1, ATR_Slow_Period, 0);   
-   if ( !spikeDetected && ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
-   //---
-   
-   if( !spikeAlert && spikeDetected && (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60)
-   {
-      Alert("Spike on " + Symbol() + "!");
-      Log("[SPIKE ALERT] - (Fast = " + ATRfast + ", Slow = " + ATRslow + ") - Sleep for "+MinutesToSleep+" minutes ...");
-      CloseAllOrders();
-      spikeAlert = true;
-      lastSpikeAlertTime = TimeCurrent();
-   }
-
-   if( spikeAlert )
-   {
-      if( (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60 ) 
-      {
-         Log("[SPIKE ALERT] - Wake up after ",IntegerToString(MinutesToSleep)," minutes...");
-         spikeAlert = false;
-      }
-      else
-      {
-         return;
-      }
-   }
+//   double ATRfast = iATR(Symbol(), 0, ATR_Fast_Period, 0);
+//   double ATRslow = iATR(Symbol(), 0, ATR_Slow_Period, 0);   
+//   if ( !spikeDetected && ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
+//   //---
+//   ATRfast = iATR(Symbol(), PERIOD_H1, ATR_Fast_Period, 0);
+//   ATRslow = iATR(Symbol(), PERIOD_H1, ATR_Slow_Period, 0);   
+//   if ( !spikeDetected && ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
+//   //---
+//   
+//   if( !spikeAlert && spikeDetected && (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60)
+//   {
+//      Alert("Spike on " + Symbol() + "!");
+//      Log("[SPIKE ALERT] - (Fast = " + ATRfast + ", Slow = " + ATRslow + ") - Sleep for "+MinutesToSleep+" minutes ...");
+//      CloseAllOrders();
+//      spikeAlert = true;
+//      lastSpikeAlertTime = TimeCurrent();
+//   }
+//
+//   if( spikeAlert )
+//   {
+//      if( (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60 ) 
+//      {
+//         Log("[SPIKE ALERT] - Wake up after ",IntegerToString(MinutesToSleep)," minutes...");
+//         spikeAlert = false;
+//      }
+//      else
+//      {
+//         return;
+//      }
+//   }
 //-----------------------------------  
    if (gi_960 == TRUE) {
       ChickenOutClose(Symbol());
@@ -1559,7 +1559,7 @@ void f0_15(int ai_0, int ai_unused_4) {
    int li_60 = MathRound(MathLog(order_lots_20 / base_lot) / MathLog(gd_964)) + 1.0;
    if (li_60 < 0) li_60 = 0;
    gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
-   if (count_AA == 0 && li_60 == 0 && signal() == 1) {
+   if (li_60 == 0 && signal() == 1) {
       //if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_12();
       else
@@ -2166,8 +2166,8 @@ int FilterATR;
    if
    (
       bbs >= 1 && 
-      sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      //MarketInfo(Symbol(), MODE_BID) > bb0L_20
+      //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
+      sma0_600 < MarketInfo(Symbol(), MODE_BID)
    ) //SIGNAL BUY
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2210,8 +2210,8 @@ int FilterATR;
    if
    (
       bbs >= 1 && 
-      sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
+      //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
+      sma0_600 > MarketInfo(Symbol(), MODE_ASK)
    )  //SIGNAL SELL
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2365,7 +2365,7 @@ void f0_14(int ai_unused_0, int ai_4) {
    if (li_60 < 0) li_60 = 0;
    gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
 
-   if (count_AA == 0 && li_60 == 0 && signal() == -1) {
+   if (li_60 == 0 && signal() == -1) {
       //if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_13();
       else
