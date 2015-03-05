@@ -1559,8 +1559,7 @@ void f0_15(int ai_0, int ai_unused_4) {
    int li_60 = MathRound(MathLog(order_lots_20 / base_lot) / MathLog(gd_964)) + 1.0;
    if (li_60 < 0) li_60 = 0;
    gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
-
-   if (count_AA == 0 && li_60 == 0 && signal() == 1) {
+   if (/*count_AA == 0 && */li_60 == 0 && signal() == 1) {
       //if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_12();
       else
@@ -1830,6 +1829,7 @@ int signal() {
       //MarketInfo(Symbol(), MODE_BID) > bb0L_20
    ) //SIGNAL BUY
    {
+   return(buy);
      if(use_bb && use_stoch && use_rsi)
      {
         if(Low[bb_shift]<loBB && stoch<lo_level && rsi<lower)   return(buy);
@@ -1867,6 +1867,7 @@ int signal() {
       //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
    )  //SIGNAL SELL
    {
+   return(sell);
      if(use_bb && use_stoch && use_rsi)
      {
         if(High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sell);
@@ -2011,7 +2012,7 @@ void f0_14(int ai_unused_0, int ai_4) {
    if (li_60 < 0) li_60 = 0;
    gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
 
-   if (count_AA == 0 && li_60 == 0 && signal() == -1) {
+   if (/*count_AA == 0 && */li_60 == 0 && signal() == -1) {
       //if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_13();
       else
