@@ -1559,7 +1559,7 @@ void f0_15(int ai_0, int ai_unused_4) {
    int li_60 = MathRound(MathLog(order_lots_20 / base_lot) / MathLog(gd_964)) + 1.0;
    if (li_60 < 0) li_60 = 0;
    gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
-   if (/*count_AA == 0 && */li_60 == 0 && signal() == 1) {
+   if (count_AA == 0 && li_60 == 0 && signal() == 1) {
       //if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_12();
       else
@@ -2097,15 +2097,7 @@ int FilterATR;
 //----
    if((Use_Leviathan_Sig==FALSE)&&(CCI_Buy_Sig==1)&&(WPR_Buy_Sig==1)&&(MA_Buy_Sig1==1)&&(MA_Buy_Sig2==1)&&(MA_Slope_Buy_Sig==1)&&(BB_Buy_Sig==1)&&(MA_Dist_Buy_Sig==1)&&(RSI_Buy_Sig==1)) //SIGNAL BUY
    {
-      if
-      (
-         bbs >= 1 && 
-         sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-         //MarketInfo(Symbol(), MODE_BID) > bb0L_20
-      ) //SIGNAL BUY
-      {
-         return(buy);
-      }
+      return(buy);
    }
    else if((Use_Leviathan_Sig==TRUE))
    {
@@ -2122,15 +2114,7 @@ int FilterATR;
 //----
    if((Use_Leviathan_Sig==FALSE)&&(CCI_Sell_Sig==1)&&(WPR_Sell_Sig==1)&&(MA_Sell_Sig1==1)&&(MA_Sell_Sig2==1)&&(MA_Slope_Sell_Sig==1)&&(BB_Sell_Sig==1)&&(MA_Dist_Sell_Sig==1)&&(RSI_Sell_Sig==1))  //SIGNAL SELL
    {
-      if
-      (
-         bbs >= 1 && 
-         sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-         //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
-      )  //SIGNAL SELL
-      {
-         return(sell);
-      }
+      return(sell);
    }
    else if((Use_Leviathan_Sig==TRUE))
    {
@@ -2259,7 +2243,7 @@ void f0_14(int ai_unused_0, int ai_4) {
    if (li_60 < 0) li_60 = 0;
    gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
 
-   if (/*count_AA == 0 && */li_60 == 0 && signal() == -1) {
+   if (count_AA == 0 && li_60 == 0 && signal() == -1) {
       //if (Month() == 12 && Day() >= 10) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_13();
       else
