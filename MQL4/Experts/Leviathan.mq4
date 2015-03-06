@@ -1725,9 +1725,10 @@ int trigger(int pos) {
    if (
       pos == OP_BUY &&
       (
-         (sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
+         (sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
          ||
-         (bbs >= 1 && sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 && iLow(Symbol(),0,1) < bb1L_20 && iOpen(Symbol(),0,0) > bb0L_20)
+         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iHigh(Symbol(),0,1) > bb0L_20)
+         
       )
    ) {
       sig_trigger = 1;
@@ -1736,9 +1737,9 @@ int trigger(int pos) {
    if (
       pos == OP_SELL &&
       (
-         (sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
+         (sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
          ||
-         (bbs >= 1 && sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 && iHigh(Symbol(),0,1) > bb1U_20 && iOpen(Symbol(),0,0) < bb0U_20)
+         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iLow(Symbol(),0,1) < bb0U_20)
       )
    ) {
       sig_trigger = 1;
