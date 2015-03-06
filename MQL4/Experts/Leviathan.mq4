@@ -1919,7 +1919,7 @@ int signal() {
      Use_WPR=true; WPR_Period=8; WPR_Entry=93; WPR_Exit=42;
      Use_Fractals=True; MidFractalDist=8; OppositFractalDist=15;
      Use_MA1=true; MA_Period1=75;
-     Use_MA2=true; MA_Period2=20;
+     Use_MA2=False; MA_Period2=20;
      Use_MA2_Slope=False; MA_Slope= 5;
   }
   //---
@@ -2166,9 +2166,9 @@ int FilterATR;
 //----
    if
    (
-      bbs >= 1 && 
+      bbs >= 1 //&& 
       //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      sma0_600 < MarketInfo(Symbol(), MODE_BID)
+      //sma0_600 < MarketInfo(Symbol(), MODE_BID)
    ) //SIGNAL BUY
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2210,9 +2210,9 @@ int FilterATR;
 //----
    if
    (
-      bbs >= 1 && 
+      bbs >= 1 //&& 
       //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      sma0_600 > MarketInfo(Symbol(), MODE_ASK)
+      //sma0_600 > MarketInfo(Symbol(), MODE_ASK)
    )  //SIGNAL SELL
    {
       if((Use_Leviathan_Sig==TRUE))
