@@ -2166,9 +2166,9 @@ int FilterATR;
 //----
    if
    (
-      bbs >= 1 //&& 
+      bbs >= 1 && 
       //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      //sma0_600 < MarketInfo(Symbol(), MODE_BID)
+      sma0_600 < MarketInfo(Symbol(), MODE_BID)
    ) //SIGNAL BUY
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2210,9 +2210,9 @@ int FilterATR;
 //----
    if
    (
-      bbs >= 1 //&& 
+      bbs >= 1 && 
       //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      //sma0_600 > MarketInfo(Symbol(), MODE_ASK)
+      sma0_600 > MarketInfo(Symbol(), MODE_ASK)
    )  //SIGNAL SELL
    {
       if((Use_Leviathan_Sig==TRUE))
