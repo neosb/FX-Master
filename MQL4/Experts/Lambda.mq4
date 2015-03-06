@@ -479,11 +479,11 @@ int OnInit()
       do_exec(db, sql);
    }*/
 
-   //-- 'CurrencyData' --> 'Time', 'TimeFrame', 'Pair', 'High', 'Ask', 'Bid', 'Low', 'PIPRange', 'BidRatio', 'RelStr1', 'RelStr2'
+   //-- 'CurrencyData' --> 'Time', 'TimeFrame', 'Pair', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'PIPRange', 'BidRatio', 'RelStr1', 'RelStr2'
    if (!do_check_table_exists(db, "CurrencyData")) {
       Print("Creating schema for ", db + " / CurrencyData");
       string sql = "CREATE TABLE 'CurrencyData' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'Time' INTEGER, 'TimeFrame' INTEGER, 'Pair' TEXT, ";
-             sql+= "'High' REAL, 'Ask' REAL, 'Bid' REAL, 'Low' REAL, 'PIPRange' REAL, 'BidRatio' REAL, 'RelStr1' REAL, 'RelStr2' REAL)";
+             sql+= "'High' REAL, 'MarketInfo(Pair, MODE_ASK)' REAL, 'MarketInfo(Pair, MODE_BID)' REAL, 'Low' REAL, 'PIPRange' REAL, 'BidRatio' REAL, 'RelStr1' REAL, 'RelStr2' REAL)";
       do_exec(db, sql);
    }
    /*else if( db_reset )
@@ -522,11 +522,11 @@ int OnInit()
       do_exec(db, sql);
    }*/
 
-   //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
+   //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
    if (!do_check_table_exists(db, "Signals")) {
       Print("Creating schema for ", db + " / Signals");
       string sql = "CREATE TABLE 'Signals' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'Time' INTEGER, 'TimeFrame' INTEGER, 'Currency' TEXT, 'LastUpdate' INTEGER, 'Hits' INTEGER, ";
-             sql+= "'Type' TEXT, 'Description' TEXT, 'Direction' INTEGER, 'Strength' REAL, 'High' REAL, 'Ask' REAL, 'Bid' REAL, 'Low' REAL, 'Open' REAL, 'TradeVolume' REAL,";
+             sql+= "'Type' TEXT, 'Description' TEXT, 'Direction' INTEGER, 'Strength' REAL, 'High' REAL, 'MarketInfo(Pair, MODE_ASK)' REAL, 'MarketInfo(Pair, MODE_BID)' REAL, 'Low' REAL, 'Open' REAL, 'TradeVolume' REAL,";
              sql+= "'Value0' REAL, 'Value1' REAL, 'Value2' REAL, 'Value3' REAL, 'Value4' REAL, 'Value5' REAL, 'Value6' REAL, 'Value7' REAL, 'Value8' REAL, 'Value9' REAL)";
       do_exec(db, sql);
    }
@@ -1265,7 +1265,7 @@ if (global_counter % skip_ticks == 0 ) {
 
                      //Print("Updating tuple for ", db + " / Signals");
                             sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '-1', ";
-                            sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(sig_currency,MODE_ASK)+"', Bid = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
+                            sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(sig_currency,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
                             sql+= "Value0 = '"+bb_squeeze_green_0+"', Value1 = '"+bb_squeeze_green_1+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                             sql+= "WHERE Currency = '"+sig_currency+"' AND TimeFrame = "+sig_timeFrame+" AND Type = 'BB' AND Direction = '"+DIR_LONG+"' AND Strength = '"+STR_STRONG+"'";
                      if (handle > 0) sqlite_free_query(handle);
@@ -1348,7 +1348,7 @@ if (global_counter % skip_ticks == 0 ) {
 
                      //Print("Updating tuple for ", db + " / Signals");
                             sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '-1', ";
-                            sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(sig_currency,MODE_ASK)+"', Bid = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
+                            sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(sig_currency,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
                             sql+= "Value0 = '"+bb_squeeze_green_0+"', Value1 = '"+bb_squeeze_green_1+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                             sql+= "WHERE Currency = '"+sig_currency+"' AND TimeFrame = "+sig_timeFrame+" AND Type = 'BB' AND Direction = '"+DIR_SHORT+"' AND Strength = '"+STR_STRONG+"'";
                      if (handle > 0) sqlite_free_query(handle);
@@ -1721,7 +1721,7 @@ if (global_counter % skip_ticks == 0 ) {
 
                      //Print("Updating tuple for ", db + " / Signals");
                             sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '-1', ";
-                            sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(sig_currency,MODE_ASK)+"', Bid = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
+                            sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(sig_currency,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
                             sql+= "WHERE Currency = '"+sig_currency+"' AND TimeFrame = "+sig_timeFrame+" AND Type = 'ISW' AND Direction = '"+DIR_LONG+"' AND Strength = '"+STR_STRONG+"'";
                      if (handle > 0) sqlite_free_query(handle);
                      handle = 0;
@@ -1804,7 +1804,7 @@ if (global_counter % skip_ticks == 0 ) {
 
                      //Print("Updating tuple for ", db + " / Signals");
                             sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '-1', ";
-                            sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(sig_currency,MODE_ASK)+"', Bid = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
+                            sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(sig_currency,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
                             sql+= "WHERE Currency = '"+sig_currency+"' AND TimeFrame = "+sig_timeFrame+" AND Type = 'ISW' AND Direction = '"+DIR_SHORT+"' AND Strength = '"+STR_STRONG+"'";
                      if (handle > 0) sqlite_free_query(handle);
                      handle = 0;
@@ -2176,7 +2176,7 @@ if (global_counter % skip_ticks == 0 ) {
 
                      //Print("Updating tuple for ", db + " / Signals");
                             sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '-1', ";
-                            sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(sig_currency,MODE_ASK)+"', Bid = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
+                            sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(sig_currency,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
                             //sql+= "Value0 = '"+bb_squeeze_green_0+"', Value1 = '"+bb_squeeze_green_1+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                             sql+= "WHERE Currency = '"+sig_currency+"' AND TimeFrame = "+sig_timeFrame+" AND Type = 'BB' AND Direction = '"+DIR_LONG+"' AND Strength = '"+STR_STRONG+"'";
                      if (handle > 0) sqlite_free_query(handle);
@@ -2259,7 +2259,7 @@ if (global_counter % skip_ticks == 0 ) {
 
                      //Print("Updating tuple for ", db + " / Signals");
                             sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '-1', ";
-                            sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(sig_currency,MODE_ASK)+"', Bid = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
+                            sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(sig_currency,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(sig_currency,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"' ";
                             //sql+= "Value0 = '"+bb_squeeze_green_0+"', Value1 = '"+bb_squeeze_green_1+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                             sql+= "WHERE Currency = '"+sig_currency+"' AND TimeFrame = "+sig_timeFrame+" AND Type = 'BB' AND Direction = '"+DIR_SHORT+"' AND Strength = '"+STR_STRONG+"'";
                      if (handle > 0) sqlite_free_query(handle);
@@ -2443,13 +2443,13 @@ void PopulateDBStatistics()
             double relStr1  = do_strength_lookup(bidRatio);
             double relStr2  = 9-relStr1;
 
-            //-- 'CurrencyData' --> 'Time', 'TimeFrame', 'Pair', 'High', 'Ask', 'Bid', 'Low', 'PIPRange', 'BidRatio', 'RelStr1', 'RelStr2'
+            //-- 'CurrencyData' --> 'Time', 'TimeFrame', 'Pair', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'PIPRange', 'BidRatio', 'RelStr1', 'RelStr2'
             handle = sqlite_query(db, "SELECT TimeFrame,Pair FROM 'CurrencyData' WHERE Pair = '"+marketWatchSymbolsList[i]+"' AND TimeFrame = "+TimeFrame+" ORDER BY id DESC LIMIT 1", cols);
             if (sqlite_next_row(handle) > 0)
             {
                //Print("Updating tuple for ", db + " / CurrencyData");
-               string sql = "UPDATE 'CurrencyData' SET Time = '"+TimeGMT()+"', High = '"+DoubleToString(high,digits)+"', Ask = '"+DoubleToString(ask,digits)+"', ";
-                      sql+= "Bid = '"+DoubleToString(bid,digits)+"', Low = '"+DoubleToString(low,digits)+"', PIPRange = '"+DoubleToString(pipRange,digits)+"', ";
+               string sql = "UPDATE 'CurrencyData' SET Time = '"+TimeGMT()+"', High = '"+DoubleToString(high,digits)+"', MarketInfo(Pair, MODE_ASK) = '"+DoubleToString(ask,digits)+"', ";
+                      sql+= "MarketInfo(Pair, MODE_BID) = '"+DoubleToString(bid,digits)+"', Low = '"+DoubleToString(low,digits)+"', PIPRange = '"+DoubleToString(pipRange,digits)+"', ";
                       sql+= "BidRatio = '"+DoubleToString(bidRatio,digits)+"', RelStr1 = '"+DoubleToString(relStr1,digits)+"', RelStr2 = '"+DoubleToString(relStr2,digits)+"' ";
                       sql+= "WHERE Pair = '"+marketWatchSymbolsList[i]+"' AND TimeFrame = "+TimeFrame;
                if (handle > 0) sqlite_free_query(handle);
@@ -2459,7 +2459,7 @@ void PopulateDBStatistics()
             else
             {
                //Print("Inserting tuple for ", db + " / CurrencyData");
-               string sql = "INSERT INTO 'CurrencyData'('Time','TimeFrame','Pair','High','Ask','Bid','Low','PIPRange','BidRatio','RelStr1','RelStr2') ";
+               string sql = "INSERT INTO 'CurrencyData'('Time','TimeFrame','Pair','High','MarketInfo(Pair, MODE_ASK)','MarketInfo(Pair, MODE_BID)','Low','PIPRange','BidRatio','RelStr1','RelStr2') ";
                       sql+= "VALUES('"+TimeGMT()+"', "+TimeFrame+",'"+marketWatchSymbolsList[i]+"','"+DoubleToString(high,digits)+"',";
                       sql+= "'"+DoubleToString(ask,digits)+"','"+DoubleToString(bid,digits)+"','"+DoubleToString(low,digits)+"',";
                       sql+= "'"+DoubleToString(pipRange,digits)+"','"+DoubleToString(bidRatio,digits)+"','"+DoubleToString(relStr1,digits)+"','"+DoubleToString(relStr2,digits)+"')";
@@ -2687,7 +2687,7 @@ void PopulateDBStatistics()
                  bool updated = false;
                  int Direction = (upTrendStop > 0 ? DIR_LONG : DIR_SHORT);
 
-                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
+                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
                  handle = sqlite_query(db, "SELECT * FROM 'Signals' WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'BB' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"' ORDER BY id DESC LIMIT 1", cols);
                  if (sqlite_next_row(handle) > 0)
                   {
@@ -2732,7 +2732,7 @@ void PopulateDBStatistics()
                      {
                         //Print("Updating tuple for ", db + " / Signals");
                         string sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '"+(sig_hits+1)+"', ";
-                               sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(Pair,MODE_ASK)+"', Bid = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
+                               sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(Pair,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
                                sql+= "Value0 = '"+bb_squeeze_green_0+"', Value1 = '"+bb_squeeze_green_1+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                                sql+= "WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'BB' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"'";
                         if (handle > 0) sqlite_free_query(handle);
@@ -2744,7 +2744,7 @@ void PopulateDBStatistics()
                  if (!updated)
                   {
                      //Print("Inserting tuple for ", db + " / Signals");
-                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
+                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
                             sql+= "VALUES('"+TimeGMT()+"', "+TimeFrame+",'"+Pair+"','"+TimeGMT()+"','1','BB','BBands Signal','"+Direction+"','"+STR_STRONG+"',";
                             sql+= "'"+RatesBar[0].high+"','"+MarketInfo(Pair,MODE_ASK)+"','"+MarketInfo(Pair,MODE_BID)+"','"+RatesBar[0].low+"','"+RatesBar[0].open+"','"+RatesBar[0].real_volume+"',";
                             sql+= "'"+bb_squeeze_green_0+"','"+bb_squeeze_green_1+"','"+upTrendStop+"','"+downTrendStop+"','"+upTrendSignal+"','"+downTrendSignal+"')";
@@ -2759,7 +2759,7 @@ void PopulateDBStatistics()
                  bool updated = false;
                  int Direction = (upTrendStop > 0 ? DIR_LONG : DIR_SHORT);
 
-                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
+                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
                  handle = sqlite_query(db, "SELECT * FROM 'Signals' WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'BB' AND Direction = '"+Direction+"' AND Strength = '"+STR_WEAK+"' ORDER BY id DESC LIMIT 1", cols);
                  if (sqlite_next_row(handle) > 0)
                   {
@@ -2804,7 +2804,7 @@ void PopulateDBStatistics()
                      {
                         //Print("Updating tuple for ", db + " / Signals");
                         string sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '"+(sig_hits+1)+"', ";
-                               sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(Pair,MODE_ASK)+"', Bid = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
+                               sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(Pair,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
                                sql+= "Value0 = '"+bb_squeeze_green_0+"', Value1 = '"+bb_squeeze_green_1+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                                sql+= "WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'BB' AND Direction = '"+Direction+"' AND Strength = '"+STR_WEAK+"'";
                         if (handle > 0) sqlite_free_query(handle);
@@ -2816,7 +2816,7 @@ void PopulateDBStatistics()
                  if (!updated)
                   {
                      //Print("Inserting tuple for ", db + " / Signals");
-                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
+                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
                             sql+= "VALUES('"+TimeGMT()+"', "+TimeFrame+",'"+Pair+"','"+TimeGMT()+"','1','BB','BBands Signal','"+Direction+"','"+STR_WEAK+"',";
                             sql+= "'"+RatesBar[0].high+"','"+MarketInfo(Pair,MODE_ASK)+"','"+MarketInfo(Pair,MODE_BID)+"','"+RatesBar[0].low+"','"+RatesBar[0].open+"','"+RatesBar[0].real_volume+"',";
                             sql+= "'"+bb_squeeze_green_0+"','"+bb_squeeze_green_1+"','"+upTrendStop+"','"+downTrendStop+"','"+upTrendSignal+"','"+downTrendSignal+"')";
@@ -2936,7 +2936,7 @@ void PopulateDBStatistics()
                 //-- ISW Signal
                 if( curr1Cnt == curr1Conf || curr2Cnt == curr2Conf )
                 {
-                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
+                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
                  handle = sqlite_query(db, "SELECT * FROM 'Signals' WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'ISW' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"' ORDER BY id DESC LIMIT 1", cols);
                  if (sqlite_next_row(handle) > 0)
                   {
@@ -2981,7 +2981,7 @@ void PopulateDBStatistics()
                      {
                         //Print("Updating tuple for ", db + " / Signals");
                         string sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '"+(sig_hits+1)+"', ";
-                               sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(Pair,MODE_ASK)+"', Bid = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
+                               sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(Pair,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
                                sql+= "Value0 = '"+strength1+"', Value1 = '"+strength2+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                                sql+= "WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'ISW' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"'";
                         if (handle > 0) sqlite_free_query(handle);
@@ -2993,7 +2993,7 @@ void PopulateDBStatistics()
                  if (!updated)
                   {
                      //Print("Inserting tuple for ", db + " / Signals");
-                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
+                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
                             sql+= "VALUES('"+TimeGMT()+"', "+TimeFrame+",'"+Pair+"','"+TimeGMT()+"','1','ISW','Individual Strength/Weakness Signal','"+Direction+"','"+STR_STRONG+"',";
                             sql+= "'"+RatesBar[0].high+"','"+MarketInfo(Pair,MODE_ASK)+"','"+MarketInfo(Pair,MODE_BID)+"','"+RatesBar[0].low+"','"+RatesBar[0].open+"','"+RatesBar[0].real_volume+"',";
                             sql+= "'"+strength1+"','"+strength2+"','"+upTrendStop+"','"+downTrendStop+"','"+upTrendSignal+"','"+downTrendSignal+"')";
@@ -3068,7 +3068,7 @@ void PopulateDBStatistics()
                 //-- ISW Signal
                 if( curr1Cnt == curr1Conf || curr2Cnt == curr2Conf )
                 {
-                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
+                 //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
                  handle = sqlite_query(db, "SELECT * FROM 'Signals' WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'ISW' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"' ORDER BY id DESC LIMIT 1", cols);
                  if (sqlite_next_row(handle) > 0)
                   {
@@ -3113,7 +3113,7 @@ void PopulateDBStatistics()
                      {
                         //Print("Updating tuple for ", db + " / Signals");
                         string sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '"+(sig_hits+1)+"', ";
-                               sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(Pair,MODE_ASK)+"', Bid = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
+                               sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(Pair,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
                                sql+= "Value0 = '"+strength1+"', Value1 = '"+strength2+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                                sql+= "WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'ISW' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"'";
                         if (handle > 0) sqlite_free_query(handle);
@@ -3125,7 +3125,7 @@ void PopulateDBStatistics()
                  if (!updated)
                   {
                      //Print("Inserting tuple for ", db + " / Signals");
-                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
+                     string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
                             sql+= "VALUES('"+TimeGMT()+"', "+TimeFrame+",'"+Pair+"','"+TimeGMT()+"','1','ISW','Individual Strength/Weakness Signal','"+Direction+"','"+STR_STRONG+"',";
                             sql+= "'"+RatesBar[0].high+"','"+MarketInfo(Pair,MODE_ASK)+"','"+MarketInfo(Pair,MODE_BID)+"','"+RatesBar[0].low+"','"+RatesBar[0].open+"','"+RatesBar[0].real_volume+"',";
                             sql+= "'"+strength1+"','"+strength2+"','"+upTrendStop+"','"+downTrendStop+"','"+upTrendSignal+"','"+downTrendSignal+"')";
@@ -3154,7 +3154,411 @@ void PopulateDBStatistics()
          if (PASignalEnabled)
          {
             int signal = 0;
+
             //-------------------------------------------------------------------------
+              double Max_Spread_Open     = 0.0;
+              double Max_Spread_Close    = 0.0;
+              string S4="-------ATR and PriceLevel Filter-------";
+              bool   UseATRfilter        = false;
+              int    Atr_Period          = 14;
+              string TypeATRfilterStr    = "1=Lower Level, 2=Higher Level";
+              int    Type_ATR_level      = 1;        
+              double AtrLevel            = 0.0006;
+              bool   UsePriceLevelFilter = true;
+              int    PrvHoursCheck1      = 0;
+              int    PrvHoursCheck2      = 3;
+              string S10="-------CCI Sets-------";
+              bool   Use_CCI             = False;
+              int    CCI_Period          = 10;
+              double CCI_Entry           = 200;
+              double CCI_Exit            = 140;
+              string S11="-------WPR Sets-------";
+              bool   Use_WPR             = true;
+              int    WPR_Period          = 10;
+              double WPR_Entry           = 91;
+              double WPR_Exit            = 40;
+              string S12="-------RSI Sets-------";
+              bool   Use_RSI             = false;
+              int    RSI_Period          = 70;
+              double RSI_Entry           = 50;
+              string S13="-------Fractals Sets-------";
+              bool   Use_Fractals        = true;
+              double MidFractalDist      = 5;
+              double OppositFractalDist  = 10;
+              bool   Show_Fractal_Levels = False;
+              string S14="-------MA Sets-------";
+              bool   Use_MA_Dist         = false;
+              double MA_Dist_Period      = 4;
+              string Mode                = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
+              double MA_Dist_Mode        = 1;
+              double Dist_to_MA          = 4;
+              string S15="-------MA1 Sets-------";
+              bool   Use_MA1             = False;
+              int    MA_Period1          = 75;
+              string Mode1               = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
+              int    MA_Mode1            = 2;
+              string S16="-------MA2 Sets-------";
+              bool   Use_MA2             = False;
+              int    MA_Period2          = 19;
+              string Mode2               = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
+              int    MA_Mode2            = 2;
+              string S17="-------MA2 Slope Sets-------";
+              bool   Use_MA2_Slope       = False;
+              double MA_Slope            = 1;
+              string S18="-------BB Sets-------";
+              bool   Use_BB              = False;
+              int    BB_Period           = 10;
+              int    BB_Dev              = 2;
+              int    BB_Range            = 12;
+              int    BB_Penetration      = 2;
+              bool   Use_BB_Direction    = False;
+              //-----------------------------------------------------------------
+              bool      use_bb=true;
+              int       bb_period=20;
+              int       bb_deviation=2;
+              int       bb_shift=0;
+              bool      use_stoch=true;
+              int       k=5;
+              int       d=3;
+              int       slowing=3;
+              int       price_field=0;
+              int       stoch_shift=0;
+              int       lo_level=30;
+              int       up_level=70;
+              bool      use_rsi=true;
+              int       rsi_period=12;
+              int       rsi_shift=0;
+              int       lower=30;
+              int       upper=70;
+              //-----------------------------------------------------------------
+            
+              //Auto Sets
+              bool Use_Leviathan_Sig = TRUE;
+              if(StringSubstr(Pair,0,6)=="EURCAD")
+              {
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0) Max_Spread_Open=6; if(Max_Spread_Close==0) Max_Spread_Close=6;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+                 Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
+                 Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="EURGBP")
+              {
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+                 Use_WPR=true; WPR_Period=11; WPR_Entry=90; WPR_Exit=40;
+                 Use_Fractals=true; MidFractalDist=5; OppositFractalDist=9;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="USDCAD")
+              {
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=120; CCI_Exit=125;
+                 Use_WPR=true; WPR_Period=10; WPR_Entry=90; WPR_Exit=35;
+                 Use_Fractals=true; MidFractalDist=8; OppositFractalDist=11;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="EURCHF")
+              { 
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=5; if(Max_Spread_Close==0)Max_Spread_Close=5;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+                 Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+                 Use_Fractals=true; MidFractalDist=7; OppositFractalDist=9;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="USDCHF")
+              { 
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+                 Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
+                 Use_Fractals=true; MidFractalDist=6; OppositFractalDist=9;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="GBPCHF")
+              { 
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+                 Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+                 Use_Fractals=true; MidFractalDist=9; OppositFractalDist=15;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="GBPCAD")
+              {  
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+                 Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+                 Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="EURUSD")
+              {  
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
+                 Use_WPR=true; WPR_Period=8; WPR_Entry=93; WPR_Exit=42;
+                 Use_Fractals=True; MidFractalDist=8; OppositFractalDist=15;
+                 Use_MA1=true; MA_Period1=75;
+                 Use_MA2=true; MA_Period2=20;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="CADCHF")
+              {
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
+                 Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
+                 Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="GBPUSD")
+              {  
+                 Use_Leviathan_Sig = FALSE;
+                 if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
+                 Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=125;
+                 Use_WPR=true; WPR_Period=12; WPR_Entry=90; WPR_Exit=38;
+                 Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
+                 Use_MA1=False; MA_Period1=25;
+                 Use_MA2_Slope=False; MA_Slope= 5;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="AUDUSD")
+              {  
+                  Use_Leviathan_Sig = TRUE;
+                  use_bb=true;
+                  bb_period=20;
+                  bb_deviation=2;
+                  bb_shift=0;
+                  use_stoch=true;
+                  k=5;
+                  d=3;
+                  slowing=3;
+                  price_field=0;
+                  stoch_shift=0;
+                  lo_level=30;
+                  up_level=70;
+                  use_rsi=true;
+                  rsi_period=12;
+                  rsi_shift=0;
+                  lower=30;
+                  upper=70;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="AUDNZD")
+              {  
+                  Use_Leviathan_Sig = TRUE;
+                  use_bb=true;
+                  bb_period=20;
+                  bb_deviation=2;
+                  bb_shift=0;
+                  use_stoch=true;
+                  k=5;
+                  d=3;
+                  slowing=3;
+                  price_field=0;
+                  stoch_shift=0;
+                  lo_level=30;
+                  up_level=70;
+                  use_rsi=true;
+                  rsi_period=12;
+                  rsi_shift=0;
+                  lower=30;
+                  upper=70;
+              }
+              //---
+              if(StringSubstr(Pair,0,6)=="NZDUSD")
+              {  
+                  Use_Leviathan_Sig = TRUE;
+                  use_bb=true;
+                  bb_period=20;
+                  bb_deviation=2;
+                  bb_shift=0;
+                  use_stoch=true;
+                  k=5;
+                  d=3;
+                  slowing=3;
+                  price_field=0;
+                  stoch_shift=0;
+                  lo_level=30;
+                  up_level=70;
+                  use_rsi=true;
+                  rsi_period=12;
+                  rsi_shift=0;
+                  lower=30;
+                  upper=70;
+              }
+              //-----------------------------------------------------------------
+               int CCI_Buy_Sig;
+               int CCI_Sell_Sig;
+               int WPR_Buy_Sig;
+               int WPR_Sell_Sig;
+               int MA_Buy_Sig1;
+               int MA_Sell_Sig1;
+               int MA_Buy_Sig2;
+               int MA_Sell_Sig2;
+               int Fractals_Buy_Sig;
+               int Fractals_Sell_Sig;  
+               int CCI_Exit_Buy_Sig;
+               int CCI_Exit_Sell_Sig;
+               int WPR_Exit_Buy_Sig;
+               int WPR_Exit_Sell_Sig; 
+               int MA_Slope_Buy_Sig;               
+               int MA_Slope_Sell_Sig;
+               int BB_Buy_Sig;               
+               int BB_Sell_Sig;
+               bool Trade_Pause_Buy_Sig;
+               bool Trade_Pause_Sell_Sig;
+               int MA_Dist_Buy_Sig;               
+               int MA_Dist_Sell_Sig;
+               int RSI_Buy_Sig;
+               int RSI_Sell_Sig;
+            //--------------------------
+               double CCI_1; 
+               double WPR_1; 
+               double MA_1_1; 
+               double MA_1_2; 
+               double MA_2_1; 
+               double MA_2_2; 
+               double BB_U_1; 
+               double BB_U_2; 
+               double BB_U_3; 
+               double BB_L_1; 
+               double BB_L_2; 
+               double BB_L_3; 
+               double MA_3_1; 
+               double RSI_1; 
+            //--------------------------
+               int FilterATR;  
+               //+------------------------------------------------------------------+
+               //| Variable Begin                                                   |
+               //+------------------------------------------------------------------+
+              //-----------------------------------------------------------------
+              //digits points
+              double PointsDec=Point;
+              int MultiplierDigit=1;
+              if(MarketInfo(Pair, MODE_DIGITS) == 5.0 || MarketInfo(Pair, MODE_DIGITS) == 3.0) MultiplierDigit=10;
+              PointsDec*=MultiplierDigit;
+              //-----------------------------------------------------------------
+              FilterATR=0;
+              if(UseATRfilter==true)
+              {
+              switch(Type_ATR_level)
+              {
+              case 1: if(iATR(Pair, TimeFrame, Atr_Period, 0) > AtrLevel) FilterATR=1; break;
+              case 2: if(iATR(Pair, TimeFrame, Atr_Period, 0) < AtrLevel) FilterATR=1; break;
+              }
+              }
+              if(UseATRfilter==false) FilterATR=1;
+              //-----------------------------------------------------------------
+              //indicators
+              if(Use_CCI) CCI_1 = iCCI(Pair, TimeFrame, CCI_Period, PRICE_CLOSE, 0);  
+              if(Use_WPR) WPR_1 = iWPR(Pair, TimeFrame, WPR_Period, 0);
+              //---
+              if(Use_MA1) MA_1_1  = iMA(Pair, TimeFrame,MA_Period1,0,MA_Mode1,PRICE_CLOSE,1);
+              if(Use_MA1) MA_1_2  = iMA(Pair, TimeFrame,MA_Period1,0,MA_Mode1,PRICE_CLOSE,2);    
+              if(Use_MA2 || Use_MA2_Slope) MA_2_1  = iMA(Pair, TimeFrame,MA_Period2,0,MA_Mode2,PRICE_CLOSE,1);
+              if(Use_MA2 || Use_MA2_Slope) MA_2_2  = iMA(Pair, TimeFrame,MA_Period2,0,MA_Mode2,PRICE_CLOSE,2);
+              if(Use_MA_Dist) MA_3_1  = iMA(Pair, TimeFrame,MA_Dist_Period,0,MA_Dist_Mode,PRICE_CLOSE,1);
+              if(Use_BB) BB_L_1  = iBands(Pair, TimeFrame,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,0);
+              if(Use_BB) BB_L_2  = iBands(Pair, TimeFrame,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,1); 
+              if(Use_BB) BB_L_3  = iBands(Pair, TimeFrame,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,2);    
+              if(Use_BB) BB_U_1  = iBands(Pair, TimeFrame,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,0);    
+              if(Use_BB) BB_U_2  = iBands(Pair, TimeFrame,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,1);
+              if(Use_BB) BB_U_3  = iBands(Pair, TimeFrame,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,2);    
+              if(Use_RSI) RSI_1  = iRSI(Pair, TimeFrame, RSI_Period, PRICE_CLOSE, 0);
+              //-----------------------------------------------------------------
+              //trade signals
+              if(!Use_CCI) {CCI_Buy_Sig=1;CCI_Sell_Sig=1;}
+              if(!Use_WPR) {WPR_Buy_Sig=1;WPR_Sell_Sig=1;}  
+              if(!Use_MA1) {MA_Buy_Sig1=1; MA_Sell_Sig1=1;} 
+              if(!Use_MA2) {MA_Buy_Sig2=1; MA_Sell_Sig2=1;}  
+              if(!Use_MA2_Slope) {MA_Slope_Buy_Sig=1; MA_Slope_Sell_Sig=1;}  
+              if(!Use_Fractals) {Fractals_Buy_Sig=1; Fractals_Sell_Sig=1;}
+              if(!Use_BB) {BB_Buy_Sig=1; BB_Sell_Sig=1;}
+              if(!Use_MA_Dist) {MA_Dist_Buy_Sig=1; MA_Dist_Sell_Sig=1;} 
+              if(!Use_RSI) {RSI_Buy_Sig=1; RSI_Sell_Sig=1;}  
+              if(Use_CCI && CCI_1<-CCI_Entry) CCI_Buy_Sig=1;
+              if(Use_CCI && CCI_1>CCI_Entry) CCI_Sell_Sig=1;  
+              if(Use_WPR && WPR_1<-WPR_Entry) WPR_Buy_Sig=1;  
+              if(Use_WPR && WPR_1>-(100-WPR_Entry)) WPR_Sell_Sig=1;  
+              if(Use_MA1 && MA_1_1>MA_1_2)  MA_Buy_Sig1=1;  
+              if(Use_MA1 && MA_1_1<MA_1_2)  MA_Sell_Sig1=1;
+              if(Use_MA2 && MA_2_1>MA_2_2)  MA_Buy_Sig2=1;  
+              if(Use_MA2 && MA_2_1<MA_2_2)  MA_Sell_Sig2=1;  
+              if(Use_MA2_Slope && (MA_2_1-MA_2_2)>=MA_Slope*PointsDec)  MA_Slope_Buy_Sig=1;  
+              if(Use_MA2_Slope && (MA_2_2-MA_2_1)>=MA_Slope*PointsDec)  MA_Slope_Sell_Sig=1;    
+              if(Use_BB && !Use_BB_Direction && MarketInfo(Pair, MODE_ASK)<BB_L_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && BB_L_1-MarketInfo(Pair,MODE_ASK)>=BB_Penetration*PointsDec) BB_Buy_Sig=1;
+              if(Use_BB && !Use_BB_Direction && MarketInfo(Pair, MODE_BID)>BB_U_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && MarketInfo(Pair, MODE_BID)-BB_U_1>=BB_Penetration*PointsDec) BB_Sell_Sig=1;  
+              if(Use_BB && Use_BB_Direction && MarketInfo(Pair, MODE_ASK)<BB_L_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && BB_L_1-MarketInfo(Pair, MODE_ASK)>=BB_Penetration*PointsDec && BB_L_1>BB_L_2) BB_Buy_Sig=1;
+              if(Use_BB && Use_BB_Direction && MarketInfo(Pair, MODE_BID)>BB_U_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && MarketInfo(Pair, MODE_BID)-BB_U_1>=BB_Penetration*PointsDec && BB_U_1<BB_U_2) BB_Sell_Sig=1;  
+              if(Use_MA_Dist && MarketInfo(Pair, MODE_BID)-MA_3_1>=Dist_to_MA*PointsDec)  MA_Dist_Sell_Sig=1;   
+              if(Use_RSI && RSI_1>=RSI_Entry)  RSI_Buy_Sig=1;  
+              if(Use_RSI && RSI_1<=(100-RSI_Entry))  RSI_Sell_Sig=1;
+               //---- input parameters
+               int             bolPrd     = 20;
+               double          bolDev     = 2.0;
+               int             keltPrd    = 20;
+               double          keltFactor = 1.5;
+               int             momPrd     = 12;
+               //---- indicators
+               double diff     = iATR(Pair, TimeFrame,keltPrd,0)*keltFactor;
+               double std      = iStdDev(Pair, TimeFrame,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
+               double bbs      = bolDev * std / diff;
+               //----
+               double upBB     = iBands(Pair, TimeFrame,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_UPPER,bb_shift);
+               double loBB     = iBands(Pair, TimeFrame,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_LOWER,bb_shift);
+               double stoch    = iStochastic(Pair, TimeFrame,k,d,slowing,MODE_SMA,price_field,MODE_SIGNAL,stoch_shift);
+               double rsi      = iRSI(Pair, TimeFrame,rsi_period,PRICE_CLOSE,rsi_shift);
+               //----
+               double sma0_50  = iMA(Pair, TimeFrame,50,0,MODE_EMA,PRICE_CLOSE,0);
+               double sma0_200 = iMA(Pair, TimeFrame,200,0,MODE_EMA,PRICE_CLOSE,0);
+               double sma0_600 = iMA(Pair, TimeFrame,600,0,MODE_EMA,PRICE_CLOSE,0);
+               double sma1_50  = iMA(Pair, TimeFrame,50,0,MODE_EMA,PRICE_CLOSE,1);
+               double sma1_200 = iMA(Pair, TimeFrame,200,0,MODE_EMA,PRICE_CLOSE,1);
+               double sma1_600 = iMA(Pair, TimeFrame,600,0,MODE_EMA,PRICE_CLOSE,1);
+               //----
+               // 0 - MODE_MAIN, 1 - MODE_UPPER, 2 - MODE_LOWER
+               double bb0L_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
+               double bb1L_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,1);
+               double bb2L_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,2);
+               double bb3L_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,3);
+            
+               double bb0M_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
+               double bb1M_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,1);
+               double bb2M_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,2);
+               double bb3M_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,3);
+            
+               double bb0U_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
+               double bb1U_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
+               double bb2U_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
+               double bb3U_20 = iBands(Pair, TimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
+               //+------------------------------------------------------------------+
+               //| Variable End                                                     |
+               //+------------------------------------------------------------------+
+            //----
             //-- Pivots, Support/Resistance and Price Alerts
             get_NearestAndFarestSR(Pair, PERIOD_H4, (iLow(Pair, PERIOD_H4, 2)+iHigh(Pair, PERIOD_H4, 2))/2.0 );
             //---
@@ -3165,11 +3569,6 @@ void PopulateDBStatistics()
             
             if (iMACD(Pair, TimeFrame, 12, 26, 9, PRICE_CLOSE, MODE_MAIN, macdShift) > iMACD(Pair, TimeFrame, 12, 26, 9, PRICE_CLOSE, MODE_SIGNAL, macdShift)) macdSignal = 2;
             else macdSignal = 1;
-            
-            double sma0_50  = iMA(Pair, TimeFrame,50,0,MODE_SMA,PRICE_CLOSE,0);
-            double sma0_200 = iMA(Pair, TimeFrame,200,0,MODE_SMA,PRICE_CLOSE,0);
-            double sma1_50  = iMA(Pair, TimeFrame,50,0,MODE_SMA,PRICE_CLOSE,1);
-            double sma1_200 = iMA(Pair, TimeFrame,200,0,MODE_SMA,PRICE_CLOSE,1);
 
             //+------------------------------------------------------------------+
             //| Variable Begin                                                   |
@@ -3189,10 +3588,73 @@ void PopulateDBStatistics()
             } else if (nearest_broken_pivot == EMPTY_VALUE && Buy2_2 < nearest_daily_resistance && Buy3_1 > nearest_daily_resistance && Buy2_3 > nearest_daily_resistance) {
                nearest_broken_pivot = nearest_resistance;
             }
-            
-            if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
-               signal = DIR_LONG; //SIGNAL BUY
-            
+
+         //----
+            if
+            (
+               bbs >= 1 && 
+               //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
+               sma0_600 < MarketInfo(Pair, MODE_BID)
+            ) //SIGNAL BUY
+            {
+               if((Use_Leviathan_Sig==TRUE))
+               {
+                 if(use_bb && use_stoch && use_rsi)
+                 {
+                    if(iLow(Pair, TimeFrame, bb_shift)<loBB && stoch<lo_level && rsi<lower) {
+                        if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                           signal = DIR_LONG; //SIGNAL BUY
+                    }
+                 }
+                 if(use_bb && use_stoch && !use_rsi)
+                 {
+                    if(iLow(Pair, TimeFrame, bb_shift)<loBB && stoch<lo_level) {
+                        if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                           signal = DIR_LONG; //SIGNAL BUY
+                    }
+                 }
+                 if(use_bb && !use_stoch && !use_rsi)
+                 {
+                    if(iLow(Pair, TimeFrame, bb_shift)<loBB) {
+                        if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                           signal = DIR_LONG; //SIGNAL BUY
+                    }
+                 }
+                 if(!use_bb && use_stoch && use_rsi)
+                 {
+                    if(stoch<lo_level && rsi<lower) {
+                        if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                           signal = DIR_LONG; //SIGNAL BUY
+                    }
+                 }
+                 if(!use_bb && use_stoch && !use_rsi)
+                 {
+                    if(stoch<lo_level) {
+                        if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                           signal = DIR_LONG; //SIGNAL BUY
+                    }
+                 }
+                 if(use_bb && !use_stoch && use_rsi)
+                 {
+                    if(iLow(Pair, TimeFrame, bb_shift)<loBB && rsi<lower) {
+                        if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                           signal = DIR_LONG; //SIGNAL BUY
+                    }
+                 }
+                 if(!use_bb && !use_stoch && use_rsi)
+                 {
+                    if(rsi<lower) {
+                        if(sma0_200 < sma0_50 && sma1_200 < sma1_50 && macdSignal == 2 && Buy3_2 > Buy1_1 && Buy1_2 > 0 && Buy2_1 > 50 && nearest_broken_pivot != EMPTY_VALUE && Buy3_2 > nearest_broken_pivot)
+                           signal = DIR_LONG; //SIGNAL BUY
+                    }
+                 }
+               }
+               else if((CCI_Buy_Sig==1)&&(WPR_Buy_Sig==1)&&(MA_Buy_Sig1==1)&&(MA_Buy_Sig2==1)&&(MA_Slope_Buy_Sig==1)&&(BB_Buy_Sig==1)&&(MA_Dist_Buy_Sig==1)&&(RSI_Buy_Sig==1)) //SIGNAL BUY
+               {
+                  signal = DIR_LONG; //SIGNAL BUY
+               }
+            }
+         //----            
             double Sell1_1 =    iMA(Pair, PERIOD_H4, 50, 0, MODE_EMA, PRICE_CLOSE, 0);
             double Sell1_2 =  iMACD(Pair, PERIOD_H4, 8, 17, 9, PRICE_CLOSE, MODE_MAIN, 0);
             double Sell2_1 =   iRSI(Pair, PERIOD_H4, 15, PRICE_CLOSE, 0);
@@ -3208,9 +3670,72 @@ void PopulateDBStatistics()
             } else if (nearest_broken_pivot == EMPTY_VALUE && Sell2_2 > nearest_daily_support && Sell3_1 < nearest_daily_support && Sell2_3 < nearest_daily_support) {
                nearest_broken_pivot = nearest_resistance;
             }
-            
-            if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
-               signal = DIR_SHORT; //SIGNAL SELL
+         //----
+            if
+            (
+               bbs >= 1 && 
+               //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
+               sma0_600 > MarketInfo(Pair, MODE_ASK)
+            )  //SIGNAL SELL
+            {
+               if((Use_Leviathan_Sig==TRUE))
+               {
+                 if(use_bb && use_stoch && use_rsi)
+                 {
+                    if(iHigh(Pair, TimeFrame, bb_shift)>upBB && stoch>up_level && rsi>upper) {
+                        if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                           signal = DIR_SHORT; //SIGNAL SELL
+                    }
+                 }
+                 if(use_bb && use_stoch && !use_rsi)
+                 {
+                    if(iHigh(Pair, TimeFrame, bb_shift)>upBB && stoch>up_level) {
+                        if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                           signal = DIR_SHORT; //SIGNAL SELL
+                    }
+                 }
+                 if(use_bb && !use_stoch && !use_rsi)
+                 {
+                    if(iHigh(Pair, TimeFrame, bb_shift)>upBB) {
+                        if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                           signal = DIR_SHORT; //SIGNAL SELL
+                    }
+                 }
+                 if(!use_bb && use_stoch && use_rsi)
+                 {
+                    if(stoch>up_level && rsi>upper) {
+                        if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                           signal = DIR_SHORT; //SIGNAL SELL
+                    }
+                 }
+                 if(!use_bb && use_stoch && !use_rsi)
+                 {
+                    if(stoch>up_level) {
+                        if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                           signal = DIR_SHORT; //SIGNAL SELL
+                    }
+                 }
+                 if(use_bb && !use_stoch && use_rsi)
+                 {
+                    if(iHigh(Pair, TimeFrame, bb_shift)>upBB && rsi>upper) {
+                        if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                           signal = DIR_SHORT; //SIGNAL SELL
+                    }
+                 }
+                 if(!use_bb && !use_stoch && use_rsi)
+                 {
+                    if(rsi>upper) {
+                        if(sma0_200 > sma0_50 && sma1_200 > sma1_50 && macdSignal == 1 && Sell3_2 < Sell1_1 && Sell1_2 < 0 && Sell2_1 < 50 && nearest_broken_pivot != EMPTY_VALUE && Sell3_2 < nearest_broken_pivot)
+                           signal = DIR_SHORT; //SIGNAL SELL
+                    }
+                 }
+               }
+               else if((CCI_Sell_Sig==1)&&(WPR_Sell_Sig==1)&&(MA_Sell_Sig1==1)&&(MA_Sell_Sig2==1)&&(MA_Slope_Sell_Sig==1)&&(BB_Sell_Sig==1)&&(MA_Dist_Sell_Sig==1)&&(RSI_Sell_Sig==1))  //SIGNAL SELL
+               {
+                  signal = DIR_SHORT; //SIGNAL SELL
+               }
+            }
+         //----
 
             //+------------------------------------------------------------------+
             //| Variable End                                                     |
@@ -3222,7 +3747,7 @@ void PopulateDBStatistics()
               bool updated = false;
               int Direction = signal;
 
-              //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
+              //-- 'Signals' --> 'Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5', 'Value6', 'Value7', 'Value8', 'Value9'
               handle = sqlite_query(db, "SELECT * FROM 'Signals' WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'PA' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"' ORDER BY id DESC LIMIT 1", cols);
               if (sqlite_next_row(handle) > 0)
                {
@@ -3267,7 +3792,7 @@ void PopulateDBStatistics()
                   {
                      //Print("Updating tuple for ", db + " / Signals");
                      string sql = "UPDATE 'Signals' SET LastUpdate = '"+TimeGMT()+"', Hits = '"+(sig_hits+1)+"', ";
-                            sql+= "High = '"+RatesBar[0].high+"', Ask = '"+MarketInfo(Pair,MODE_ASK)+"', Bid = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
+                            sql+= "High = '"+RatesBar[0].high+"', MarketInfo(Pair, MODE_ASK) = '"+MarketInfo(Pair,MODE_ASK)+"', MarketInfo(Pair, MODE_BID) = '"+MarketInfo(Pair,MODE_BID)+"', Low = '"+RatesBar[0].low+"', Open = '"+RatesBar[0].open+"', TradeVolume = '"+RatesBar[0].real_volume+"', ";
                             sql+= "Value0 = '"+bb_squeeze_green_0+"', Value1 = '"+bb_squeeze_green_1+"', Value2 = '"+upTrendStop+"', Value3 = '"+downTrendStop+"', Value4 = '"+upTrendSignal+"', Value5 = '"+downTrendSignal+"' ";
                             sql+= "WHERE Currency = '"+Pair+"' AND TimeFrame = "+TimeFrame+" AND Type = 'PA' AND Direction = '"+Direction+"' AND Strength = '"+STR_STRONG+"'";
                      if (handle > 0) sqlite_free_query(handle);
@@ -3279,7 +3804,7 @@ void PopulateDBStatistics()
               if (!updated)
                {
                   //Print("Inserting tuple for ", db + " / Signals");
-                  string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'Ask', 'Bid', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
+                  string sql = "INSERT INTO 'Signals'('Time', 'TimeFrame', 'Currency', 'LastUpdate', 'Hits', 'Type', 'Description', 'Direction', 'Strength', 'High', 'MarketInfo(Pair, MODE_ASK)', 'MarketInfo(Pair, MODE_BID)', 'Low', 'Open', 'TradeVolume', 'Value0', 'Value1', 'Value2', 'Value3', 'Value4', 'Value5') ";
                          sql+= "VALUES('"+TimeGMT()+"', "+TimeFrame+",'"+Pair+"','"+TimeGMT()+"','1','PA','PA Pivots Signal','"+Direction+"','"+STR_STRONG+"',";
                          sql+= "'"+RatesBar[0].high+"','"+MarketInfo(Pair,MODE_ASK)+"','"+MarketInfo(Pair,MODE_BID)+"','"+RatesBar[0].low+"','"+RatesBar[0].open+"','"+RatesBar[0].real_volume+"',";
                          sql+= "'"+bb_squeeze_green_0+"','"+bb_squeeze_green_1+"','"+upTrendStop+"','"+downTrendStop+"','"+upTrendSignal+"','"+downTrendSignal+"')";
@@ -4399,7 +4924,7 @@ void manageOrder(string symbol, int orderMagicNumber) {
                   Verbose("Moving trailing stop for order with ticket: ", OrderTicket(), ", Magic Number: ", orderMagicNumber, " to :", newSL);
                   if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0)) {
                      error = GetLastError();
-                     Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", Ask: ", MarketInfo(symbol, MODE_ASK), ", Bid: ", MarketInfo(symbol, MODE_BID), " Current SL: ",  OrderStopLoss());
+                     Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", MarketInfo(Pair, MODE_ASK): ", MarketInfo(symbol, MODE_ASK), ", MarketInfo(Pair, MODE_BID): ", MarketInfo(symbol, MODE_BID), " Current SL: ",  OrderStopLoss());
                   }
                }
             }
@@ -4531,7 +5056,7 @@ void manageOrder(string symbol, int orderMagicNumber) {
                      Verbose("Moving SL 2 BE for order with ticket: ", OrderTicket(), ", Magic Number: ", orderMagicNumber, " to :", newSL);
                      if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0)) {
                         error = GetLastError();
-                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", Ask: ", MarketInfo(symbol,MODE_ASK), ", Bid: ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
+                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", MarketInfo(Pair, MODE_ASK): ", MarketInfo(symbol,MODE_ASK), ", MarketInfo(Pair, MODE_BID): ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
                      }
                   }
                } else { // OrderType() == OP_SELL
@@ -4540,7 +5065,7 @@ void manageOrder(string symbol, int orderMagicNumber) {
                      Verbose("Moving SL 2 BE for order with ticket: ", OrderTicket(), ", Magic Number: ", orderMagicNumber, " to :", newSL);
                      if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0)) {
                         error = GetLastError();
-                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", Ask: ", MarketInfo(symbol,MODE_ASK), ", Bid: ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
+                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", MarketInfo(Pair, MODE_ASK): ", MarketInfo(symbol,MODE_ASK), ", MarketInfo(Pair, MODE_BID): ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
                      }
                   }
                }
@@ -4908,7 +5433,7 @@ void manageOrder(string symbol, int orderMagicNumber) {
                   Verbose("Moving trailing stop for order with ticket: ", OrderTicket(), ", Magic Number: ", orderMagicNumber, " to :", newSL);
                   if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0)) {
                      error = GetLastError();
-                     Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", Ask: ", MarketInfo(symbol, MODE_ASK), ", Bid: ", MarketInfo(symbol, MODE_BID), " Current SL: ",  OrderStopLoss());
+                     Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", MarketInfo(Pair, MODE_ASK): ", MarketInfo(symbol, MODE_ASK), ", MarketInfo(Pair, MODE_BID): ", MarketInfo(symbol, MODE_BID), " Current SL: ",  OrderStopLoss());
                   }
                }
             }
@@ -5010,7 +5535,7 @@ void manageOrder(string symbol, int orderMagicNumber) {
                      Verbose("Moving SL 2 BE for order with ticket: ", OrderTicket(), ", Magic Number: ", orderMagicNumber, " to :", newSL);
                      if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0)) {
                         error = GetLastError();
-                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", Ask: ", MarketInfo(symbol,MODE_ASK), ", Bid: ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
+                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", MarketInfo(Pair, MODE_ASK): ", MarketInfo(symbol,MODE_ASK), ", MarketInfo(Pair, MODE_BID): ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
                      }
                   }
                } else { // OrderType() == OP_SELL
@@ -5019,7 +5544,7 @@ void manageOrder(string symbol, int orderMagicNumber) {
                      Verbose("Moving SL 2 BE for order with ticket: ", OrderTicket(), ", Magic Number: ", orderMagicNumber, " to :", newSL);
                      if(!OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0)) {
                         error = GetLastError();
-                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", Ask: ", MarketInfo(symbol,MODE_ASK), ", Bid: ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
+                        Verbose("Failed, error: ", error, " - ", ErrorDescription(error),", MarketInfo(Pair, MODE_ASK): ", MarketInfo(symbol,MODE_ASK), ", MarketInfo(Pair, MODE_BID): ", MarketInfo(symbol,MODE_BID), " Current SL: ",  OrderStopLoss());
                      }
                   }
                }
@@ -6510,7 +7035,7 @@ bool sqSetSLPTForOrder(int ticket, double realSL, double realPT, int orderMagicN
          int error = GetLastError();
          VerboseLog("Error modifying order with ticket("+ticket+") - error #",error, " : ", ErrorDescription(error));
          VerboseLog("Order Details - Type: "+sqGetOrderTypeAsString(OrderType())+", OpenPrice: "+OrderOpenPrice()+", SL: "+OrderStopLoss()+", TP: "+OrderTakeProfit());
-         VerboseLog("Order Modify Bid: "+MarketInfo(symbol, MODE_BID)+", Ask: "+MarketInfo(symbol, MODE_ASK)+", NewSL: "+realSL+", NewTP: "+realPT);
+         VerboseLog("Order Modify MarketInfo(Pair, MODE_BID): "+MarketInfo(symbol, MODE_BID)+", MarketInfo(Pair, MODE_ASK): "+MarketInfo(symbol, MODE_ASK)+", NewSL: "+realSL+", NewTP: "+realPT);
 
          if(retries == 0 && closeAtError) {
             // when it is last unsuccessful retry, it tries to close the order
@@ -6588,7 +7113,7 @@ bool sqOpenOrder(string symbol, int orderType, double orderLots, double price, d
    int ticket;
 
    Verbose("Opening order with MagicNumber: ", orderMagicNumber,", type: ", sqGetOrderTypeAsString(orderType), ", price: ", price,", lots: ", orderLots, ", comment: ", comment, " ----------------");
-   Verbose("Current Ask: ", MarketInfo(symbol,MODE_ASK), ", Bid: ", MarketInfo(symbol,MODE_BID));
+   Verbose("Current MarketInfo(Pair, MODE_ASK): ", MarketInfo(symbol,MODE_ASK), ", MarketInfo(Pair, MODE_BID): ", MarketInfo(symbol,MODE_BID));
 
    if(TimeCurrent() - lastOrderErrorCloseTime < 600) {
       return(false);
