@@ -55,6 +55,7 @@ extern double Multiplier = 0.5;
 extern int MaximumBuyLevels = 12;
 extern int MaximumSellLevels = 12;
 extern bool GreedyModeOn = FALSE;
+extern bool TriggerProtectionOn = FALSE;
 /*extern*/ bool EnvyAugmenterOn = TRUE;
 /*extern*/ bool Negative_Basket_Protection = TRUE;
 /*extern*/ int NBP = 0;
@@ -1664,7 +1665,7 @@ void f0_15(int ai_0, int ai_unused_4) {
 
 int trigger(int pos) {
 //----
-   if (GreedyModeOn) return(1);
+   if (TriggerProtectionOn==FALSE) return(1);
 //----
    HideTestIndicators(TRUE);
 //----
