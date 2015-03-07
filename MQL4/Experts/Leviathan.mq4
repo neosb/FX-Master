@@ -42,7 +42,7 @@ extern string EA_Name = "Leviathan";
 extern string _________ = "Input a unique magic number for each chart";
 extern int MagicNumber = 0;
 extern double BaseLotSize = 0.01;
-extern bool LotStepEnable    = true;
+extern bool LotStepEnable    = FALSE;
 extern double LotStepValue   = 0.01;
 extern double LotStepFrom    = 1000;
 extern double LotStepEvery   = 1000;
@@ -54,6 +54,7 @@ extern double ProgressiveStopLossPerc = 0;
 extern double Multiplier = 0.5;
 extern int MaximumBuyLevels = 12;
 extern int MaximumSellLevels = 12;
+extern bool GreedyModeOn = FALSE;
 /*extern*/ bool EnvyAugmenterOn = TRUE;
 /*extern*/ bool Negative_Basket_Protection = TRUE;
 /*extern*/ int NBP = 0;
@@ -337,10 +338,10 @@ int OnInit()
    gi_1212 = FALSE;
    if (Chicken_Out == TRUE) gi_960 = TRUE;
    else gi_960 = FALSE;
-   if (Period() != PERIOD_H1) {
-      Print("ERROR -- Leviathan should be attached to " + Symbol() + " 60 minute chart window");
-      Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 60 minute chart window");
-   }
+   //if (Period() != PERIOD_M30) {
+   //   Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //   Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //}
    //updateMagicNumber();
    MathSrand(ExecutionPoint+BasketTakeProfit*Multiplier); // Fix 0.5 for Un-synk
    gsa_92[0] = GhostAccountNumber();
@@ -548,19 +549,19 @@ if (DrawLines)
    int li_52;
    bool bool_56;
    f0_8();
-   if (IsTesting()) {
-      if (Period() != PERIOD_H1) {
-         Print("ERROR -- Leviathan should be attached to " + Symbol() + " 60 minute chart window");
-         Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 60 minute chart window");
-         return;
-      }
-   } else {
-      if (Period() != PERIOD_H1) {
-         Print("ERROR -- Leviathan should be attached to " + Symbol() + " 60 minute chart window");
-         Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 60 minute chart window");
-         return;
-      }
-   }
+   //if (IsTesting()) {
+   //   if (Period() != PERIOD_M30) {
+   //      Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      return;
+   //   }
+   //} else {
+   //   if (Period() != PERIOD_M30) {
+   //      Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
+   //      return;
+   //   }
+   //}
 
 //-----------------------------------
 //--- SPIKE ALERT
@@ -1565,7 +1566,7 @@ void f0_15(int ai_0, int ai_unused_4) {
       else
          if (ai_0 > 0) f0_12();
    } else {
-      if (/*trigger(OP_BUY) > 0 && */order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
+      if (trigger(OP_BUY) > 0 && order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
           if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Ask + BasketTakeProfit * g_point_1204;
@@ -1663,6 +1664,8 @@ void f0_15(int ai_0, int ai_unused_4) {
 
 int trigger(int pos) {
 //----
+   if (GreedyModeOn) return(1);
+//----
    HideTestIndicators(TRUE);
 //----
    int sig_trigger = 0;
@@ -1725,9 +1728,10 @@ int trigger(int pos) {
    if (
       pos == OP_BUY &&
       (
-         (sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
+         /*(sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
          ||
-         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iHigh(Symbol(),0,1) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
+         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iHigh(Symbol(),0,1) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )*/
+         MarketInfo(Symbol(), MODE_BID) > bb0L_20
          
       )
    ) {
@@ -1737,9 +1741,10 @@ int trigger(int pos) {
    if (
       pos == OP_SELL &&
       (
-         (sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
+         /*(sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
          ||
-         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iLow(Symbol(),0,1) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
+         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iLow(Symbol(),0,1) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )*/
+         MarketInfo(Symbol(), MODE_ASK) < bb0U_20
       )
    ) {
       sig_trigger = 1;
@@ -2168,7 +2173,7 @@ int FilterATR;
    (
       bbs >= 1 && 
       //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      sma0_600 < MarketInfo(Symbol(), MODE_BID)
+      (GreedyModeOn == TRUE || sma0_600 < MarketInfo(Symbol(), MODE_BID))
    ) //SIGNAL BUY
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2212,7 +2217,7 @@ int FilterATR;
    (
       bbs >= 1 && 
       //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      sma0_600 > MarketInfo(Symbol(), MODE_ASK)
+      (GreedyModeOn == TRUE || sma0_600 > MarketInfo(Symbol(), MODE_ASK))
    )  //SIGNAL SELL
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2372,7 +2377,7 @@ void f0_14(int ai_unused_0, int ai_4) {
       else
          if (ai_4 > 0) f0_13();
    } else {
-      if(/*trigger(OP_SELL) > 0 && */Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
+      if(trigger(OP_SELL) > 0 && Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Bid - BasketTakeProfit * gPoint;
@@ -2788,6 +2793,7 @@ double LOT()
 
    if(LotStepEnable)
    {
+      /*
       double safeProfit = AccountBalance();
 
       if (DDFromStart <= -2)
@@ -2822,7 +2828,8 @@ double LOT()
          safeProfit = AccountBalance() + (AccountBalance()*5.0)/100;
       }
       
-      //double safeProfit = StartingBalance;
+      */
+      double safeProfit = StartingBalance;
       
       double stepValue = ((safeProfit-LotStepFrom)/LotStepEvery)*LotStepValue ;
       double lotStepValue = NormalizeDouble( ( stepValue - MathMod(stepValue, LotStepValue) ) , MarketInfo(Symbol(),MODE_DIGITS) );;

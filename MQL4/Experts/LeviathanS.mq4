@@ -46,14 +46,15 @@ extern bool LotStepEnable    = FALSE;
 extern double LotStepValue   = 0.01;
 extern double LotStepFrom    = 1000;
 extern double LotStepEvery   = 1000;
-extern int ExecutionPoint = 36;
-extern double BasketTakeProfit = 60.0;
+extern int ExecutionPoint = 15;
+extern double BasketTakeProfit = 20.0;
 extern int BasketStopLoss = 180;
 extern double EquityShield    = 0;
 extern double ProgressiveStopLossPerc = 0;
 extern double Multiplier = 1.8;
 extern int MaximumBuyLevels = 16;
 extern int MaximumSellLevels = 16;
+extern bool GreedyModeOn = FALSE;
 /*extern*/ bool EnvyAugmenterOn = TRUE;
 /*extern*/ bool Negative_Basket_Protection = TRUE;
 /*extern*/ int NBP = 36;
@@ -1663,6 +1664,8 @@ void f0_15(int ai_0, int ai_unused_4) {
 
 int trigger(int pos) {
 //----
+   if (GreedyModeOn) return(1);
+//----
    HideTestIndicators(TRUE);
 //----
    int sig_trigger = 0;
@@ -1725,9 +1728,10 @@ int trigger(int pos) {
    if (
       pos == OP_BUY &&
       (
-         (sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
+         /*(sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
          ||
-         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iHigh(Symbol(),0,1) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
+         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iHigh(Symbol(),0,1) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )*/
+         MarketInfo(Symbol(), MODE_BID) > bb0L_20
          
       )
    ) {
@@ -1737,9 +1741,10 @@ int trigger(int pos) {
    if (
       pos == OP_SELL &&
       (
-         (sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
+         /*(sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
          ||
-         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iLow(Symbol(),0,1) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
+         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iLow(Symbol(),0,1) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )*/
+         MarketInfo(Symbol(), MODE_ASK) < bb0U_20
       )
    ) {
       sig_trigger = 1;
@@ -2168,7 +2173,7 @@ int FilterATR;
    (
       bbs >= 1 && 
       //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      sma0_600 < MarketInfo(Symbol(), MODE_BID)
+      (GreedyModeOn == TRUE || sma0_600 < MarketInfo(Symbol(), MODE_BID))
    ) //SIGNAL BUY
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2212,7 +2217,7 @@ int FilterATR;
    (
       bbs >= 1 && 
       //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      sma0_600 > MarketInfo(Symbol(), MODE_ASK)
+      (GreedyModeOn == TRUE || sma0_600 > MarketInfo(Symbol(), MODE_ASK))
    )  //SIGNAL SELL
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2788,6 +2793,7 @@ double LOT()
 
    if(LotStepEnable)
    {
+      /*
       double safeProfit = AccountBalance();
 
       if (DDFromStart <= -2)
@@ -2822,7 +2828,8 @@ double LOT()
          safeProfit = AccountBalance() + (AccountBalance()*5.0)/100;
       }
       
-      //double safeProfit = StartingBalance;
+      */
+      double safeProfit = StartingBalance;
       
       double stepValue = ((safeProfit-LotStepFrom)/LotStepEvery)*LotStepValue ;
       double lotStepValue = NormalizeDouble( ( stepValue - MathMod(stepValue, LotStepValue) ) , MarketInfo(Symbol(),MODE_DIGITS) );;
