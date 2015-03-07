@@ -1674,6 +1674,7 @@ int trigger(int pos) {
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
+   int TriggerTimeFrame = PERIOD_M30;
    //---- input parameters
    int             bolPrd     = 20;
    double          bolDev     = 2.0;
@@ -1681,47 +1682,47 @@ int trigger(int pos) {
    double          keltFactor = 1.5;
    int             momPrd     = 12;
    //---- indicators
-   double diff     = iATR(Symbol(),0,keltPrd,0)*keltFactor;
-   double std      = iStdDev(Symbol(),0,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
+   double diff     = iATR(Symbol(),PERIOD_H1,keltPrd,0)*keltFactor;
+   double std      = iStdDev(Symbol(),PERIOD_H1,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
    double bbs      = bolDev * std / diff;
    //----
-   double sma0_50  = iMA(Symbol(),0,50,0,MODE_EMA,PRICE_TYPICAL,0);
-   double sma0_200 = iMA(Symbol(),0,200,0,MODE_EMA,PRICE_TYPICAL,0);
-   double sma0_600 = iMA(Symbol(),0,600,0,MODE_EMA,PRICE_TYPICAL,0);
-   double sma1_50  = iMA(Symbol(),0,50,0,MODE_EMA,PRICE_TYPICAL,1);
-   double sma1_200 = iMA(Symbol(),0,200,0,MODE_EMA,PRICE_TYPICAL,1);
-   double sma1_600 = iMA(Symbol(),0,600,0,MODE_EMA,PRICE_TYPICAL,1);
+   double sma0_50  = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_TYPICAL,0);
+   double sma0_200 = iMA(Symbol(),TriggerTimeFrame,200,0,MODE_EMA,PRICE_TYPICAL,0);
+   double sma0_600 = iMA(Symbol(),TriggerTimeFrame,600,0,MODE_EMA,PRICE_TYPICAL,0);
+   double sma1_50  = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_TYPICAL,1);
+   double sma1_200 = iMA(Symbol(),TriggerTimeFrame,200,0,MODE_EMA,PRICE_TYPICAL,1);
+   double sma1_600 = iMA(Symbol(),TriggerTimeFrame,600,0,MODE_EMA,PRICE_TYPICAL,1);
    //----
-   double Buy1_1   = iMA(Symbol(),0,50,0,MODE_EMA,PRICE_CLOSE,0);
-   double Buy1_2   = iMACD(Symbol(),0,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
-   double Buy2_1   = iRSI(Symbol(),0,15,PRICE_CLOSE,0);
-   double Buy2_2   = iOpen(Symbol(),0,1);
-   double Buy2_3   = iOpen(Symbol(),0,0);
-   double Buy3_1   = iClose(Symbol(),0,1);
+   double Buy1_1   = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_CLOSE,0);
+   double Buy1_2   = iMACD(Symbol(),TriggerTimeFrame,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
+   double Buy2_1   = iRSI(Symbol(),TriggerTimeFrame,15,PRICE_CLOSE,0);
+   double Buy2_2   = iOpen(Symbol(),TriggerTimeFrame,1);
+   double Buy2_3   = iOpen(Symbol(),TriggerTimeFrame,0);
+   double Buy3_1   = iClose(Symbol(),TriggerTimeFrame,1);
    double Buy3_2   = MarketInfo(Symbol(),MODE_BID);
-   double Sell1_1  = iMA(Symbol(),0,50,0,MODE_EMA,PRICE_CLOSE,0);
-   double Sell1_2  = iMACD(Symbol(),0,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
-   double Sell2_1  = iRSI(Symbol(),0,15,PRICE_CLOSE,0);
-   double Sell2_2  = iOpen(Symbol(),0,1);
-   double Sell2_3  = iOpen(Symbol(),0,0);
-   double Sell3_1  = iClose(Symbol(),0,1);
+   double Sell1_1  = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_CLOSE,0);
+   double Sell1_2  = iMACD(Symbol(),TriggerTimeFrame,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
+   double Sell2_1  = iRSI(Symbol(),TriggerTimeFrame,15,PRICE_CLOSE,0);
+   double Sell2_2  = iOpen(Symbol(),TriggerTimeFrame,1);
+   double Sell2_3  = iOpen(Symbol(),TriggerTimeFrame,0);
+   double Sell3_1  = iClose(Symbol(),TriggerTimeFrame,1);
    double Sell3_2  = MarketInfo(Symbol(),MODE_ASK);
    //----
    // 0 - MODE_MAIN, 1 - MODE_UPPER, 2 - MODE_LOWER
-   double bb0L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
-   double bb1L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,1);
-   double bb2L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,2);
-   double bb3L_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_LOWER,3);
+   double bb0L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
+   double bb1L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,1);
+   double bb2L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,2);
+   double bb3L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,3);
 
-   double bb0M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
-   double bb1M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,1);
-   double bb2M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,2);
-   double bb3M_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_MAIN,3);
+   double bb0M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
+   double bb1M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,1);
+   double bb2M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,2);
+   double bb3M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,3);
 
-   double bb0U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
-   double bb1U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
-   double bb2U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
-   double bb3U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
+   double bb0U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
+   double bb1U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
+   double bb2U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
+   double bb3U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
@@ -1729,10 +1730,10 @@ int trigger(int pos) {
    if (
       pos == OP_BUY &&
       (
-         /*(sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
+         (sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
          ||
-         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iHigh(Symbol(),0,1) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )*/
-         MarketInfo(Symbol(), MODE_BID) > bb0L_20
+         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iOpen(Symbol(),0,0) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
+         //MarketInfo(Symbol(), MODE_BID) > bb0L_20
          
       )
    ) {
@@ -1742,10 +1743,10 @@ int trigger(int pos) {
    if (
       pos == OP_SELL &&
       (
-         /*(sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
+         (sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
          ||
-         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iLow(Symbol(),0,1) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )*/
-         MarketInfo(Symbol(), MODE_ASK) < bb0U_20
+         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iOpen(Symbol(),0,0) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
+         //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
       )
    ) {
       sig_trigger = 1;
