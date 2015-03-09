@@ -49,13 +49,13 @@ extern double LotStepEvery   = 1000;
 extern int ExecutionPoint = 20;
 extern double BasketTakeProfit = 30.0;
 extern int BasketStopLoss = 180;
-extern double EquityShield    = 0;
-extern double ProgressiveStopLossPerc = 0;
+/*extern*/ double EquityShield    = 0;
+/*extern*/ double ProgressiveStopLossPerc = 0;
 extern double Multiplier = 0.5;
 extern int MaximumBuyLevels = 12;
 extern int MaximumSellLevels = 12;
-extern bool GreedyModeOn = FALSE;
-extern bool TriggerProtectionOn = FALSE;
+/*extern*/ bool GreedyModeOn = TRUE;
+/*extern*/ bool TriggerProtectionOn = TRUE;
 /*extern*/ bool EnvyAugmenterOn = TRUE;
 /*extern*/ bool Negative_Basket_Protection = TRUE;
 /*extern*/ int NBP = 0;
@@ -67,7 +67,7 @@ string gs_168 = "1234567890123456";
 /*extern*/ int Close_Order_Attempts = 3;
 /*extern*/ bool FreezeAfterTP = FALSE;
 /*extern*/ bool FreezeAfterTPScheduler = FALSE;
-extern bool SupportECN = TRUE;
+/*extern*/ bool SupportECN = TRUE;
 /*extern*/ string __________ = "Freeze After TP Scheduler";
 /*extern*/ int SUN_StartHour = 0;
 /*extern*/ int SUN_StartMinute = 0;
@@ -335,7 +335,7 @@ int        Deviation                  = 2;
 double     MoneyRisk                  = 2.0;
 int        Signal                     = 1;
 int        Line                       = 1;
-int        Nbars                      = 500;
+int        Nbars                      = 100;
 string II1_3 = "== bbsqueeze_dark";
 int        bolPrd                     = 20;
 double     bolDev                     = 2.0;
@@ -1401,7 +1401,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
          }
       }
       //---
-      /*
+      //Alert("B:",lots_8);
       if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) > MarketInfo(Symbol(), MODE_ASK)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
@@ -1420,7 +1420,6 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
             }
          } // IF NBP TRUE  
       }
-      */
       //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
@@ -1474,6 +1473,8 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
             else if (type == OP_SELL && f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
             else lots_8 = NormalizeDouble(base_lot, 2);
          }
+      } else {
+         lots_8 = NormalizeDouble(lots, 2);
       }
       // No money check
       if (!MarginEnoughCheck(lots_8)) {Sleep(10000); GlobalVariableDel("PERMISSION"); return(false);}// Fix 0.06a No money check      
@@ -1488,8 +1489,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
             for (index_44 = 0; index_44 < 25; index_44++)
                if (gia_1216[index_44] <= 0) break;
             if (index_44 < 25) {
-               ticket_4 = GhostOrderSend(Symbol(), OP_SELL, lots_8, NormalizeDouble(Bid, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32,
-                  MagicNumber, 0, Pink);
+               ticket_4 = GhostOrderSend(Symbol(), OP_SELL, lots_8, NormalizeDouble(Bid, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32, MagicNumber, 0, Pink);
                if (ticket_4 > 0) {
                   gia_1216[index_44] = ticket_4;
                   gia_1220[index_44] = 1;
@@ -1506,8 +1506,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
                }
             }
          } else {
-            ticket_4 = GhostOrderSend(Symbol(), OP_SELL, lots_8, NormalizeDouble(Bid, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32,
-               MagicNumber, 0, Pink);
+            ticket_4 = GhostOrderSend(Symbol(), OP_SELL, lots_8, NormalizeDouble(Bid, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32, MagicNumber, 0, Pink);
          }
       } else {
          if (gi_1212 == TRUE) {
@@ -1564,7 +1563,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
          }
       }
       //---
-      /*
+      //Alert("S:",lots_8);
       if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) < MarketInfo(Symbol(), MODE_BID)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
@@ -1583,7 +1582,6 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
             }
          } // IF NBP TRUE 
       }
-      */
       //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
@@ -1753,10 +1751,13 @@ int trigger(int pos) {
 //----
    int sig_trigger = 0;
 //----
+   MqlRates RatesBar[];
+   ArraySetAsSeries(RatesBar,true);
+   CopyRates(Symbol(),SignalPeriod,0,500,RatesBar);
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
-   int TriggerTimeFrame = PERIOD_M30;
+   int TriggerTimeFrame = PERIOD_H1;
    //---- input parameters
    int             bolPrd     = 20;
    double          bolDev     = 2.0;
@@ -1764,9 +1765,9 @@ int trigger(int pos) {
    double          keltFactor = 1.5;
    int             momPrd     = 12;
    //---- indicators
-   double diff     = iATR(Symbol(),PERIOD_H1,keltPrd,0)*keltFactor;
-   double std      = iStdDev(Symbol(),PERIOD_H1,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
-   double bbs      = bolDev * std / diff;
+   double diff     = iATR(Symbol(),TriggerTimeFrame,keltPrd,0)*keltFactor;
+   double std      = iStdDev(Symbol(),TriggerTimeFrame,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
+   double bbs      = (diff != 0 ? bolDev * std / diff : 1);
    //----
    double sma0_50  = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_TYPICAL,0);
    double sma0_200 = iMA(Symbol(),TriggerTimeFrame,200,0,MODE_EMA,PRICE_TYPICAL,0);
@@ -1774,21 +1775,6 @@ int trigger(int pos) {
    double sma1_50  = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_TYPICAL,1);
    double sma1_200 = iMA(Symbol(),TriggerTimeFrame,200,0,MODE_EMA,PRICE_TYPICAL,1);
    double sma1_600 = iMA(Symbol(),TriggerTimeFrame,600,0,MODE_EMA,PRICE_TYPICAL,1);
-   //----
-   double Buy1_1   = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_CLOSE,0);
-   double Buy1_2   = iMACD(Symbol(),TriggerTimeFrame,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
-   double Buy2_1   = iRSI(Symbol(),TriggerTimeFrame,15,PRICE_CLOSE,0);
-   double Buy2_2   = iOpen(Symbol(),TriggerTimeFrame,1);
-   double Buy2_3   = iOpen(Symbol(),TriggerTimeFrame,0);
-   double Buy3_1   = iClose(Symbol(),TriggerTimeFrame,1);
-   double Buy3_2   = MarketInfo(Symbol(),MODE_BID);
-   double Sell1_1  = iMA(Symbol(),TriggerTimeFrame,50,0,MODE_EMA,PRICE_CLOSE,0);
-   double Sell1_2  = iMACD(Symbol(),TriggerTimeFrame,8,17,9,PRICE_CLOSE,MODE_MAIN,0);
-   double Sell2_1  = iRSI(Symbol(),TriggerTimeFrame,15,PRICE_CLOSE,0);
-   double Sell2_2  = iOpen(Symbol(),TriggerTimeFrame,1);
-   double Sell2_3  = iOpen(Symbol(),TriggerTimeFrame,0);
-   double Sell3_1  = iClose(Symbol(),TriggerTimeFrame,1);
-   double Sell3_2  = MarketInfo(Symbol(),MODE_ASK);
    //----
    // 0 - MODE_MAIN, 1 - MODE_UPPER, 2 - MODE_LOWER
    double bb0L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
@@ -1805,33 +1791,6 @@ int trigger(int pos) {
    double bb1U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
    double bb2U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
    double bb3U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
-
-   double bb_squeeze_green_0  = bb_squeeze_dark(Symbol(),TriggerTimeFrame, bolPrd, bolDev, keltPrd, keltFactor, momPrd, Length, Nbars, 5, 0);
-   double bb_squeeze_green_1  = bb_squeeze_dark(Symbol(),TriggerTimeFrame, bolPrd, bolDev, keltPrd, keltFactor, momPrd, Length, Nbars, 5, 1);
-
-   double upTrendStop         = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 0, 0);
-   double downTrendStop       = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 1, 0);
-   double upTrendSignal       = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 2, 0);
-   double downTrendSignal     = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 3, 0);
-
-   //--_T_S_R__Signal_Line
-   double signalLineValue0_0  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 0, 0); // Blue
-   double signalLineValue1_0  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 1, 0); // Red
-   double signalLineValue0_1  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 0, 1); // Blue
-   double signalLineValue1_1  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 1, 1); // Red
-
-   //--HAMA
-   double hamaValue0_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 0, 0);
-   double hamaValue1_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 1, 0);
-   double hamaValue2_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 2, 0);
-   double hamaValue3_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 3, 0);
-   double hamaValue0_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 0, 1);
-   double hamaValue1_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 1, 1);
-   double hamaValue2_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 2, 1);
-   double hamaValue3_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 3, 1);
-
-   double bbSMA_0             = iBands(Symbol(),TriggerTimeFrame, 20,2,0, PRICE_CLOSE, MODE_MAIN, 0);
-   double bbSMA_1             = iBands(Symbol(),TriggerTimeFrame, 20,2,0, PRICE_CLOSE, MODE_MAIN, 1);
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
@@ -1869,387 +1828,12 @@ int signal() {
 //----
    int buy = 1, sell = -1;
 //----
-  double Max_Spread_Open     = 0.0;
-  double Max_Spread_Close    = 0.0;
-  string S4="-------ATR and PriceLevel Filter-------";
-  bool   UseATRfilter        = false;
-  int    Atr_Period          = 14;
-  string TypeATRfilterStr    = "1=Lower Level, 2=Higher Level";
-  int    Type_ATR_level      = 1;        
-  double AtrLevel            = 0.0006;
-  bool   UsePriceLevelFilter = true;
-  int    PrvHoursCheck1      = 0;
-  int    PrvHoursCheck2      = 3;
-  string S10="-------CCI Sets-------";
-  bool   Use_CCI             = False;
-  int    CCI_Period          = 10;
-  double CCI_Entry           = 200;
-  double CCI_Exit            = 140;
-  string S11="-------WPR Sets-------";
-  bool   Use_WPR             = true;
-  int    WPR_Period          = 10;
-  double WPR_Entry           = 91;
-  double WPR_Exit            = 40;
-  string S12="-------RSI Sets-------";
-  bool   Use_RSI             = false;
-  int    RSI_Period          = 70;
-  double RSI_Entry           = 50;
-  string S13="-------Fractals Sets-------";
-  bool   Use_Fractals        = true;
-  double MidFractalDist      = 5;
-  double OppositFractalDist  = 10;
-  bool   Show_Fractal_Levels = False;
-  string S14="-------MA Sets-------";
-  bool   Use_MA_Dist         = false;
-  double MA_Dist_Period      = 4;
-  string Mode                = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
-  double MA_Dist_Mode        = 1;
-  double Dist_to_MA          = 4;
-  string S15="-------MA1 Sets-------";
-  bool   Use_MA1             = False;
-  int    MA_Period1          = 75;
-  string Mode1               = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
-  int    MA_Mode1            = 2;
-  string S16="-------MA2 Sets-------";
-  bool   Use_MA2             = False;
-  int    MA_Period2          = 19;
-  string Mode2               = "0= Simple, 1=Exponential, 2=Smoothed, 3=Linear Weighted";
-  int    MA_Mode2            = 2;
-  string S17="-------MA2 Slope Sets-------";
-  bool   Use_MA2_Slope       = False;
-  double MA_Slope            = 1;
-  string S18="-------BB Sets-------";
-  bool   Use_BB              = False;
-  int    BB_Period           = 10;
-  int    BB_Dev              = 2;
-  int    BB_Range            = 12;
-  int    BB_Penetration      = 2;
-  bool   Use_BB_Direction    = False;
-  //-----------------------------------------------------------------
-  bool      use_bb=true;
-  int       bb_period=20;
-  int       bb_deviation=2;
-  int       bb_shift=0;
-  bool      use_stoch=true;
-  int       k=5;
-  int       d=3;
-  int       slowing=3;
-  int       price_field=0;
-  int       stoch_shift=0;
-  int       lo_level=30;
-  int       up_level=70;
-  bool      use_rsi=true;
-  int       rsi_period=12;
-  int       rsi_shift=0;
-  int       lower=30;
-  int       upper=70;
-  //-----------------------------------------------------------------
-
-  //Auto Sets
-  bool Use_Leviathan_Sig = TRUE;
-  if(StringSubstr(Symbol(),0,6)=="EURCAD")
-  {
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0) Max_Spread_Open=6; if(Max_Spread_Close==0) Max_Spread_Close=6;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
-     Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="EURGBP")
-  {
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-     Use_WPR=true; WPR_Period=11; WPR_Entry=90; WPR_Exit=40;
-     Use_Fractals=true; MidFractalDist=5; OppositFractalDist=9;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="USDCAD")
-  {
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=120; CCI_Exit=125;
-     Use_WPR=true; WPR_Period=10; WPR_Entry=90; WPR_Exit=35;
-     Use_Fractals=true; MidFractalDist=8; OppositFractalDist=11;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="EURCHF")
-  { 
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=5; if(Max_Spread_Close==0)Max_Spread_Close=5;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-     Use_Fractals=true; MidFractalDist=7; OppositFractalDist=9;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="USDCHF")
-  { 
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=40;
-     Use_Fractals=true; MidFractalDist=6; OppositFractalDist=9;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="GBPCHF")
-  { 
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-     Use_Fractals=true; MidFractalDist=9; OppositFractalDist=15;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="GBPCAD")
-  {  
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-     Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="EURUSD")
-  {  
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=120;
-     Use_WPR=true; WPR_Period=8; WPR_Entry=93; WPR_Exit=42;
-     Use_Fractals=True; MidFractalDist=8; OppositFractalDist=15;
-     Use_MA1=true; MA_Period1=75;
-     Use_MA2=False; MA_Period2=20;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="CADCHF")
-  {
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=6; if(Max_Spread_Close==0)Max_Spread_Close=6;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=130;
-     Use_WPR=true; WPR_Period=10; WPR_Entry=91; WPR_Exit=30;
-     Use_Fractals=true; MidFractalDist=7; OppositFractalDist=13;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="GBPUSD")
-  {  
-     Use_Leviathan_Sig = FALSE;
-     if(Max_Spread_Open==0)Max_Spread_Open=4; if(Max_Spread_Close==0)Max_Spread_Close=4;
-     Use_CCI=true; CCI_Period=10; CCI_Entry=100; CCI_Exit=125;
-     Use_WPR=true; WPR_Period=12; WPR_Entry=90; WPR_Exit=38;
-     Use_Fractals=true; MidFractalDist=6; OppositFractalDist=11;
-     Use_MA1=False; MA_Period1=25;
-     Use_MA2_Slope=False; MA_Slope= 5;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="AUDUSD")
-  {  
-      Use_Leviathan_Sig = TRUE;
-      use_bb=true;
-      bb_period=20;
-      bb_deviation=2;
-      bb_shift=0;
-      use_stoch=true;
-      k=5;
-      d=3;
-      slowing=3;
-      price_field=0;
-      stoch_shift=0;
-      lo_level=30;
-      up_level=70;
-      use_rsi=true;
-      rsi_period=12;
-      rsi_shift=0;
-      lower=30;
-      upper=70;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="AUDNZD")
-  {  
-      Use_Leviathan_Sig = TRUE;
-      use_bb=true;
-      bb_period=20;
-      bb_deviation=2;
-      bb_shift=0;
-      use_stoch=true;
-      k=5;
-      d=3;
-      slowing=3;
-      price_field=0;
-      stoch_shift=0;
-      lo_level=30;
-      up_level=70;
-      use_rsi=true;
-      rsi_period=12;
-      rsi_shift=0;
-      lower=30;
-      upper=70;
-  }
-  //---
-  if(StringSubstr(Symbol(),0,6)=="NZDUSD")
-  {  
-      Use_Leviathan_Sig = TRUE;
-      use_bb=true;
-      bb_period=20;
-      bb_deviation=2;
-      bb_shift=0;
-      use_stoch=true;
-      k=5;
-      d=3;
-      slowing=3;
-      price_field=0;
-      stoch_shift=0;
-      lo_level=30;
-      up_level=70;
-      use_rsi=true;
-      rsi_period=12;
-      rsi_shift=0;
-      lower=30;
-      upper=70;
-  }
-  //-----------------------------------------------------------------
-int CCI_Buy_Sig;
-int CCI_Sell_Sig;
-int WPR_Buy_Sig;
-int WPR_Sell_Sig;
-int MA_Buy_Sig1;
-int MA_Sell_Sig1;
-int MA_Buy_Sig2;
-int MA_Sell_Sig2;
-int Fractals_Buy_Sig;
-int Fractals_Sell_Sig;  
-int CCI_Exit_Buy_Sig;
-int CCI_Exit_Sell_Sig;
-int WPR_Exit_Buy_Sig;
-int WPR_Exit_Sell_Sig; 
-int MA_Slope_Buy_Sig;               
-int MA_Slope_Sell_Sig;
-int BB_Buy_Sig;               
-int BB_Sell_Sig;
-bool Trade_Pause_Buy_Sig;
-bool Trade_Pause_Sell_Sig;
-int MA_Dist_Buy_Sig;               
-int MA_Dist_Sell_Sig;
-int RSI_Buy_Sig;
-int RSI_Sell_Sig;
-//--------------------------
-double CCI_1; 
-double WPR_1; 
-double MA_1_1; 
-double MA_1_2; 
-double MA_2_1; 
-double MA_2_2; 
-double BB_U_1; 
-double BB_U_2; 
-double BB_U_3; 
-double BB_L_1; 
-double BB_L_2; 
-double BB_L_3; 
-double MA_3_1; 
-double RSI_1; 
-//--------------------------
-int FilterATR;  
+   MqlRates RatesBar[];
+   ArraySetAsSeries(RatesBar,true);
+   CopyRates(Symbol(),SignalPeriod,0,500,RatesBar);
    //+------------------------------------------------------------------+
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
-  //-----------------------------------------------------------------
-  //digits points
-  double PointsDec=Point;
-  int MultiplierDigit=1;
-  if(MarketInfo(Symbol(), MODE_DIGITS) == 5.0 || MarketInfo(Symbol(), MODE_DIGITS) == 3.0) MultiplierDigit=10;
-  PointsDec*=MultiplierDigit;
-  //-----------------------------------------------------------------
-  FilterATR=0;
-  if(UseATRfilter==true)
-  {
-  switch(Type_ATR_level)
-  {
-  case 1: if(iATR(NULL, 0, Atr_Period, 0) > AtrLevel) FilterATR=1; break;
-  case 2: if(iATR(NULL, 0, Atr_Period, 0) < AtrLevel) FilterATR=1; break;
-  }
-  }
-  if(UseATRfilter==false) FilterATR=1;
-  //-----------------------------------------------------------------
-  //indicators
-  if(Use_CCI) CCI_1 = iCCI(NULL, 0, CCI_Period, PRICE_CLOSE, 0);  
-  if(Use_WPR) WPR_1 = iWPR(NULL, 0, WPR_Period, 0);
-  //---
-  if(Use_MA1) MA_1_1  = iMA(NULL,0,MA_Period1,0,MA_Mode1,PRICE_CLOSE,1);
-  if(Use_MA1) MA_1_2  = iMA(NULL,0,MA_Period1,0,MA_Mode1,PRICE_CLOSE,2);    
-  if(Use_MA2 || Use_MA2_Slope) MA_2_1  = iMA(NULL,0,MA_Period2,0,MA_Mode2,PRICE_CLOSE,1);
-  if(Use_MA2 || Use_MA2_Slope) MA_2_2  = iMA(NULL,0,MA_Period2,0,MA_Mode2,PRICE_CLOSE,2);
-  if(Use_MA_Dist) MA_3_1  = iMA(NULL,0,MA_Dist_Period,0,MA_Dist_Mode,PRICE_CLOSE,1);
-  if(Use_BB) BB_L_1  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,0);
-  if(Use_BB) BB_L_2  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,1); 
-  if(Use_BB) BB_L_3  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_LOWER,2);    
-  if(Use_BB) BB_U_1  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,0);    
-  if(Use_BB) BB_U_2  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,1);
-  if(Use_BB) BB_U_3  = iBands(NULL,0,BB_Period,BB_Dev,0,PRICE_CLOSE,MODE_UPPER,2);    
-  if(Use_RSI) RSI_1  = iRSI(NULL, 0, RSI_Period, PRICE_CLOSE, 0);
-  //-----------------------------------------------------------------
-  //trade signals
-  if(!Use_CCI) {CCI_Buy_Sig=1;CCI_Sell_Sig=1;}
-  if(!Use_WPR) {WPR_Buy_Sig=1;WPR_Sell_Sig=1;}  
-  if(!Use_MA1) {MA_Buy_Sig1=1; MA_Sell_Sig1=1;} 
-  if(!Use_MA2) {MA_Buy_Sig2=1; MA_Sell_Sig2=1;}  
-  if(!Use_MA2_Slope) {MA_Slope_Buy_Sig=1; MA_Slope_Sell_Sig=1;}  
-  if(!Use_Fractals) {Fractals_Buy_Sig=1; Fractals_Sell_Sig=1;}
-  if(!Use_BB) {BB_Buy_Sig=1; BB_Sell_Sig=1;}
-  if(!Use_MA_Dist) {MA_Dist_Buy_Sig=1; MA_Dist_Sell_Sig=1;} 
-  if(!Use_RSI) {RSI_Buy_Sig=1; RSI_Sell_Sig=1;}  
-  if(Use_CCI && CCI_1<-CCI_Entry) CCI_Buy_Sig=1;
-  if(Use_CCI && CCI_1>CCI_Entry) CCI_Sell_Sig=1;  
-  if(Use_WPR && WPR_1<-WPR_Entry) WPR_Buy_Sig=1;  
-  if(Use_WPR && WPR_1>-(100-WPR_Entry)) WPR_Sell_Sig=1;  
-  if(Use_MA1 && MA_1_1>MA_1_2)  MA_Buy_Sig1=1;  
-  if(Use_MA1 && MA_1_1<MA_1_2)  MA_Sell_Sig1=1;
-  if(Use_MA2 && MA_2_1>MA_2_2)  MA_Buy_Sig2=1;  
-  if(Use_MA2 && MA_2_1<MA_2_2)  MA_Sell_Sig2=1;  
-  if(Use_MA2_Slope && (MA_2_1-MA_2_2)>=MA_Slope*PointsDec)  MA_Slope_Buy_Sig=1;  
-  if(Use_MA2_Slope && (MA_2_2-MA_2_1)>=MA_Slope*PointsDec)  MA_Slope_Sell_Sig=1;    
-  if(Use_BB && !Use_BB_Direction && Ask<BB_L_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && BB_L_1-Ask>=BB_Penetration*PointsDec) BB_Buy_Sig=1;
-  if(Use_BB && !Use_BB_Direction && Bid>BB_U_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && Bid-BB_U_1>=BB_Penetration*PointsDec) BB_Sell_Sig=1;  
-  if(Use_BB && Use_BB_Direction && Ask<BB_L_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && BB_L_1-Ask>=BB_Penetration*PointsDec && BB_L_1>BB_L_2) BB_Buy_Sig=1;
-  if(Use_BB && Use_BB_Direction && Bid>BB_U_1 && (BB_U_1-BB_L_1)>BB_Range*PointsDec && Bid-BB_U_1>=BB_Penetration*PointsDec && BB_U_1<BB_U_2) BB_Sell_Sig=1;  
-  if(Use_MA_Dist && Bid-MA_3_1>=Dist_to_MA*PointsDec)  MA_Dist_Sell_Sig=1;   
-  if(Use_RSI && RSI_1>=RSI_Entry)  RSI_Buy_Sig=1;  
-  if(Use_RSI && RSI_1<=(100-RSI_Entry))  RSI_Sell_Sig=1;
-   //---- input parameters
-   int             bolPrd     = 20;
-   double          bolDev     = 2.0;
-   int             keltPrd    = 20;
-   double          keltFactor = 1.5;
-   int             momPrd     = 12;
-   //---- indicators
-   double diff     = iATR(Symbol(),0,keltPrd,0)*keltFactor;
-   double std      = iStdDev(Symbol(),0,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
-   double bbs      = bolDev * std / diff;
-   //----
-   double upBB     = iBands(Symbol(),0,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_UPPER,bb_shift);
-   double loBB     = iBands(Symbol(),0,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_LOWER,bb_shift);
-   double stoch    = iStochastic(Symbol(),0,k,d,slowing,MODE_SMA,price_field,MODE_SIGNAL,stoch_shift);
-   double rsi      = iRSI(Symbol(),0,rsi_period,PRICE_CLOSE,rsi_shift);
-   //----
-   double isarM30_0 = iSAR(Symbol(), PERIOD_M30, gd_1044, gd_1052, 0);
-   double isarM30_1 = iSAR(Symbol(), PERIOD_M30, gd_1044, gd_1052, 1);
-   double isarH1_0  = iSAR(Symbol(), PERIOD_H1 , gd_1044, gd_1052, 0);
-   double isarH1_1  = iSAR(Symbol(), PERIOD_H1 , gd_1044, gd_1052, 1);
    //----
    double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,0);
    double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,0);
@@ -2273,10 +1857,38 @@ int FilterATR;
    double bb1U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
    double bb2U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
    double bb3U_20 = iBands(Symbol(),0,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
+   
+   //double bb_squeeze_green_0  = bb_squeeze_dark(Symbol(), SignalPeriod, bolPrd, bolDev, keltPrd, keltFactor, momPrd, Length, Nbars, 5, 0);
+   //double bb_squeeze_green_1  = bb_squeeze_dark(Symbol(), SignalPeriod, bolPrd, bolDev, keltPrd, keltFactor, momPrd, Length, Nbars, 5, 1);
+
+   //double upTrendStop         = doda_bands2(Symbol(), SignalPeriod, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 0, 0);
+   //double downTrendStop       = doda_bands2(Symbol(), SignalPeriod, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 1, 0);
+   //double upTrendSignal       = doda_bands2(Symbol(), SignalPeriod, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 2, 0);
+   //double downTrendSignal     = doda_bands2(Symbol(), SignalPeriod, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 3, 0);
+
+   //--_T_S_R__Signal_Line
+   //double signalLineValue0_0  = i_TSRLine(Symbol(), SignalPeriod, "_T_S_R__Signal_Line", 15, 3, 0, 0, 0); // Blue
+   //double signalLineValue1_0  = i_TSRLine(Symbol(), SignalPeriod, "_T_S_R__Signal_Line", 15, 3, 0, 1, 0); // Red
+   //double signalLineValue0_1  = i_TSRLine(Symbol(), SignalPeriod, "_T_S_R__Signal_Line", 15, 3, 0, 0, 1); // Blue
+   //double signalLineValue1_1  = i_TSRLine(Symbol(), SignalPeriod, "_T_S_R__Signal_Line", 15, 3, 0, 1, 1); // Red
+
+   //--HAMA
+   //double hamaValue0_0        = i_hama(Symbol(), SignalPeriod, "HAMA_", 0, 0);
+   //double hamaValue1_0        = i_hama(Symbol(), SignalPeriod, "HAMA_", 1, 0);
+   //double hamaValue2_0        = i_hama(Symbol(), SignalPeriod, "HAMA_", 2, 0);
+   //double hamaValue3_0        = i_hama(Symbol(), SignalPeriod, "HAMA_", 3, 0);
+   //double hamaValue0_1        = i_hama(Symbol(), SignalPeriod, "HAMA_", 0, 1);
+   //double hamaValue1_1        = i_hama(Symbol(), SignalPeriod, "HAMA_", 1, 1);
+   //double hamaValue2_1        = i_hama(Symbol(), SignalPeriod, "HAMA_", 2, 1);
+   //double hamaValue3_1        = i_hama(Symbol(), SignalPeriod, "HAMA_", 3, 1);
+
+   //double bbSMA_0             = iBands(Symbol(), SignalPeriod, 20,2,0, PRICE_CLOSE, MODE_MAIN, 0);
+   //double bbSMA_1             = iBands(Symbol(), SignalPeriod, 20,2,0, PRICE_CLOSE, MODE_MAIN, 1);
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
 //----
+/**/
    if ( GreedyModeOn == TRUE ) {
       if ( sma0_600 > sma1_600 && MarketInfo(Symbol(),MODE_BID) < bb0M_20 ) {
          return(buy);
@@ -2287,94 +1899,37 @@ int FilterATR;
          return(0);
       }
    }
+/**/
 //----
-   if
-   (
-      bbs >= 1 && 
-      //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      sma0_600 < MarketInfo(Symbol(), MODE_BID)
-   ) //SIGNAL BUY
+/*
+   //--- Signal Line Reinforcement
+   bool strongSignalLineLong  = false;
+   bool strongSignalLineShort = false;
+
+   //if(bb_squeeze_green_0 != EMPTY_VALUE && bb_squeeze_green_0 == 0 && bb_squeeze_green_1 != EMPTY_VALUE && bb_squeeze_green_1 == 0)
+   //{
+   //   if( signalLineValue0_0 != EMPTY_VALUE && signalLineValue0_1 != EMPTY_VALUE && signalLineValue0_0 > bbSMA_0 && signalLineValue0_1 < bbSMA_1 )
+   //   {
+         if( upTrendStop > 0 && (hamaValue0_0 == hamaValue2_0 && hamaValue0_0 < hamaValue1_0) && (hamaValue0_1 == hamaValue2_1 && hamaValue0_1 < hamaValue1_1) )
+         {
+            strongSignalLineLong = true;
+         }
+   //   }
+
+   //   if( signalLineValue1_0 != EMPTY_VALUE && signalLineValue1_1 != EMPTY_VALUE && signalLineValue1_0 < bbSMA_0 && signalLineValue1_1 > bbSMA_1 )
+   //   {
+         if( downTrendStop > 0 && (hamaValue1_0 == hamaValue3_0 && hamaValue0_0 > hamaValue1_0) && (hamaValue1_1 == hamaValue3_1 && hamaValue0_1 > hamaValue1_1) )
+         {
+            strongSignalLineShort = true;
+         }
+   //   }
+   //}
+
+   if ( (upTrendStop > 0 && strongSignalLineLong == true) || (downTrendStop > 0 && strongSignalLineShort == true) ) 
    {
-      if((Use_Leviathan_Sig==TRUE))
-      {
-        if(use_bb && use_stoch && use_rsi)
-        {
-           if(Low[bb_shift]<loBB && stoch<lo_level && rsi<lower)   return(buy);
-        }
-        if(use_bb && use_stoch && !use_rsi)
-        {
-           if(Low[bb_shift]<loBB && stoch<lo_level)   return(buy);
-        }
-        if(use_bb && !use_stoch && !use_rsi)
-        {
-           if(Low[bb_shift]<loBB)   return(buy);
-        }
-        if(!use_bb && use_stoch && use_rsi)
-        {
-           if(stoch<lo_level && rsi<lower)   return(buy);
-        }
-        if(!use_bb && use_stoch && !use_rsi)
-        {
-           if(stoch<lo_level)  return(buy);
-        }
-        if(use_bb && !use_stoch && use_rsi)
-        {
-           if(Low[bb_shift]<loBB && rsi<lower)   return(buy);
-        }
-        if(!use_bb && !use_stoch && use_rsi)
-        {
-           if(rsi<lower)  return(buy);
-        }
-      }
-      else if((CCI_Buy_Sig==1)&&(WPR_Buy_Sig==1)&&(MA_Buy_Sig1==1)&&(MA_Buy_Sig2==1)&&(MA_Slope_Buy_Sig==1)&&(BB_Buy_Sig==1)&&(MA_Dist_Buy_Sig==1)&&(RSI_Buy_Sig==1)) //SIGNAL BUY
-      {
-         return(buy);
-      }
+      return (upTrendStop > 0 ? buy : sell);
    }
-//----
-   if
-   (
-      bbs >= 1 && 
-      //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      sma0_600 > MarketInfo(Symbol(), MODE_ASK)
-   )  //SIGNAL SELL
-   {
-      if((Use_Leviathan_Sig==TRUE))
-      {
-        if(use_bb && use_stoch && use_rsi)
-        {
-           if(High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sell);
-        }
-        if(use_bb && use_stoch && !use_rsi)
-        {
-           if(High[bb_shift]>upBB && stoch>up_level) return(sell);
-        }
-        if(use_bb && !use_stoch && !use_rsi)
-        {
-           if(High[bb_shift]>upBB) return(sell);
-        }
-        if(!use_bb && use_stoch && use_rsi)
-        {
-           if(stoch>up_level && rsi>upper) return(sell);
-        }
-        if(!use_bb && use_stoch && !use_rsi)
-        {
-           if(stoch>up_level) return(sell);
-        }
-        if(use_bb && !use_stoch && use_rsi)
-        {
-           if(High[bb_shift]>upBB && rsi>upper) return(sell);
-        }
-        if(!use_bb && !use_stoch && use_rsi)
-        {
-           if(rsi>upper) return(sell);
-        }
-      }
-      else if((CCI_Sell_Sig==1)&&(WPR_Sell_Sig==1)&&(MA_Sell_Sig1==1)&&(MA_Sell_Sig2==1)&&(MA_Slope_Sell_Sig==1)&&(BB_Sell_Sig==1)&&(MA_Dist_Sell_Sig==1)&&(RSI_Sell_Sig==1))  //SIGNAL SELL
-      {
-         return(sell);
-      }
-   }
+*/
 //----
    HideTestIndicators(TRUE);
 //----   
@@ -3659,7 +3214,7 @@ double bb_squeeze_dark(string sig_currency, int sig_timeFrame, int bolPrd, doubl
       }
 		diff = iATR(sig_currency,sig_timeFrame,keltPrd,shift)*keltFactor;
 		std = iStdDev(sig_currency,sig_timeFrame,bolPrd,MODE_SMA,0,PRICE_CLOSE,shift);
-		bbs = bolDev * std / diff;
+		bbs = (diff != 0 ? bolDev * std / diff : 1);
       if(bbs<1) {
          upK[shift]=0;
          loK[shift]=EMPTY_VALUE;
