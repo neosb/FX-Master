@@ -1241,7 +1241,7 @@ double f0_6(int ai_0) {
    return (0);
 }
 
-int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
+int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SELL) {
    int ticket_4;
    int li_48;
    bool bool_52;
@@ -1266,13 +1266,17 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
             GhostFreeSelect(false);
          } else ld_16 = Ask + g_pips_972 * Point;
       }
-      if (gi_1168 == FALSE) {
-         if (ai_0) lots_8 = NormalizeDouble(f0_11(1) * gd_1060, 2);
-         else lots_8 = f0_2(gd_1016);
+      if (lots <= 0) {
+         if (gi_1168 == FALSE) {
+            if (ai_0) lots_8 = NormalizeDouble(f0_11(1) * gd_1060, 2);
+            else lots_8 = f0_2(gd_1016);
+         } else {
+            if (type == OP_SELL && f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
+            else if (type == OP_BUY && f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
+            else lots_8 = NormalizeDouble(base_lot, 2);
+         }
       } else {
-         if (type == OP_SELL && f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
-         else if (type == OP_BUY && f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
-         else lots_8 = NormalizeDouble(base_lot, 2);
+         lots_8 = NormalizeDouble(lots, 2);
       }
       
       // No money check
@@ -1288,8 +1292,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
             for (index_44 = 0; index_44 < 25; index_44++)
                if (gia_1216[index_44] <= 0) break;
             if (index_44 < 25) {
-               ticket_4 = GhostOrderSend(Symbol(), OP_BUY, lots_8, NormalizeDouble(Ask, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32,
-                  MagicNumber, 0, Green);
+               ticket_4 = GhostOrderSend(Symbol(), OP_BUY, lots_8, NormalizeDouble(Ask, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32, MagicNumber, 0, Green);
                if (ticket_4 > 0) {
                   gia_1216[index_44] = ticket_4;
                   gia_1220[index_44] = 0;
@@ -1306,8 +1309,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
                }
             }
          } else {
-            ticket_4 = GhostOrderSend(Symbol(), OP_BUY, lots_8, NormalizeDouble(Ask, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32,
-               MagicNumber, 0, Green);
+            ticket_4 = GhostOrderSend(Symbol(), OP_BUY, lots_8, NormalizeDouble(Ask, Digits), Slippage, NormalizeDouble(ld_24, Digits), NormalizeDouble(ld_16, Digits), EA_Name + ls_32, MagicNumber, 0, Green);
          }
       } else {
          if (gi_1212 == TRUE) {
@@ -1336,6 +1338,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
             ticket_4 = GhostOrderSend(Symbol(), OP_BUY, lots_8, NormalizeDouble(Ask, Digits), Slippage, 0, 0, EA_Name + ls_32, MagicNumber, 0, Green);
             Sleep(1000);
          }
+         
          if (ticket_4 >= 0) {
          //--- Assert 1: Declare variables
             double   aOpenPrice;
@@ -1363,6 +1366,26 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
             }
          }
       }
+      //---
+      if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) > MarketInfo(Symbol(), MODE_ASK)) {
+         if (Negative_Basket_Protection == TRUE) {
+            double std_TP, nbp_TP, tmp_TP;
+            std_TP = Bid - BasketTakeProfit * gPoint;
+            nbp_TP = Ask - NBP * gPoint;
+            if (std_TP > nbp_TP) {
+               tmp_TP = SellMinTP();
+               if (tmp_TP == 0.0) {
+                  f0_13(0, std_TP, lots_8);
+               } else {
+                  tmp_TP = nbp_TP;
+                  f0_13(0, tmp_TP, lots_8);
+               }
+            } else {
+               f0_13(0, std_TP, lots_8);
+            }
+         } // IF NBP TRUE  
+      }
+      //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
          if (!ai_0) {
@@ -1381,7 +1404,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_SELL) {
    return (li_ret_40);
 }
 
-int f0_13(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_BUY) {
+int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BUY) {
    int ticket_4;
    int li_48;
    bool bool_52;
@@ -1406,15 +1429,16 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_BUY) {
             GhostFreeSelect(false);
          } else ld_16 = Bid - g_pips_972 * Point;
       }
-      if (gi_1168 == FALSE) {
-         if (ai_0) lots_8 = NormalizeDouble(f0_11(0) * gd_1060, 2);
-         else lots_8 = f0_2(gd_1016);
-      } else {
-         if (type == OP_BUY && f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
-         else if (type == OP_SELL && f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
-         else lots_8 = NormalizeDouble(base_lot, 2);
+      if (lots <= 0) {
+         if (gi_1168 == FALSE) {
+            if (ai_0) lots_8 = NormalizeDouble(f0_11(0) * gd_1060, 2);
+            else lots_8 = f0_2(gd_1016);
+         } else {
+            if (type == OP_BUY && f0_6(0) > 0.0) lots_8 = NormalizeDouble(f0_6(0) * gd_964, 2);
+            else if (type == OP_SELL && f0_3(0) > 0.0) lots_8 = NormalizeDouble(f0_3(0) * gd_964, 2);
+            else lots_8 = NormalizeDouble(base_lot, 2);
+         }
       }
-      
       // No money check
       if (!MarginEnoughCheck(lots_8)) {Sleep(10000); GlobalVariableDel("PERMISSION"); return(false);}// Fix 0.06a No money check      
       
@@ -1503,6 +1527,26 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, int type = OP_BUY) {
             }
          }
       }
+      //---
+      if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) < MarketInfo(Symbol(), MODE_BID)) {
+         if (Negative_Basket_Protection == TRUE) {
+            double std_TP, nbp_TP, tmp_TP;
+            std_TP = Ask + BasketTakeProfit * g_point_1204;
+            nbp_TP = Bid + NBP * g_point_1204;
+            if (std_TP < nbp_TP) {
+               tmp_TP = BuyMaxTP();
+               if (tmp_TP == 0.0) {
+                  f0_12(0, std_TP, lots_8); //Openbuy
+               } else {
+                  tmp_TP = nbp_TP;
+                  f0_12(0, tmp_TP, lots_8);
+               }
+            } else {
+               f0_12(0, std_TP, lots_8);
+            }
+         } // IF NBP TRUE 
+      }
+      //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
          if (!ai_0) {
@@ -1733,8 +1777,6 @@ int trigger(int pos) {
          (sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
          ||
          (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iOpen(Symbol(),0,0) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
-         //MarketInfo(Symbol(), MODE_BID) > bb0L_20
-         
       )
    ) {
       sig_trigger = 1;
@@ -1746,7 +1788,6 @@ int trigger(int pos) {
          (sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
          ||
          (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iOpen(Symbol(),0,0) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
-         //MarketInfo(Symbol(), MODE_ASK) < bb0U_20
       )
    ) {
       sig_trigger = 1;
@@ -2171,11 +2212,22 @@ int FilterATR;
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
 //----
+   if ( GreedyModeOn == TRUE ) {
+      if ( sma0_600 > sma1_600 && MarketInfo(Symbol(),MODE_BID) < bb0M_20 ) {
+         return(buy);
+      } else 
+      if ( sma0_600 < sma1_600 && MarketInfo(Symbol(),MODE_ASK) > bb0M_20 ) {
+         return(sell);
+      } else {
+         return(0);
+      }
+   }
+//----
    if
    (
       bbs >= 1 && 
       //sma0_200 < sma0_50 && sma1_200 < sma1_50 && sma0_600 < sma0_200 
-      (GreedyModeOn == TRUE || sma0_600 < MarketInfo(Symbol(), MODE_BID))
+      sma0_600 < MarketInfo(Symbol(), MODE_BID)
    ) //SIGNAL BUY
    {
       if((Use_Leviathan_Sig==TRUE))
@@ -2219,7 +2271,7 @@ int FilterATR;
    (
       bbs >= 1 && 
       //sma0_200 > sma0_50 && sma1_200 > sma1_50 && sma0_600 > sma0_200 
-      (GreedyModeOn == TRUE || sma0_600 > MarketInfo(Symbol(), MODE_ASK))
+      sma0_600 > MarketInfo(Symbol(), MODE_ASK)
    )  //SIGNAL SELL
    {
       if((Use_Leviathan_Sig==TRUE))
