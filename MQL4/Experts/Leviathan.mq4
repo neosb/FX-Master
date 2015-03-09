@@ -1891,10 +1891,10 @@ int signal() {
 //----
 /**/
    if ( GreedyModeOn == TRUE ) {
-      if ( sma0_600 > sma1_600 && MarketInfo(Symbol(),MODE_BID) < bb0M_20 ) {
+      if ( (sma0_600 > sma1_600 && MarketInfo(Symbol(),MODE_BID) < bb0M_20) || (MarketInfo(Symbol(), MODE_ASK) > bb0U_20) ) {
          return(buy);
       } else 
-      if ( sma0_600 < sma1_600 && MarketInfo(Symbol(),MODE_ASK) > bb0M_20 ) {
+      if ( (sma0_600 < sma1_600 && MarketInfo(Symbol(),MODE_ASK) > bb0M_20) || (MarketInfo(Symbol(), MODE_BID) < bb0L_20) ) {
          return(sell);
       } else {
          return(0);
