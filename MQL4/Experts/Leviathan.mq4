@@ -1402,7 +1402,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
       }
       //---
       //Alert("B:",lots_8);
-      if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) > MarketInfo(Symbol(), MODE_ASK)) {
+      if(TriggerProtectionOn == FALSE && iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) > MarketInfo(Symbol(), MODE_ASK)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Bid - BasketTakeProfit * gPoint;
@@ -1564,7 +1564,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
       }
       //---
       //Alert("S:",lots_8);
-      if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) < MarketInfo(Symbol(), MODE_BID)) {
+      if(TriggerProtectionOn == FALSE && iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) < MarketInfo(Symbol(), MODE_BID)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Ask + BasketTakeProfit * g_point_1204;
@@ -1794,28 +1794,31 @@ int trigger(int pos) {
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
+   if (bbs >= 1) return(1);
+   else return(0);
+   
 //----
-   if (
-      pos == OP_BUY &&
-      (
-         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_BID) /*&& MarketInfo(Symbol(), MODE_BID) > bb0L_20*/) 
-         ||
-         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iOpen(Symbol(),0,0) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
-      )
-   ) {
-      sig_trigger = 1;
-   }
+   //if (
+   //   pos == OP_BUY &&
+   //   (
+   //      (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_BID) /*&& MarketInfo(Symbol(), MODE_BID) > bb0L_20*/) 
+   //      ||
+   //      (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iOpen(Symbol(),0,0) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
+   //   )
+   //) {
+   //   sig_trigger = 1;
+   //}
 //----
-   if (
-      pos == OP_SELL &&
-      (
-         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_ASK) /*&& MarketInfo(Symbol(), MODE_ASK) < bb0U_20*/)
-         ||
-         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iOpen(Symbol(),0,0) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
-      )
-   ) {
-      sig_trigger = 1;
-   }
+   //if (
+   //   pos == OP_SELL &&
+   //   (
+   //      (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_ASK) /*&& MarketInfo(Symbol(), MODE_ASK) < bb0U_20*/)
+   //      ||
+   //      (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iOpen(Symbol(),0,0) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
+   //   )
+   //) {
+   //   sig_trigger = 1;
+   //}
 //----
    HideTestIndicators(TRUE);
 //----
