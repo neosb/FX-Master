@@ -1794,12 +1794,11 @@ int trigger(int pos) {
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
-   if (bbs >= 1) return(1);
-   else return(0);
+   //if (bbs >= 1) return(1);
+   //else return(0);
    
 //----
-   //if (
-   //   pos == OP_BUY &&
+   if (pos == OP_BUY && MarketInfo(Symbol(), MODE_BID) > bb0L_20) return(1);
    //   (
    //      (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_BID) /*&& MarketInfo(Symbol(), MODE_BID) > bb0L_20*/) 
    //      ||
@@ -1809,8 +1808,7 @@ int trigger(int pos) {
    //   sig_trigger = 1;
    //}
 //----
-   //if (
-   //   pos == OP_SELL &&
+   if (pos == OP_SELL && MarketInfo(Symbol(), MODE_ASK) < bb0U_20) return(1);
    //   (
    //      (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_ASK) /*&& MarketInfo(Symbol(), MODE_ASK) < bb0U_20*/)
    //      ||
