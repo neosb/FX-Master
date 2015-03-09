@@ -175,29 +175,7 @@ extern string Level_25 = "";
 extern double Multiplier_25 = 1.5;
 extern double BasketTakeProfit_25 = 0.0;
 extern bool   DrawLines = FALSE;
-
-/*extern*/ string _____ = "SWB indicator settings";
-/*extern*/ bool Use_SWB_indicator = false;
-/*extern*/ bool      swb_is_reversed = FALSE;
-
-/*extern*/ bool      use_bb=true;
-/*extern*/ int       bb_period=20;
-/*extern*/ int       bb_deviation=2;
-/*extern*/ int       bb_shift=0;
-/*extern*/ bool      use_stoch=true;
-/*extern*/ int       k=5;
-/*extern*/ int       d=3;
-/*extern*/ int       slowing=3;
-/*extern*/ int       price_field=0;
-/*extern*/ int       stoch_shift=0;
-/*extern*/ int       lo_level=30;
-/*extern*/ int       up_level=70;
-/*extern*/ bool      use_rsi=true;
-/*extern*/ int       rsi_period=12;
-/*extern*/ int       rsi_shift=0;
-/*extern*/ int       lower=30;
-/*extern*/ int       upper=70;
-
+//----------------------------------------------------------------------- +
 double gd_948;
 bool gi_956 = FALSE;
 bool gi_960 = FALSE;
@@ -321,6 +299,62 @@ double farest_resistance = 0;
 double farest_daily_support = 0;
 double farest_daily_resistance = 0;
 //---------------------------------
+
+//---- indicator parameters
+
+/*extern*/ string _____ = "SWB indicator settings";
+/*extern*/ bool Use_SWB_indicator = false;
+/*extern*/ bool      swb_is_reversed = FALSE;
+
+/*extern*/ bool      use_bb=true;
+/*extern*/ int       bb_period=20;
+/*extern*/ int       bb_deviation=2;
+/*extern*/ int       bb_shift=0;
+/*extern*/ bool      use_stoch=true;
+/*extern*/ int       k=5;
+/*extern*/ int       d=3;
+/*extern*/ int       slowing=3;
+/*extern*/ int       price_field=0;
+/*extern*/ int       stoch_shift=0;
+/*extern*/ int       lo_level=30;
+/*extern*/ int       up_level=70;
+/*extern*/ bool      use_rsi=true;
+/*extern*/ int       rsi_period=12;
+/*extern*/ int       rsi_shift=0;
+/*extern*/ int       lower=30;
+/*extern*/ int       upper=70;
+int CorrelationRadius                 = 25;
+int MA_Period                         = 20;
+int ResultingBars                     = 0;
+double HeatMapDailyPercRateTholdMin   = 0.23;
+double HeatMapDailyPercRateTholdMax   = 0.33;
+string II1   = "== BBands Signals";
+string II1_2 = "== Doda-BBands2";
+int        Length                     = 20;
+int        Deviation                  = 2;
+double     MoneyRisk                  = 2.0;
+int        Signal                     = 1;
+int        Line                       = 1;
+int        Nbars                      = 500;
+string II1_3 = "== bbsqueeze_dark";
+int        bolPrd                     = 20;
+double     bolDev                     = 2.0;
+int        keltPrd                    = 20;
+double     keltFactor                 = 1.5;
+int        momPrd                     = 12;
+int Viscosity         = 7;      //[Viscosity] - Volatility Viscosity
+int Sedimentation     = 50;     //[Sedimentation] - Volatility Sedimentation
+double Threshold_level= 1.1;   //[Threshold_level] - Volatility Threshold
+bool lag_supressor    = true;   //[lag_supressor] - Volatility Lag Suppressor
+//---------------------------------
+double    lag_s_K=0.5;
+//---- buffers
+double thresholdBuffer[];
+double vol_m[];
+double vol_t[];
+double ind_c[];
+double soglie[];
+double regression_line[];           // array dei valori della retta di regressione
 
 //---------------------------------------------------------------------------
 
@@ -1367,6 +1401,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
          }
       }
       //---
+      /*
       if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) > MarketInfo(Symbol(), MODE_ASK)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
@@ -1385,6 +1420,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
             }
          } // IF NBP TRUE  
       }
+      */
       //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
@@ -1528,6 +1564,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
          }
       }
       //---
+      /*
       if(iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) < MarketInfo(Symbol(), MODE_BID)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
@@ -1546,6 +1583,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
             }
          } // IF NBP TRUE 
       }
+      */
       //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
@@ -1706,7 +1744,7 @@ void f0_15(int ai_0, int ai_unused_4) {
       }
    }
 }
-
+//------------------------------------------------------------------------ +
 int trigger(int pos) {
 //----
    if (TriggerProtectionOn==FALSE) return(1);
@@ -1767,6 +1805,33 @@ int trigger(int pos) {
    double bb1U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
    double bb2U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
    double bb3U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
+
+   double bb_squeeze_green_0  = bb_squeeze_dark(Symbol(),TriggerTimeFrame, bolPrd, bolDev, keltPrd, keltFactor, momPrd, Length, Nbars, 5, 0);
+   double bb_squeeze_green_1  = bb_squeeze_dark(Symbol(),TriggerTimeFrame, bolPrd, bolDev, keltPrd, keltFactor, momPrd, Length, Nbars, 5, 1);
+
+   double upTrendStop         = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 0, 0);
+   double downTrendStop       = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 1, 0);
+   double upTrendSignal       = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 2, 0);
+   double downTrendSignal     = doda_bands2(Symbol(),TriggerTimeFrame, "Doda-Bands2", Length, Deviation, MoneyRisk, Signal, Line, Nbars, FALSE, 3, 0);
+
+   //--_T_S_R__Signal_Line
+   double signalLineValue0_0  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 0, 0); // Blue
+   double signalLineValue1_0  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 1, 0); // Red
+   double signalLineValue0_1  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 0, 1); // Blue
+   double signalLineValue1_1  = i_TSRLine(Symbol(),TriggerTimeFrame, "_T_S_R__Signal_Line", 15, 3, 0, 1, 1); // Red
+
+   //--HAMA
+   double hamaValue0_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 0, 0);
+   double hamaValue1_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 1, 0);
+   double hamaValue2_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 2, 0);
+   double hamaValue3_0        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 3, 0);
+   double hamaValue0_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 0, 1);
+   double hamaValue1_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 1, 1);
+   double hamaValue2_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 2, 1);
+   double hamaValue3_1        = i_hama(Symbol(),TriggerTimeFrame, "HAMA_", 3, 1);
+
+   double bbSMA_0             = iBands(Symbol(),TriggerTimeFrame, 20,2,0, PRICE_CLOSE, MODE_MAIN, 0);
+   double bbSMA_1             = iBands(Symbol(),TriggerTimeFrame, 20,2,0, PRICE_CLOSE, MODE_MAIN, 1);
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
@@ -1774,7 +1839,7 @@ int trigger(int pos) {
    if (
       pos == OP_BUY &&
       (
-         (sma0_600 < MarketInfo(Symbol(), MODE_BID) && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
+         (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_BID) /*&& MarketInfo(Symbol(), MODE_BID) > bb0L_20*/) 
          ||
          (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_BID) && iLow(Symbol(),0,1) < bb1L_20 && iOpen(Symbol(),0,0) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
       )
@@ -1785,7 +1850,7 @@ int trigger(int pos) {
    if (
       pos == OP_SELL &&
       (
-         (sma0_600 > MarketInfo(Symbol(), MODE_ASK) && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
+         (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_ASK) /*&& MarketInfo(Symbol(), MODE_ASK) < bb0U_20*/)
          ||
          (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && iHigh(Symbol(),0,1) > bb1U_20 && iOpen(Symbol(),0,0) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
       )
@@ -3281,4 +3346,450 @@ void get_NearestAndFarestSR(string symbol, int timeframe, double price)
       }
    }
 }
+//+------------------------------------------------------------------+
+//+-----  INDICATORS                                           ------+
+//+------------------------------------------------------------------+
+
+double i_TSRLine(string sig_currency, int sig_timeFrame, string indexLabel, int period, int method, int price, int indexBuffer, int shiftBuffer) {
+
+   MqlRates RatesBarTSR[];
+   ArraySetAsSeries(RatesBarTSR,true);
+
+   //---- buffers
+   double Uptrend[];
+   double Dntrend[];
+   double ExtMapBuffer[];
+
+   ArrayResize(Uptrend, Nbars);
+   ArraySetAsSeries(Uptrend, true);
+   ArrayResize(Dntrend, Nbars);
+   ArraySetAsSeries(Dntrend, true);
+   ArrayResize(ExtMapBuffer, Nbars);
+   ArraySetAsSeries(ExtMapBuffer, true);
+
+   if( CopyRates(sig_currency,sig_timeFrame,0,Nbars+period,RatesBarTSR)==Nbars+period )
+   {
+      int x = 0;
+      int p = MathSqrt(2*period);
+      int e = Nbars;
+
+      double vect[], trend[];
+
+      ArrayResize(vect, e);
+      ArraySetAsSeries(vect, true);
+      ArrayResize(trend, e);
+      ArraySetAsSeries(trend, true);
+
+      for(x = 0; x < e; x++)
+      {
+         //vect[x] = 2*WMA(Pair, TimeFrame, x, period/2, method, price) - WMA(Pair, TimeFrame, x, period, method, price);
+         vect[x] = 2*iMA(sig_currency,sig_timeFrame, period, 0, method, price, x) - iMA(sig_currency,sig_timeFrame, 2*period, 0, method, price, x);
+      }
+
+      for(x = 0; x < e; x++) ExtMapBuffer[x] = iMAOnArray(vect, 0, p, 0, method, x);
+
+      for(x = e-2; x >= 0; x--)
+      {
+         trend[x] = trend[x+1];
+         if (ExtMapBuffer[x]> ExtMapBuffer[x+1]) trend[x] =1;
+         if (ExtMapBuffer[x]< ExtMapBuffer[x+1]) trend[x] =-1;
+
+         if (trend[x]>0)
+         {
+            Uptrend[x] = ExtMapBuffer[x];
+            if (trend[x+1]<0) Uptrend[x+1]=ExtMapBuffer[x+1];
+            Dntrend[x] = EMPTY_VALUE;
+         }
+         else if (trend[x]<0)
+         {
+            Dntrend[x] = ExtMapBuffer[x];
+            if (trend[x+1]>0) Dntrend[x+1]=ExtMapBuffer[x+1];
+            Uptrend[x] = EMPTY_VALUE;
+         }
+
+      }
+   }
+
+   switch(indexBuffer) {
+   case 0:
+      return Uptrend[shiftBuffer];
+   case 1:
+      return Dntrend[shiftBuffer];
+   default:
+      return EMPTY_VALUE;
+   }
+
+}
+
+//+------------------------------------------------------------------+
+
+double i_hama(string sig_currency, int sig_timeFrame, string indexLabel, int indexBuffer, int shiftBuffer) {
+
+   //---- buffers
+   int MaMetod  = 1;
+   int MaPeriod = 20;
+   //---- buffers
+   double ExtMapBuffer1[];
+   double ExtMapBuffer2[];
+   double ExtMapBuffer3[];
+   double ExtMapBuffer4[];
+
+   ArrayResize(ExtMapBuffer1, Nbars);
+   ArrayResize(ExtMapBuffer2, Nbars);
+   ArrayResize(ExtMapBuffer3, Nbars);
+   ArrayResize(ExtMapBuffer4, Nbars);
+
+   ArrayInitialize(ExtMapBuffer1, EMPTY_VALUE);
+   ArrayInitialize(ExtMapBuffer2, EMPTY_VALUE);
+   ArrayInitialize(ExtMapBuffer3, EMPTY_VALUE);
+   ArrayInitialize(ExtMapBuffer4, EMPTY_VALUE);
+   //----
+   double maOpen, maClose, maLow, maHigh;
+   double haOpen, haHigh, haLow, haClose;
+
+   int pos=Nbars - Length - 1;
+   while(pos>=0)
+     {
+      maOpen=iMA(sig_currency, sig_timeFrame,MaPeriod,0,MaMetod,0,pos);
+      maClose=iMA(sig_currency, sig_timeFrame,MaPeriod,0,MaMetod,3,pos);
+      maLow=iMA(sig_currency, sig_timeFrame,MaPeriod,0,MaMetod,1,pos);
+      maHigh=iMA(sig_currency, sig_timeFrame,MaPeriod,0,MaMetod,2,pos);
+
+      haOpen=(ExtMapBuffer3[pos+1]+ExtMapBuffer4[pos+1])/2;
+      haClose=(maOpen+maHigh+maLow+maClose)/4;
+      haHigh=MathMax(maHigh, MathMax(haOpen, haClose));
+      haLow=MathMin(maLow, MathMin(haOpen, haClose));
+      if (haOpen<haClose)
+        {
+         ExtMapBuffer1[pos]=haLow;
+         ExtMapBuffer2[pos]=haHigh;
+        }
+      else
+        {
+         ExtMapBuffer1[pos]=haHigh;
+         ExtMapBuffer2[pos]=haLow;
+        }
+      ExtMapBuffer3[pos]=haOpen;
+      ExtMapBuffer4[pos]=haClose;
+ 	   pos--;
+     }
+
+   switch(indexBuffer) {
+   case 0:
+      return ExtMapBuffer1[shiftBuffer];
+   case 1:
+      return ExtMapBuffer2[shiftBuffer];
+   case 2:
+      return ExtMapBuffer3[shiftBuffer];
+   case 3:
+      return ExtMapBuffer4[shiftBuffer];
+   default:
+      return EMPTY_VALUE;
+   }
+}
+
+//+------------------------------------------------------------------+
+
+double doda_bands2(string sig_currency, int sig_timeFrame, string indexLabel, int Length, int Deviation, double MoneyRisk, int Signal, int Line, int Nbars, bool SoundON, int indexBuffer, int shiftBuffer) {
+
+   //---- buffers
+   double a_ibuf_124[];
+   double a_ibuf_128[];
+   double a_ibuf_132[];
+   double a_ibuf_136[];
+   double a_ibuf_140[];
+   double a_ibuf_144[];
+
+   ArrayResize(a_ibuf_124, Nbars);
+   ArrayResize(a_ibuf_128, Nbars);
+   ArrayResize(a_ibuf_132, Nbars);
+   ArrayResize(a_ibuf_136, Nbars);
+   ArrayResize(a_ibuf_140, Nbars);
+   ArrayResize(a_ibuf_144, Nbars);
+
+   ArrayInitialize(a_ibuf_124, EMPTY_VALUE);
+   ArrayInitialize(a_ibuf_128, EMPTY_VALUE);
+   ArrayInitialize(a_ibuf_132, EMPTY_VALUE);
+   ArrayInitialize(a_ibuf_136, EMPTY_VALUE);
+   ArrayInitialize(a_ibuf_140, EMPTY_VALUE);
+   ArrayInitialize(a_ibuf_144, EMPTY_VALUE);
+
+   bool ai_152 = FALSE;
+   bool ai_156 = FALSE;
+
+   int ali_8;
+   double lda_12[25000];
+   double lda_16[25000];
+   double lda_20[25000];
+   double lda_24[25000];
+   for (int al_shift_4 = Nbars - 1; al_shift_4 >= 0; al_shift_4--) {
+      a_ibuf_124[al_shift_4] = 0;
+      a_ibuf_128[al_shift_4] = 0;
+      a_ibuf_132[al_shift_4] = 0;
+      a_ibuf_136[al_shift_4] = 0;
+      a_ibuf_140[al_shift_4] = EMPTY_VALUE;
+      a_ibuf_144[al_shift_4] = EMPTY_VALUE;
+   }
+   for (int al_shift_4 = Nbars - Length - 1; al_shift_4 >= 0; al_shift_4--) {
+      lda_12[al_shift_4] = iBands(sig_currency, sig_timeFrame, Length, Deviation, 0, PRICE_CLOSE, MODE_UPPER, al_shift_4);
+      lda_16[al_shift_4] = iBands(sig_currency, sig_timeFrame, Length, Deviation, 0, PRICE_CLOSE, MODE_LOWER, al_shift_4);
+      if (iClose(sig_currency, sig_timeFrame, al_shift_4) > lda_12[al_shift_4 + 1]) ali_8 = 1;
+      if (iClose(sig_currency, sig_timeFrame, al_shift_4) < lda_16[al_shift_4 + 1]) ali_8 = -1;
+      if (ali_8 > 0 && lda_16[al_shift_4] < lda_16[al_shift_4 + 1]) lda_16[al_shift_4] = lda_16[al_shift_4 + 1];
+      if (ali_8 < 0 && lda_12[al_shift_4] > lda_12[al_shift_4 + 1]) lda_12[al_shift_4] = lda_12[al_shift_4 + 1];
+      lda_20[al_shift_4] = lda_12[al_shift_4] + (MoneyRisk - 1.0) / 2.0 * (lda_12[al_shift_4] - lda_16[al_shift_4]);
+      lda_24[al_shift_4] = lda_16[al_shift_4] - (MoneyRisk - 1.0) / 2.0 * (lda_12[al_shift_4] - lda_16[al_shift_4]);
+      if (ali_8 > 0 && lda_24[al_shift_4] < lda_24[al_shift_4 + 1]) lda_24[al_shift_4] = lda_24[al_shift_4 + 1];
+      if (ali_8 < 0 && lda_20[al_shift_4] > lda_20[al_shift_4 + 1]) lda_20[al_shift_4] = lda_20[al_shift_4 + 1];
+      if (ali_8 > 0) {
+         if (Signal > 0 && a_ibuf_124[al_shift_4 + 1] == -1.0) {
+            a_ibuf_132[al_shift_4] = lda_24[al_shift_4];
+            a_ibuf_124[al_shift_4] = lda_24[al_shift_4];
+            if (Line > 0) a_ibuf_140[al_shift_4] = lda_24[al_shift_4];
+            if (SoundON == TRUE && al_shift_4 == 0 && (!ai_152)) {
+               Alert("DodaCharts-BBands going Up on ", sig_currency, "-", sig_timeFrame);
+               ai_152 = TRUE;
+               ai_156 = FALSE;
+            }
+         } else {
+            a_ibuf_124[al_shift_4] = lda_24[al_shift_4];
+            if (Line > 0) a_ibuf_140[al_shift_4] = lda_24[al_shift_4];
+            a_ibuf_132[al_shift_4] = -1;
+         }
+         if (Signal == 2) a_ibuf_124[al_shift_4] = 0;
+         a_ibuf_136[al_shift_4] = -1;
+         a_ibuf_128[al_shift_4] = -1.0;
+         a_ibuf_144[al_shift_4] = EMPTY_VALUE;
+      }
+      if (ali_8 < 0) {
+         if (Signal > 0 && a_ibuf_128[al_shift_4 + 1] == -1.0) {
+            a_ibuf_136[al_shift_4] = lda_20[al_shift_4];
+            a_ibuf_128[al_shift_4] = lda_20[al_shift_4];
+            if (Line > 0) a_ibuf_144[al_shift_4] = lda_20[al_shift_4];
+            if (SoundON == TRUE && al_shift_4 == 0 && (!ai_156)) {
+               Alert("DodaCharts-BBands going Down on ", sig_currency, "-", sig_timeFrame);
+               ai_156 = TRUE;
+               ai_152 = FALSE;
+            }
+         } else {
+            a_ibuf_128[al_shift_4] = lda_20[al_shift_4];
+            if (Line > 0) a_ibuf_144[al_shift_4] = lda_20[al_shift_4];
+            a_ibuf_136[al_shift_4] = -1;
+         }
+         if (Signal == 2) a_ibuf_128[al_shift_4] = 0;
+         a_ibuf_132[al_shift_4] = -1;
+         a_ibuf_124[al_shift_4] = -1.0;
+         a_ibuf_140[al_shift_4] = EMPTY_VALUE;
+      }
+   }
+
+   switch(indexBuffer) {
+   case 0:
+      return a_ibuf_124[shiftBuffer];
+   case 1:
+      return a_ibuf_128[shiftBuffer];
+   case 2:
+      return a_ibuf_132[shiftBuffer];
+   case 3:
+      return a_ibuf_136[shiftBuffer];
+   case 4:
+      return a_ibuf_140[shiftBuffer];
+   case 5:
+      return a_ibuf_144[shiftBuffer];
+   default:
+      return EMPTY_VALUE;
+   }
+
+}
+
+//+------------------------------------------------------------------+
+
+double bb_squeeze_dark(string sig_currency, int sig_timeFrame, int bolPrd, double bolDev, int keltPrd, double keltFactor, int momPrd, long Length, long Nbars, int indexBuffer, int shiftBuffer) {
+
+   //---- buffers
+   double upB[];
+   double upB2[];
+   double loB[];
+   double loB2[];
+   double upK[];
+   double loK[];
+
+   ArrayResize(upB,  Nbars);
+   ArrayResize(upB2, Nbars);
+   ArrayResize(loB,  Nbars);
+   ArrayResize(loB2, Nbars);
+   ArrayResize(upK,  Nbars);
+   ArrayResize(loK,  Nbars);
+
+   ArrayInitialize(upB,  EMPTY_VALUE);
+   ArrayInitialize(upB2, EMPTY_VALUE);
+   ArrayInitialize(loB,  EMPTY_VALUE);
+   ArrayInitialize(loB2, EMPTY_VALUE);
+   ArrayInitialize(upK,  EMPTY_VALUE);
+   ArrayInitialize(loK,  EMPTY_VALUE);
+
+   int i,j,slippage=3;
+   double breakpoint=0.0;
+   double ema=0.0;
+   int peakf=0;
+   int peaks=0;
+   int valleyf=0;
+   int valleys=0;
+   double ccis[61],ccif[61];
+   double delta=0;
+   double ugol=0;
+
+   int shift;
+   double diff,d,dPrev, std,bbs;
+
+   for (shift=Nbars - Length - 1;shift>=0;shift--) {
+      //d=iMomentum(NULL,0,momPrd,PRICE_CLOSE,shift);
+      d=LinearRegressionValue(sig_currency, sig_timeFrame, bolPrd,shift);
+      dPrev=LinearRegressionValue(sig_currency, sig_timeFrame, bolPrd,shift+1);
+      if(d>0) {
+         if ((dPrev>0) && (dPrev > d)){ upB2[shift]=d; upB[shift] = 0; } else { upB[shift]= d; upB2[shift] = 0; }
+         //upB[shift]=0;
+         loB[shift]=0;
+         loB2[shift]=0;
+      } else {
+         if ((dPrev<0) && (dPrev < d)){ loB2[shift]=d; loB[shift] = 0; } else { loB[shift]= d; loB2[shift] = 0; }
+         upB[shift]=0;
+         upB2[shift]=0;
+         //loB[shift]=d;
+      }
+		diff = iATR(sig_currency,sig_timeFrame,keltPrd,shift)*keltFactor;
+		std = iStdDev(sig_currency,sig_timeFrame,bolPrd,MODE_SMA,0,PRICE_CLOSE,shift);
+		bbs = bolDev * std / diff;
+      if(bbs<1) {
+         upK[shift]=0;
+         loK[shift]=EMPTY_VALUE;
+      } else {
+         loK[shift]=0;
+         upK[shift]=EMPTY_VALUE;
+      }
+   }
+
+   switch(indexBuffer) {
+   case 0:
+      return upB[shiftBuffer];
+   case 1:
+      return loB[shiftBuffer];
+   case 2:
+      return upB2[shiftBuffer];
+   case 3:
+      return loB2[shiftBuffer];
+   case 4:
+      return upK[shiftBuffer];
+   case 5:
+      return loK[shiftBuffer];
+   default:
+      return EMPTY_VALUE;
+   }
+}
+
+double LinearRegressionValue(string sig_currency, int sig_timeFrame, int Len,int shift) {
+   double SumBars = 0;
+   double SumSqrBars = 0;
+   double SumY = 0;
+   double Sum1 = 0;
+   double Sum2 = 0;
+   double Slope = 0;
+
+   SumBars = Len * (Len-1) * 0.5;
+   SumSqrBars = (Len - 1) * Len * (2 * Len - 1)/6;
+
+  for (int x=0; x<=Len-1;x++) {
+   double HH = iLow(sig_currency,sig_timeFrame,x+shift);
+   double LL = iHigh(sig_currency,sig_timeFrame,x+shift);
+   for (int y=x; y<=(x+Len)-1; y++) {
+     HH = MathMax(HH, iHigh(sig_currency,sig_timeFrame,y+shift));
+     LL = MathMin(LL, iLow(sig_currency,sig_timeFrame,y+shift));
+   }
+    Sum1 += x* (iClose(sig_currency,sig_timeFrame,x+shift)-((HH+LL)/2 + iMA(sig_currency,sig_timeFrame,Len,0,MODE_EMA,PRICE_CLOSE,x+shift))/2);
+    SumY += (iClose(sig_currency,sig_timeFrame,x+shift)-((HH+LL)/2 + iMA(sig_currency,sig_timeFrame,Len,0,MODE_EMA,PRICE_CLOSE,x+shift))/2);
+  }
+  Sum2 = SumBars * SumY;
+  double Num1 = Len * Sum1 - Sum2;
+  double Num2 = SumBars * SumBars-Len * SumSqrBars;
+
+  if (Num2 != 0.0)  {
+    Slope = Num1/Num2;
+  } else {
+    Slope = 0;
+  }
+
+  double Intercept = (SumY - Slope*SumBars) /Len;
+  double LinearRegValue = Intercept+Slope * (Len - 1);
+
+  return (LinearRegValue);
+}
+
 //---------------------------------------------------------------------------
+bool sqVolatility(string symbol, int period)
+{
+   double vol=0;
+
+   int limit=(Sedimentation+5);
+
+   ArrayResize(ind_c,limit*2);
+   ArrayResize(vol_m,limit*2);
+   ArrayResize(vol_t,limit*2);
+   ArrayResize(thresholdBuffer,limit*2);
+
+   ArrayInitialize(ind_c,0);
+   ArrayInitialize(vol_m,0);
+   ArrayInitialize(vol_t,0);
+   ArrayInitialize(thresholdBuffer,0);
+
+   for(int i=limit;i>=0;i--)
+   {
+      double sa=iATR(symbol,period,Viscosity,i);
+      double s1=ind_c[i+1];
+      double s3=ind_c[i+3];
+      double atr=NormalizeDouble(sa, MarketInfo(symbol, MODE_DIGITS) );
+      double atr_s = iATR(symbol,period,Sedimentation,i);
+
+      if(atr_s != 0)
+      {
+         if(lag_supressor)
+            vol= sa/atr_s+lag_s_K*(s1-s3);
+         else
+            vol= sa/atr_s;
+         //vol_m[i]=vol;
+      }
+      else
+      {
+         return(false);
+      }
+
+      double anti_thres = iStdDev(symbol,period,Viscosity,0,MODE_LWMA,PRICE_TYPICAL,i);
+
+      double std_dev_s = iStdDev(symbol,period,Sedimentation,0,MODE_LWMA,PRICE_TYPICAL,i);
+      if(std_dev_s != 0)
+      {
+         anti_thres= (anti_thres == 0 ? 0 : anti_thres/std_dev_s);
+      } else {
+         return(false);
+      }
+
+      double t=Threshold_level;
+      t=t-anti_thres;
+
+      if (vol>t) {
+         vol_t[i]=vol;vol_m[i]=vol;
+
+         if(i==0) return(true);
+      }
+      else {
+         vol_t[i]=vol;vol_m[i]=EMPTY_VALUE;
+
+         if(i==0) return(false);
+      }
+
+      ind_c[i]=vol;
+      thresholdBuffer[i]=t;
+   }
+
+   return(false);
+}
+//+-------------------------------------------------------------------------------------------------------------------------------------+
