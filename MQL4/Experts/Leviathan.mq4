@@ -390,20 +390,21 @@ int OnInit()
       gi_execution_point = 10.0 * ExecutionPoint;
       gi_stop_loss = 10.0 * BasketStopLoss;
       gi_take_profit = 10.0 * BasketTakeProfit;
-      //g_point_1204 = 0.01;
       g_point_1204 = Point;
+      gPoint = g_point_1204;
    } else {
       if (Digits == 5) {
          gi_execution_point = 10.0 * ExecutionPoint;
          gi_stop_loss = 10.0 * BasketStopLoss;
          gi_take_profit = 10.0 * BasketTakeProfit;
-         //g_point_1204 = 0.0001;
-         g_point_1204 = Point;
+         g_point_1204 = 0.0001;
+         gPoint = g_point_1204;
       } else {
          gi_execution_point = ExecutionPoint;
          gi_stop_loss = BasketStopLoss;
          gi_take_profit = BasketTakeProfit;
          g_point_1204 = Point;
+         gPoint = g_point_1204;
       }
    }
    gda_1180[0] = BasketTakeProfit_1;
