@@ -181,8 +181,8 @@ bool gi_956 = FALSE;
 bool gi_960 = FALSE;
 double gd_964;
 double g_pips_972 = 0.0;
-int gi_unused_980 = 0;
-int gi_984 = 0;
+int gi_execution_point = 0;
+int gi_stop_loss = 0;
 int gi_unused_988 = 300;
 int gi_992 = 5000;
 int gi_996 = 0;
@@ -386,17 +386,17 @@ int OnInit()
    gi_76 = fun1(gsa_92, ArraySize(gsa_92), 0.1, gs_1172, IsDemo());
    gd_964 = Multiplier;
    if (Digits == 3) {
-      gi_unused_980 = 10.0 * ExecutionPoint;
-      gi_984 = 10.0 * BasketStopLoss;
+      gi_execution_point = 10.0 * ExecutionPoint;
+      gi_stop_loss = 10.0 * BasketStopLoss;
       g_point_1204 = 0.01;
    } else {
       if (Digits == 5) {
-         gi_unused_980 = 10.0 * ExecutionPoint;
-         gi_984 = 10.0 * BasketStopLoss;
+         gi_execution_point = 10.0 * ExecutionPoint;
+         gi_stop_loss = 10.0 * BasketStopLoss;
          g_point_1204 = 0.0001;
       } else {
-         gi_unused_980 = ExecutionPoint;
-         gi_984 = BasketStopLoss;
+         gi_execution_point = ExecutionPoint;
+         gi_stop_loss = BasketStopLoss;
          g_point_1204 = Point;
       }
    }
@@ -1122,7 +1122,7 @@ int f0_8() {
             RefreshRates();
             if (GhostOrderType() == OP_BUY) {
                if (GhostOrderStopLoss() == 0.0) {
-                  ld_12 = GhostOrderOpenPrice() - gi_984 * Point;
+                  ld_12 = GhostOrderOpenPrice() - gi_stop_loss * Point;
                   li_20 = Close_Order_Attempts;
                   bool_4 = FALSE;
                   while (bool_4 == FALSE && li_20 >= 0) {
@@ -1147,7 +1147,7 @@ int f0_8() {
             }
             if (GhostOrderType() == OP_SELL) {
                if (GhostOrderStopLoss() == 0.0) {
-                  ld_12 = GhostOrderOpenPrice() + gi_984 * Point;
+                  ld_12 = GhostOrderOpenPrice() + gi_stop_loss * Point;
                   li_20 = Close_Order_Attempts;
                   bool_4 = FALSE;
                   while (bool_4 == FALSE && li_20 >= 0) {
@@ -1316,7 +1316,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
       // No money check
       if (!MarginEnoughCheck(lots_8)) {Sleep(10000); GlobalVariableDel("PERMISSION"); return(false);}// Fix 0.06a No money check      
       
-      if (BasketStopLoss > 0) ld_24 = Ask - gi_984 * Point;
+      if (BasketStopLoss > 0) ld_24 = Ask - gi_stop_loss * Point;
       if (!SupportECN) {
          if (ld_16 == 0.0) ld_16 = Ask + BasketTakeProfit * g_point_1204;
          if (ld_24 == 0.0) ld_24 = Ask - BasketStopLoss * g_point_1204;
@@ -1479,7 +1479,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
       // No money check
       if (!MarginEnoughCheck(lots_8)) {Sleep(10000); GlobalVariableDel("PERMISSION"); return(false);}// Fix 0.06a No money check      
       
-      if (BasketStopLoss > 0) ld_24 = Bid + gi_984 * Point;
+      if (BasketStopLoss > 0) ld_24 = Bid + gi_stop_loss * Point;
       if (!SupportECN) {
          if (ld_16 == 0.0) ld_16 = Bid - BasketTakeProfit * g_point_1204;
          if (ld_24 == 0.0) ld_24 = Bid + BasketStopLoss * g_point_1204;
@@ -1647,7 +1647,7 @@ void f0_15(int ai_0, int ai_unused_4) {
       else
          if (ai_0 > 0) f0_12();
    } else {
-      if (trigger(OP_BUY) > 0 && order_open_price_12 - Ask > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
+      if (trigger(OP_BUY) > 0 && order_open_price_12 - Ask > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
           if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Ask + BasketTakeProfit * g_point_1204;
@@ -1891,10 +1891,10 @@ int signal() {
 //----
 /**/
    if ( GreedyModeOn == TRUE ) {
-      if ( (sma0_600 > sma1_600 && MarketInfo(Symbol(),MODE_BID) < bb0M_20) || (MarketInfo(Symbol(), MODE_ASK) > bb0U_20) ) {
+      if ( (sma0_600 > sma1_600 /*&& MarketInfo(Symbol(),MODE_BID) < bb0M_20*/) || (MarketInfo(Symbol(), MODE_ASK) > bb0U_20) ) {
          return(buy);
       } else 
-      if ( (sma0_600 < sma1_600 && MarketInfo(Symbol(),MODE_ASK) > bb0M_20) || (MarketInfo(Symbol(), MODE_BID) < bb0L_20) ) {
+      if ( (sma0_600 < sma1_600 /*&& MarketInfo(Symbol(),MODE_ASK) > bb0M_20*/) || (MarketInfo(Symbol(), MODE_BID) < bb0L_20) ) {
          return(sell);
       } else {
          return(0);
@@ -2052,7 +2052,7 @@ void f0_14(int ai_unused_0, int ai_4) {
       else
          if (ai_4 > 0) f0_13();
    } else {
-      if(trigger(OP_SELL) > 0 && Bid - order_open_price_12 > ExecutionPoint * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
+      if(trigger(OP_SELL) > 0 && Bid - order_open_price_12 > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Bid - BasketTakeProfit * gPoint;
