@@ -181,8 +181,9 @@ bool gi_956 = FALSE;
 bool gi_960 = FALSE;
 double gd_964;
 double g_pips_972 = 0.0;
-int gi_execution_point = 0;
-int gi_stop_loss = 0;
+double gi_execution_point = 0;
+double gi_stop_loss = 0;
+double gi_take_profit = 0;
 int gi_unused_988 = 300;
 int gi_992 = 5000;
 int gi_996 = 0;
@@ -388,15 +389,20 @@ int OnInit()
    if (Digits == 3) {
       gi_execution_point = 10.0 * ExecutionPoint;
       gi_stop_loss = 10.0 * BasketStopLoss;
-      g_point_1204 = 0.01;
+      gi_take_profit = 10.0 * BasketTakeProfit;
+      //g_point_1204 = 0.01;
+      g_point_1204 = Point;
    } else {
       if (Digits == 5) {
          gi_execution_point = 10.0 * ExecutionPoint;
          gi_stop_loss = 10.0 * BasketStopLoss;
-         g_point_1204 = 0.0001;
+         gi_take_profit = 10.0 * BasketTakeProfit;
+         //g_point_1204 = 0.0001;
+         g_point_1204 = Point;
       } else {
          gi_execution_point = ExecutionPoint;
          gi_stop_loss = BasketStopLoss;
+         gi_take_profit = BasketTakeProfit;
          g_point_1204 = Point;
       }
    }
@@ -474,7 +480,7 @@ int OnInit()
       Alert("Please input valid KEY.");
    }
    StartingBalance = AccountBalance();
-   NBP=BasketTakeProfit;
+   //NBP=gi_take_profit;
    GhostFreeSelect(false);
 //---
    return(INIT_SUCCEEDED);
@@ -1318,8 +1324,8 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
       
       if (BasketStopLoss > 0) ld_24 = Ask - gi_stop_loss * Point;
       if (!SupportECN) {
-         if (ld_16 == 0.0) ld_16 = Ask + BasketTakeProfit * g_point_1204;
-         if (ld_24 == 0.0) ld_24 = Ask - BasketStopLoss * g_point_1204;
+         if (ld_16 == 0.0) ld_16 = Ask + gi_take_profit * g_point_1204;
+         if (ld_24 == 0.0) ld_24 = Ask - gi_stop_loss * g_point_1204;
          if (nbp > 0.0) ld_16 = nbp; // NBP
          if (gi_1212 == TRUE) {
             int index_44 = 0;
@@ -1381,8 +1387,8 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
             if( GhostOrderSelect(ticket_4, SELECT_BY_TICKET) ) aOpenPrice = GhostOrderOpenPrice();
          //--- Assert 1: Free OrderSelect #7
             GhostFreeSelect(false);
-            if (ld_16 == 0.0) ld_16 = Ask + BasketTakeProfit * g_point_1204;
-            if (ld_24 == 0.0) ld_24 = Ask - BasketStopLoss * g_point_1204;
+            if (ld_16 == 0.0) ld_16 = Ask + gi_take_profit * g_point_1204;
+            if (ld_24 == 0.0) ld_24 = Ask - gi_stop_loss * g_point_1204;
             li_48 = Close_Order_Attempts;
             bool_52 = FALSE;
             while (bool_52 == FALSE && li_48 >= 0) {
@@ -1405,7 +1411,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
       if(TriggerProtectionOn == FALSE && iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) > MarketInfo(Symbol(), MODE_ASK)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
-            std_TP = Bid - BasketTakeProfit * gPoint;
+            std_TP = Bid - gi_take_profit * gPoint;
             nbp_TP = Ask - NBP * gPoint;
             if (std_TP > nbp_TP) {
                tmp_TP = SellMinTP();
@@ -1481,8 +1487,8 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
       
       if (BasketStopLoss > 0) ld_24 = Bid + gi_stop_loss * Point;
       if (!SupportECN) {
-         if (ld_16 == 0.0) ld_16 = Bid - BasketTakeProfit * g_point_1204;
-         if (ld_24 == 0.0) ld_24 = Bid + BasketStopLoss * g_point_1204;
+         if (ld_16 == 0.0) ld_16 = Bid - gi_take_profit * g_point_1204;
+         if (ld_24 == 0.0) ld_24 = Bid + gi_stop_loss * g_point_1204;
          if (nbp > 0.0) ld_16 = nbp; // NBP
          if (gi_1212 == TRUE) {
             int index_44 = 0;
@@ -1543,8 +1549,8 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
             if( GhostOrderSelect(ticket_4, SELECT_BY_TICKET) ) aOpenPrice = GhostOrderOpenPrice();
          //--- Assert 1: Free OrderSelect #9
             GhostFreeSelect(false);
-            if (ld_16 == 0.0) ld_16 = Bid - BasketTakeProfit * g_point_1204;
-            if (ld_24 == 0.0) ld_24 = Bid + BasketStopLoss * g_point_1204;
+            if (ld_16 == 0.0) ld_16 = Bid - gi_take_profit * g_point_1204;
+            if (ld_24 == 0.0) ld_24 = Bid + gi_stop_loss * g_point_1204;
             li_48 = Close_Order_Attempts;
             bool_52 = FALSE;
             while (bool_52 == FALSE && li_48 >= 0) {
@@ -1567,7 +1573,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
       if(TriggerProtectionOn == FALSE && iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) < MarketInfo(Symbol(), MODE_BID)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
-            std_TP = Ask + BasketTakeProfit * g_point_1204;
+            std_TP = Ask + gi_take_profit * g_point_1204;
             nbp_TP = Bid + NBP * g_point_1204;
             if (std_TP < nbp_TP) {
                tmp_TP = BuyMaxTP();
@@ -1650,7 +1656,7 @@ void f0_15(int ai_0, int ai_unused_4) {
       if (trigger(OP_BUY) > 0 && order_open_price_12 - Ask > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
           if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
-            std_TP = Ask + BasketTakeProfit * g_point_1204;
+            std_TP = Ask + gi_take_profit * g_point_1204;
             nbp_TP = order_open_price_12 + NBP * g_point_1204;
             if (std_TP < nbp_TP) {
                tmp_TP = BuyMaxTP();
@@ -2055,7 +2061,7 @@ void f0_14(int ai_unused_0, int ai_4) {
       if(trigger(OP_SELL) > 0 && Bid - order_open_price_12 > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
-            std_TP = Bid - BasketTakeProfit * gPoint;
+            std_TP = Bid - gi_take_profit * gPoint;
             nbp_TP = order_open_price_12 - NBP * gPoint;
             if (std_TP > nbp_TP) {
                tmp_TP = SellMinTP();
