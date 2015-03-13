@@ -1897,10 +1897,10 @@ int signal() {
 //----
 /**/
    if ( GreedyModeOn == TRUE ) {
-      if ( (sma0_600 > sma1_600 /*&& MarketInfo(Symbol(),MODE_BID) < bb0M_20*/) || (MarketInfo(Symbol(), MODE_ASK) > bb0U_20) ) {
+      if ( (sma0_600 > sma1_600 && iClose(Symbol(),0,1) < iHigh(Symbol(),0,1) && MarketInfo(Symbol(),MODE_BID) < iClose(Symbol(),0,1) /*&& MarketInfo(Symbol(),MODE_BID) < bb0M_20*/) /*|| (MarketInfo(Symbol(), MODE_ASK) > bb0U_20)*/ ) {
          return(buy);
       } else 
-      if ( (sma0_600 < sma1_600 /*&& MarketInfo(Symbol(),MODE_ASK) > bb0M_20*/) || (MarketInfo(Symbol(), MODE_BID) < bb0L_20) ) {
+      if ( (sma0_600 < sma1_600 && iClose(Symbol(),0,1) > iLow(Symbol(),0,1)  && MarketInfo(Symbol(),MODE_ASK) > iClose(Symbol(),0,1) /*&& MarketInfo(Symbol(),MODE_ASK) > bb0M_20*/) /*|| (MarketInfo(Symbol(), MODE_BID) < bb0L_20)*/ ) {
          return(sell);
       } else {
          return(0);
