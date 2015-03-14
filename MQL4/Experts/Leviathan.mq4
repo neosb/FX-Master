@@ -1879,9 +1879,11 @@ int signal() {
    //| Variable Begin                                                   |
    //+------------------------------------------------------------------+
    //----
+   double sma0_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,0);
    double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,0);
    double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,0);
    double sma0_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0);
+   double sma1_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,1);
    double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,1);
    double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,1);
    double sma1_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,1);
@@ -1937,10 +1939,16 @@ int signal() {
       double high_1 = (iHigh(Symbol(),0,1)-iClose(Symbol(),0,1));
       double low_1  = (iClose(Symbol(),0,1)-iLow(Symbol(),0,1));
       double tolerance = 2*getPointCoef();
-      if ( (sma0_600 > sma1_600 && high_1 > tolerance && MarketInfo(Symbol(),MODE_BID) < iClose(Symbol(),0,1) /*&& MarketInfo(Symbol(),MODE_BID) < bb0M_20*/) /*|| (MarketInfo(Symbol(), MODE_ASK) > bb0U_20)*/ ) {
+      if ( (sma0_600 > sma1_600 && high_1 > tolerance && MarketInfo(Symbol(),MODE_BID) < iClose(Symbol(),0,1) &&
+            (sma0_20 > sma0_200 || (sma0_20 < sma0_200 && sma0_20 > sma1_20)) 
+            /*&& MarketInfo(Symbol(),MODE_BID) < bb0M_20*/) 
+           || (sma0_20 > sma1_20 && MarketInfo(Symbol(), MODE_ASK) > bb0U_20) ) {
          return(buy);
       } else 
-      if ( (sma0_600 < sma1_600 && low_1  > tolerance && MarketInfo(Symbol(),MODE_ASK) > iClose(Symbol(),0,1) /*&& MarketInfo(Symbol(),MODE_ASK) > bb0M_20*/) /*|| (MarketInfo(Symbol(), MODE_BID) < bb0L_20)*/ ) {
+      if ( (sma0_600 < sma1_600 && low_1  > tolerance && MarketInfo(Symbol(),MODE_ASK) > iClose(Symbol(),0,1) && 
+            (sma0_20 < sma0_200 || (sma0_20 > sma0_200 && sma0_20 < sma1_20)) 
+            /*&& MarketInfo(Symbol(),MODE_ASK) > bb0M_20*/) 
+           || (sma0_20 < sma1_20 && MarketInfo(Symbol(), MODE_BID) < bb0L_20) ) {
          return(sell);
       } else {
          return(0);
@@ -2379,6 +2387,7 @@ void f0_17() {
             "\n*=====================*"+
             "\nAccount Leverage  :  " + "1 : " + AccountLeverage() + 
             "\nAccount Type  :  " + AccountServer() + 
+            "\nAccount Balance = " + GhostAccountBalance() +
             "\nAccount Equity  = " + GhostAccountEquity() +
             "\nFree Margin     = " + GhostAccountFreeMargin() +
             "\nDrawdown  :  " + dbl2str_0 + "%" +
@@ -2404,6 +2413,7 @@ void f0_17() {
          "\n*=====================*"+
          "\nAccount Leverage  :  " + "1 : " + AccountLeverage() +
          "\nAccount Type  :  " + AccountServer() +
+         "\nAccount Balance = " + GhostAccountBalance() +
          "\nAccount Equity  = " + GhostAccountEquity() +
          "\nFree Margin     = " + GhostAccountFreeMargin() +
          "\nDrawdown  :  " + dbl2str_0 + "%" +

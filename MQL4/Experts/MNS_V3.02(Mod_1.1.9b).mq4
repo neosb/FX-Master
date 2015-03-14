@@ -63,7 +63,15 @@ extern int    MinsAfterLow        = 30;
 extern bool   IncludeSpeaks       = false; // news items with "Speaks" in them have different characteristics
 extern int    MinsBeforeSpeaks    = 360;
 extern int    MinsAfterSpeaks     = 240;
-extern bool   ReportAllForUSD     = true;
+extern bool	  ReportAllForUSD	    = true;
+extern bool   ReportAllForEUR     = true;
+extern bool   ReportAllForGBP     = true;
+extern bool   ReportAllForNZD     = true;
+extern bool   ReportAllForJPY     = true;
+extern bool   ReportAllForAUD     = true;
+extern bool   ReportAllForCHF     = true;
+extern bool   ReportAllForCAD     = true;
+extern bool   ReportAllForCNY     = false;
 extern string S6="-------Manage Loss Trade-------";
 extern bool   PauseOnLoss         = true;
 extern double PauseMinPips        = 5.0;
@@ -1128,49 +1136,102 @@ int DST()
   return(StringConcatenate(nYear,".",sMonth,".",sDay," ",sHour,":",sMin,":",sSec));
   }
 //=================================================================================================================================================//
+/**  FFCal **
+      extern bool 	IncludeHigh 		= true;
+      extern bool 	IncludeMedium 		= true;
+      extern bool 	IncludeLow 			= false;   //true;
+      extern bool 	IncludeSpeaks 		= true; 		// news items with "Speaks" in them have different characteristics
+      extern bool		IsEA_Call			= false;
+      extern int		OffsetHours			= 0;      //-1;
+      extern bool		AllowWebUpdates	= true;			// Set this to false when using in another EA or Chart, so that the multiple instances of the indicator dont fight with each other
+      extern int		Alert1MinsBefore	= 0;			// Set to -1 for no Alert
+      extern int		Alert2MinsBefore	= -1;			// Set to -1 for no Alert
+      extern bool		ReportAllForUSD	= true;
+      extern bool    ReportAllForEUR   = true;
+      extern bool    ReportAllForGBP   = true;
+                                                   // added and tested by a1ra, seems working OK.
+      extern bool    ReportAllForNZD   = true;
+      extern bool    ReportAllForJPY   = true;
+      extern bool    ReportAllForAUD   = true;
+      extern bool    ReportAllForCHF   = true;
+      extern bool    ReportAllForCAD   = true;
+      extern bool    ReportAllForCNY   = false;
+      
+      extern bool 	EnableLogging 		= false; 		// Perhaps remove this from externs once its working well
+      extern bool		ShowNextTwoEvents	= true;
+      extern bool		ShowVertNews		= false;
+      extern int 		TxtSize 			   = 10;
+      extern color 	TxtColorTitle 		= Gold;       //LightGray;
+      extern color 	TxtColorNews 		= DeepSkyBlue;
+      extern color 	TxtColorImpact 	= Red;
+      extern color 	TxtColorPrevious 	= Peru;
+      extern color 	TxtColorForecast 	= Lime;
+      extern int		VertTxtShift 		= 21;			// How far away below the ask line we want to place our vertical news text
+      extern int		VertLeftLineShift 	= 900;			// How far away to the left of the line we want to place our vertical news text
+      extern int		VertRightLineShift 	= 200;			// How far away to the left of the line we want to place our vertical news text
+      extern color	VertLineColor 		= SlateBlue;	// Color of our vertical news line
+      extern color	VertTxtColor 		= Black;		// Color of our vertical text color 
+      extern int		VertTxtSize 		= 8;			// Color of our vertical text
+      extern int		NewsCorner 			= 1;			// Choose which corner to place headlines 0=Upper Left, 1=Upper Right, 2=lower left , 3=lower right
+      extern bool		SaveXmlFiles		= false;		// If true, this will keep the daily XML files
+**/
+
 bool IsNewsTime()
 {
   if(Use_NewsFilter==FALSE) return(FALSE);
+  
   static bool rval = false;
   static int lm = -1;
   bool is_news = false;
+  
   // uncomment next line if not global variable
   int minutesSincePrevEvent = 10080, minutesUntilNextEvent = 10080; // 1 week
+  
   if (lm != Minute()) { // update news status, run every minute
-  lm = Minute();
-  // check high impact
-  if(IncludeHigh) {
-  minutesSincePrevEvent = iCustom(NULL,0,"FFCal",IncludeHigh,false,false,false,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,0);
-  minutesUntilNextEvent = iCustom(NULL,0,"FFCal",IncludeHigh,false,false,false,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,1);
-  if(minutesUntilNextEvent<=MinsBeforeHigh || minutesSincePrevEvent<=MinsAfterHigh)
-  is_news = true;
+      lm = Minute();
+
+     // check high impact
+     if(IncludeHigh) {
+         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", IncludeHigh, false, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", IncludeHigh, false, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+         
+         if(minutesUntilNextEvent<=MinsBeforeHigh || minutesSincePrevEvent<=MinsAfterHigh)
+            is_news = true;
+     }
+
+     // check medium impact
+     if(IncludeMedium && !is_news) {
+        minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, IncludeMedium, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+        minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, IncludeMedium, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+  
+        if(minutesUntilNextEvent<=MinsBeforeMedium || minutesSincePrevEvent<=MinsAfterMedium)
+            is_news = true;
+     }
+
+     // check low impact
+     if(IncludeLow && !is_news) {
+         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, false, IncludeLow, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, false, IncludeLow, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+  
+         if(minutesUntilNextEvent<=MinsBeforeLow || minutesSincePrevEvent<=MinsAfterLow)
+            is_news = true;
+     }
+   
+     // check speaks
+     if(IncludeSpeaks && !is_news) {
+         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, false, false, IncludeSpeaks, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, false, false, IncludeSpeaks, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+  
+         if(minutesUntilNextEvent<=MinsBeforeSpeaks || minutesSincePrevEvent<=MinsAfterSpeaks)
+            is_news = true;
+     }
+
+     if(is_news)
+         rval = true;
+     else
+         rval = false;
   }
-  // check medium impact
-  if(IncludeMedium && !is_news) {
-  minutesSincePrevEvent = iCustom(NULL,0,"FFCal",false,IncludeMedium,false,false,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,0);
-  minutesUntilNextEvent = iCustom(NULL,0,"FFCal",false,IncludeMedium,false,false,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,1);
-  if(minutesUntilNextEvent<=MinsBeforeMedium || minutesSincePrevEvent<=MinsAfterMedium)
-  is_news = true;
-  }
-  // check low impact
-  if(IncludeLow && !is_news) {
-  minutesSincePrevEvent = iCustom(NULL,0,"FFCal",false,false,IncludeLow,false,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,0);
-  minutesUntilNextEvent = iCustom(NULL,0,"FFCal",false,false,IncludeLow,false,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,1);
-  if(minutesUntilNextEvent<=MinsBeforeLow || minutesSincePrevEvent<=MinsAfterLow)
-  is_news = true;
-  }
-  // check speaks
-  if(IncludeSpeaks && !is_news) {
-  minutesSincePrevEvent = iCustom(NULL,0,"FFCal",false,false,false,IncludeSpeaks,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,0);
-  minutesUntilNextEvent = iCustom(NULL,0,"FFCal",false,false,false,IncludeSpeaks,true,GMT_Offset,true,-1,-1,ReportAllForUSD,1,1);
-  if(minutesUntilNextEvent<=MinsBeforeSpeaks || minutesSincePrevEvent<=MinsAfterSpeaks)
-  is_news = true;
-  }
-  if(is_news)
-  rval = true;
-  else
-  rval = false;
-  }
+  
   return(rval);
 }
 //=================================================================================================================================================//
