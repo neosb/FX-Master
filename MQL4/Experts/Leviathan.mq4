@@ -28,6 +28,8 @@
 
 #import "stdlib.ex4"
    string ErrorDescription(int a0);
+#import "Kernel32.dll"
+   void GetSystemTime(int& TimeArray[]);
 #import
 
 int   MaxAccountTrades = 30;
@@ -175,6 +177,33 @@ extern string Level_25 = "";
 extern double Multiplier_25 = 1.5;
 extern double BasketTakeProfit_25 = 0.0;
 extern bool   DrawLines = FALSE;
+extern string S5="-------News Filter-------";
+extern bool   Use_NewsFilter      = false;
+extern bool   IncludeHigh         = true;
+// mins before an event to stay out of trading
+extern int    MinsBeforeHigh      = 180;
+// mins after  an event to stay out of trading
+extern int    MinsAfterHigh       = 120;
+extern bool   IncludeMedium       = false;
+extern int    MinsBeforeMedium    = 60;
+extern int    MinsAfterMedium     = 60;
+extern bool   IncludeLow          = false;
+extern int    MinsBeforeLow       = 30;
+extern int    MinsAfterLow        = 30;
+// news items with "Speaks" in them have different characteristics
+extern bool   IncludeSpeaks       = false;
+extern int    GMT_Offset          = 2;
+extern int    MinsBeforeSpeaks    = 180;
+extern int    MinsAfterSpeaks     = 120;
+extern bool	  ReportAllForUSD	    = true;
+extern bool   ReportAllForEUR     = false;
+extern bool   ReportAllForGBP     = false;
+extern bool   ReportAllForNZD     = false;
+extern bool   ReportAllForJPY     = false;
+extern bool   ReportAllForAUD     = false;
+extern bool   ReportAllForCHF     = false;
+extern bool   ReportAllForCAD     = false;
+extern bool   ReportAllForCNY     = false;
 //----------------------------------------------------------------------- +
 double gd_948;
 bool gi_956 = FALSE;
@@ -364,6 +393,10 @@ int OnInit()
   {
 //--- create timer
    EventSetTimer(60);
+
+  //---
+  if((!IsTesting())&&(!IsOptimization())) GMT_Offset=GMTOffset();
+  //---
 
 //--- Assert 0: Init Plus   
    TurtleInit();
@@ -1753,6 +1786,8 @@ int trigger(int pos) {
 //----
    if (TriggerProtectionOn==FALSE) return(1);
 //----
+   if(IsNewsTime()) return(0);
+//----
    HideTestIndicators(TRUE);
 //----
    int sig_trigger = 0;
@@ -1830,6 +1865,8 @@ int trigger(int pos) {
 }
 
 int signal() {
+//----
+   if(IsNewsTime()) return(0);
 //----
    HideTestIndicators(TRUE);
 //----
@@ -2318,29 +2355,63 @@ int f0_4() {
 void f0_17() {
    string dbl2str_0 = DoubleToStr(f0_1(2), 2);
    if (!IsTesting()) f0_10();
+
+   MqlDateTime currentBarTimeStruct;
+   TimeToStruct(iTime(Symbol(),PERIOD_H1,0),currentBarTimeStruct);
+   datetime currentBarTimeGMT = StrToTime(currentBarTimeStruct.year+"."+currentBarTimeStruct.mon+"."+currentBarTimeStruct.day+" "+(currentBarTimeStruct.hour-GMT_Offset)+":"+currentBarTimeStruct.min+":"+currentBarTimeStruct.sec);
+
+   string Session = "[REGULAR] Trading ...";
+   if (IsNewsTime()) Session = "[PAUSE] News incoming ...";
+   
    if (FreezeAfterTPScheduler == TRUE && f0_4() == 1) {
-      Comment( GhostComment(" \nLeviathan v4.0" + 
-         "\nAccount Leverage  :  " + "1 : " + AccountLeverage() + 
-         "\nAccount Type  :  " + AccountServer() + 
-         "\nServer Time  :  " + TimeToStr(TimeCurrent(), TIME_SECONDS) +
+      Comment( 
+         GhostComment(
+            "\n*=====================*"+
+            "\n    "+EA_Name+
+            "\n*=====================*"+
+            "\n   "+Session+
+            "\n*=====================*"+
+            "\n    GMT  Offset          = "+GMT_Offset+
+            "\n    GMT    Time         = "+TimeToStr(currentBarTimeGMT, TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
+            "\n    Server Time          = "+TimeToStr(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
+            "\n*=====================*"+
+            "\n    Magic Number       = "+MagicNumber+
+            "\n*=====================*"+
+            "\nAccount Leverage  :  " + "1 : " + AccountLeverage() + 
+            "\nAccount Type  :  " + AccountServer() + 
+            "\nAccount Equity  = " + GhostAccountEquity() +
+            "\nFree Margin     = " + GhostAccountFreeMargin() +
+            "\nDrawdown  :  " + dbl2str_0 + "%" +
+            "\nTotal Profit/Loss = " + gd_948 +
+            "\nFreezeAfterTPScheduler: ON" +
+            "\n\n"
+         )
+      );
+      return;
+   }
+   Comment( 
+      GhostComment(
+         "\n*=====================*"+
+         "\n    "+EA_Name+
+         "\n*=====================*"+
+         "\n   "+Session+
+         "\n*=====================*"+
+         "\n    GMT  Offset          = "+GMT_Offset+
+         "\n    GMT    Time         = "+TimeToStr(currentBarTimeGMT, TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
+         "\n    Server Time          = "+TimeToStr(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
+         "\n*=====================*"+
+         "\n    Magic Number       = "+MagicNumber+
+         "\n*=====================*"+
+         "\nAccount Leverage  :  " + "1 : " + AccountLeverage() +
+         "\nAccount Type  :  " + AccountServer() +
          "\nAccount Equity  = " + GhostAccountEquity() +
          "\nFree Margin     = " + GhostAccountFreeMargin() +
          "\nDrawdown  :  " + dbl2str_0 + "%" +
          "\nTotal Profit/Loss = " + gd_948 +
-         "\nFreezeAfterTPScheduler: ON" +
-      "\n\n") );
-      return;
-   }
-   Comment( GhostComment(" \nLeviathan v4.0" +
-      "\nAccount Leverage  :  " + "1 : " + AccountLeverage() +
-      "\nAccount Type  :  " + AccountServer() +
-      "\nServer Time  :  " + TimeToStr(TimeCurrent(), TIME_SECONDS) +
-      "\nAccount Equity  = " + GhostAccountEquity() +
-      "\nFree Margin     = " + GhostAccountFreeMargin() +
-      "\nDrawdown  :  " + dbl2str_0 + "%" +
-      "\nTotal Profit/Loss = " + gd_948 +
-      "\nFreezeAfterTPScheduler: OFF" +
-   "\n\n") );
+         "\nFreezeAfterTPScheduler: OFF" +
+         "\n\n"
+      )
+   );
 }
 
 int f0_0() {
@@ -3391,3 +3462,146 @@ double getPointCoef() {
 
 
 //+-------------------------------------------------------------------------------------------------------------------------------------+
+
+//=================================================================================================================================================//
+  int GMTOffset()
+  {
+      int TimeArray[4];
+      int TZInfoArray[43];
+      int nYear,nMonth,nDay,nHour,nMin,nSec,nMilliSec;
+      string sMilliSec;
+  
+      GetSystemTime(TimeArray);
+      nYear=TimeArray[0]&0x0000FFFF;
+      nMonth=TimeArray[0]>>16;
+      nDay=TimeArray[1]>>16;
+      nHour=TimeArray[2]&0x0000FFFF;
+      nMin=TimeArray[2]>>16;
+      nSec=TimeArray[3]&0x0000FFFF;
+      nMilliSec=TimeArray[3]>>16;
+  
+      string LocalTimeS=FormatDateTime(nYear,nMonth,nDay,nHour,nMin,nSec);
+      double GMTdiff=TimeCurrent()-StrToTime(LocalTimeS);
+      
+      return(MathRound(GMTdiff/3600.0));
+  }
+//=================================================================================================================================================//
+  string FormatDateTime(int nYear,int nMonth,int nDay,int nHour,int nMin,int nSec)
+  {
+      string sMonth,sDay,sHour,sMin,sSec;
+  
+      sMonth=100+nMonth;
+      sMonth=StringSubstr(sMonth,1);
+      sDay=100+nDay;
+      sDay=StringSubstr(sDay,1);
+      sHour=100+nHour;
+      sHour=StringSubstr(sHour,1);
+      sMin=100+nMin;
+      sMin=StringSubstr(sMin,1);
+      sSec=100+nSec;
+      sSec=StringSubstr(sSec,1);
+      
+      return(StringConcatenate(nYear,".",sMonth,".",sDay," ",sHour,":",sMin,":",sSec));
+  }
+//=================================================================================================================================================//
+
+//=================================================================================================================================================//
+/**  FFCal **
+      extern bool 	IncludeHigh 		= true;
+      extern bool 	IncludeMedium 		= true;
+      extern bool 	IncludeLow 			= false;   //true;
+      extern bool 	IncludeSpeaks 		= true; 		// news items with "Speaks" in them have different characteristics
+      extern bool		IsEA_Call			= false;
+      extern int		OffsetHours			= 0;      //-1;
+      extern bool		AllowWebUpdates	= true;			// Set this to false when using in another EA or Chart, so that the multiple instances of the indicator dont fight with each other
+      extern int		Alert1MinsBefore	= 0;			// Set to -1 for no Alert
+      extern int		Alert2MinsBefore	= -1;			// Set to -1 for no Alert
+      extern bool		ReportAllForUSD	= true;
+      extern bool    ReportAllForEUR   = true;
+      extern bool    ReportAllForGBP   = true;
+                                                   // added and tested by a1ra, seems working OK.
+      extern bool    ReportAllForNZD   = true;
+      extern bool    ReportAllForJPY   = true;
+      extern bool    ReportAllForAUD   = true;
+      extern bool    ReportAllForCHF   = true;
+      extern bool    ReportAllForCAD   = true;
+      extern bool    ReportAllForCNY   = false;
+      
+      extern bool 	EnableLogging 		= false; 		// Perhaps remove this from externs once its working well
+      extern bool		ShowNextTwoEvents	= true;
+      extern bool		ShowVertNews		= false;
+      extern int 		TxtSize 			   = 10;
+      extern color 	TxtColorTitle 		= Gold;       //LightGray;
+      extern color 	TxtColorNews 		= DeepSkyBlue;
+      extern color 	TxtColorImpact 	= Red;
+      extern color 	TxtColorPrevious 	= Peru;
+      extern color 	TxtColorForecast 	= Lime;
+      extern int		VertTxtShift 		= 21;			// How far away below the ask line we want to place our vertical news text
+      extern int		VertLeftLineShift 	= 900;			// How far away to the left of the line we want to place our vertical news text
+      extern int		VertRightLineShift 	= 200;			// How far away to the left of the line we want to place our vertical news text
+      extern color	VertLineColor 		= SlateBlue;	// Color of our vertical news line
+      extern color	VertTxtColor 		= Black;		// Color of our vertical text color 
+      extern int		VertTxtSize 		= 8;			// Color of our vertical text
+      extern int		NewsCorner 			= 1;			// Choose which corner to place headlines 0=Upper Left, 1=Upper Right, 2=lower left , 3=lower right
+      extern bool		SaveXmlFiles		= false;		// If true, this will keep the daily XML files
+**/
+
+bool IsNewsTime()
+{
+  if(Use_NewsFilter==FALSE) return(FALSE);
+  
+  static bool rval = false;
+  static int lm = -1;
+  bool is_news = false;
+  
+  // uncomment next line if not global variable
+  int minutesSincePrevEvent = 10080, minutesUntilNextEvent = 10080; // 1 week
+  
+  if (lm != Minute()) { // update news status, run every minute
+      lm = Minute();
+
+     // check high impact
+     if(IncludeHigh) {
+         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", IncludeHigh, false, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", IncludeHigh, false, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+         
+         if(minutesUntilNextEvent<=MinsBeforeHigh || minutesSincePrevEvent<=MinsAfterHigh)
+            is_news = true;
+     }
+
+     // check medium impact
+     if(IncludeMedium && !is_news) {
+        minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, IncludeMedium, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+        minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, IncludeMedium, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+  
+        if(minutesUntilNextEvent<=MinsBeforeMedium || minutesSincePrevEvent<=MinsAfterMedium)
+            is_news = true;
+     }
+
+     // check low impact
+     if(IncludeLow && !is_news) {
+         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, false, IncludeLow, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, false, IncludeLow, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+  
+         if(minutesUntilNextEvent<=MinsBeforeLow || minutesSincePrevEvent<=MinsAfterLow)
+            is_news = true;
+     }
+   
+     // check speaks
+     if(IncludeSpeaks && !is_news) {
+         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, false, false, IncludeSpeaks, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, false, false, IncludeSpeaks, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+  
+         if(minutesUntilNextEvent<=MinsBeforeSpeaks || minutesSincePrevEvent<=MinsAfterSpeaks)
+            is_news = true;
+     }
+
+     if(is_news)
+         rval = true;
+     else
+         rval = false;
+  }
+  
+  return(rval);
+}
+//=================================================================================================================================================//
