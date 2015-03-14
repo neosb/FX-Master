@@ -179,6 +179,7 @@ extern double BasketTakeProfit_25 = 0.0;
 extern bool   DrawLines = FALSE;
 extern string S5="-------News Filter-------";
 extern bool   Use_NewsFilter      = false;
+extern int    GMT_Offset          = 3;
 extern bool   IncludeHigh         = true;
 // mins before an event to stay out of trading
 extern int    MinsBeforeHigh      = 180;
@@ -192,7 +193,6 @@ extern int    MinsBeforeLow       = 30;
 extern int    MinsAfterLow        = 30;
 // news items with "Speaks" in them have different characteristics
 extern bool   IncludeSpeaks       = false;
-extern int    GMT_Offset          = 2;
 extern int    MinsBeforeSpeaks    = 180;
 extern int    MinsAfterSpeaks     = 120;
 extern bool	  ReportAllForUSD	    = true;
