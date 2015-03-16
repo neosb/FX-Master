@@ -401,7 +401,13 @@ int OnInit()
    EventSetTimer(60);
 
   //---
-  if((!IsTesting())&&(!IsOptimization())) GMT_Offset=myTimeGMT();//GMT_Offset=GMTOffset();
+  if((!IsTesting())&&(!IsOptimization())) 
+  {
+      datetime pc_time = TimeLocal();
+	   datetime my_time_GMT = myTimeGMT();
+	
+      GMT_Offset=(TimeHour(pc_time) - TimeHour(my_time_GMT));//GMT_Offset=GMTOffset();
+  }
   //---
 
 //--- Assert 0: Init Plus   
@@ -2374,10 +2380,12 @@ void f0_17() {
    string dbl2str_0 = DoubleToStr(f0_1(2), 2);
    if (!IsTesting()) f0_10();
 
+   /*
    MqlDateTime currentBarTimeStruct;
    TimeToStruct(iTime(Symbol(),PERIOD_H1,0),currentBarTimeStruct);
    datetime currentBarTimeGMT = StrToTime(currentBarTimeStruct.year+"."+currentBarTimeStruct.mon+"."+currentBarTimeStruct.day+" "+(currentBarTimeStruct.hour-GMT_Offset)+":"+currentBarTimeStruct.min+":"+currentBarTimeStruct.sec);
-
+   */
+   
    string Session = "[REGULAR] Trading ...";
    if (IsNewsTime()) Session = "[PAUSE] News incoming ...";
    
@@ -2389,8 +2397,8 @@ void f0_17() {
             "\n*=====================*"+
             "\n   "+Session+
             "\n*=====================*"+
-            "\n    GMT  Offset          = "+GMT_Offset+
-            "\n    GMT    Time         = "+TimeToStr(currentBarTimeGMT, TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
+            "\n    GMT  Offset(Local)  = "+GMT_Offset+
+            "\n    GMT    Time         = "+TimeToStr(/*currentBarTimeGMT*/myTimeGMT(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
             "\n    Server Time          = "+TimeToStr(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
             "\n*=====================*"+
             "\n    Magic Number       = "+MagicNumber+
@@ -2415,8 +2423,8 @@ void f0_17() {
          "\n*=====================*"+
          "\n   "+Session+
          "\n*=====================*"+
-         "\n    GMT  Offset          = "+GMT_Offset+
-         "\n    GMT    Time         = "+TimeToStr(currentBarTimeGMT, TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
+         "\n    GMT  Offset(Local)  = "+GMT_Offset+
+         "\n    GMT    Time         = "+TimeToStr(/*currentBarTimeGMT*/myTimeGMT(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
          "\n    Server Time          = "+TimeToStr(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
          "\n*=====================*"+
          "\n    Magic Number       = "+MagicNumber+
@@ -3491,7 +3499,7 @@ double getPointCoef() {
 
 int TZInfoArray[43];	
 
-int myTimeGMT() 
+datetime myTimeGMT() 
 {
 	int DST = GetTimeZoneInformation(TZInfoArray);
 	if (DST == 1)
@@ -3502,7 +3510,7 @@ int myTimeGMT()
    datetime pc_time = TimeLocal();
 	datetime my_time_GMT = ( pc_time + DST /*+ (OffsetHours * 3600)*/ + (TZInfoArray[0] + TZInfoArray[42]) * 60 );
 	
-	return(TimeHour(pc_time) - TimeHour(my_time_GMT));
+	return(my_time_GMT);
 }
 
 //=================================================================================================================================================//
