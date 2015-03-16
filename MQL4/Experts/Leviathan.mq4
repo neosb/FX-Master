@@ -2396,13 +2396,19 @@ void f0_17() {
             "\n    "+EA_Name+
             "\n*=====================*"+
             "\n   "+Session+
+            "\n   News Filter: "+(Use_NewsFilter ? "ON" : "OFF")+
+            "\n   - [High "+MinsBeforeHigh+"/"+MinsAfterHigh+"]: "+(IncludeHigh ? "ON" : "OFF")+
+            "\n   - [Medium "+MinsBeforeMedium+"/"+MinsAfterMedium+"]: "+(IncludeMedium ? "ON" : "OFF")+
+            "\n   - [Low "+MinsBeforeLow+"/"+MinsAfterLow+"]: "+(IncludeLow ? "ON" : "OFF")+
+            "\n   - [Speaks "+MinsBeforeSpeaks+"/"+MinsAfterSpeaks+"]: "+(IncludeSpeaks ? "ON" : "OFF")+
             "\n*=====================*"+
-            "\n    GMT  Offset(Local)  = "+GMT_Offset+
+            "\n    GMT  Offset(Local) = "+GMT_Offset+
             "\n    GMT    Time         = "+TimeToStr(/*currentBarTimeGMT*/myTimeGMT(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
             "\n    Server Time          = "+TimeToStr(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
             "\n*=====================*"+
             "\n    Magic Number       = "+MagicNumber+
             "\n*=====================*"+
+            "\nBase Lot  :  " + LOT() + 
             "\nAccount Leverage  :  " + "1 : " + AccountLeverage() + 
             "\nAccount Type  :  " + AccountServer() + 
             "\nAccount Balance = " + GhostAccountBalance() +
@@ -2422,13 +2428,19 @@ void f0_17() {
          "\n    "+EA_Name+
          "\n*=====================*"+
          "\n   "+Session+
+         "\n   News Filter: "+(Use_NewsFilter ? "ON" : "OFF")+
+         "\n   - [High "+MinsBeforeHigh+"/"+MinsAfterHigh+"]: "+(IncludeHigh ? "ON" : "OFF")+
+         "\n   - [Medium "+MinsBeforeMedium+"/"+MinsAfterMedium+"]: "+(IncludeMedium ? "ON" : "OFF")+
+         "\n   - [Low "+MinsBeforeLow+"/"+MinsAfterLow+"]: "+(IncludeLow ? "ON" : "OFF")+
+         "\n   - [Speaks "+MinsBeforeSpeaks+"/"+MinsAfterSpeaks+"]: "+(IncludeSpeaks ? "ON" : "OFF")+
          "\n*=====================*"+
-         "\n    GMT  Offset(Local)  = "+GMT_Offset+
+         "\n    GMT  Offset(Local) = "+GMT_Offset+
          "\n    GMT    Time         = "+TimeToStr(/*currentBarTimeGMT*/myTimeGMT(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
          "\n    Server Time          = "+TimeToStr(TimeCurrent(), TIME_DATE|TIME_MINUTES|TIME_SECONDS)+
          "\n*=====================*"+
          "\n    Magic Number       = "+MagicNumber+
          "\n*=====================*"+
+         "\nBase Lot  :  " + LOT() + 
          "\nAccount Leverage  :  " + "1 : " + AccountLeverage() +
          "\nAccount Type  :  " + AccountServer() +
          "\nAccount Balance = " + GhostAccountBalance() +
