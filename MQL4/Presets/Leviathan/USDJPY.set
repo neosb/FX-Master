@@ -1,7 +1,7 @@
 EA_Name=Leviathan USDJPY
 _________=Input a unique magic number for each chart
 MagicNumber=15
-BaseLotSize=0.01
+BaseLotSize=0.02
 LotStepEnable=true
 LotStepValue=0.01
 LotStepFrom=1000.0
@@ -92,7 +92,7 @@ BasketTakeProfit_25=0.0
 DrawLines=false
 S5=-------News Filter-------
 Use_NewsFilter=true
-GMT_Offset=3
+GMT_Offset=0
 IncludeHigh=true
 MinsBeforeHigh=180
 MinsAfterHigh=120
