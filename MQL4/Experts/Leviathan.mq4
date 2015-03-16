@@ -28,9 +28,15 @@
 
 #import "stdlib.ex4"
    string ErrorDescription(int a0);
-#import "Kernel32.dll"
-   void GetSystemTime(int& TimeArray[]);
+//#import "Kernel32.dll"
+//   void GetSystemTime(int& TimeArray[]);
+#import "kernel32.dll"
+   int  GetTimeZoneInformation(int& TZInfoArray[]);
 #import
+
+#define TIME_ZONE_ID_UNKNOWN   0
+#define TIME_ZONE_ID_STANDARD  1
+#define TIME_ZONE_ID_DAYLIGHT  2
 
 int   MaxAccountTrades = 30;
 
@@ -179,7 +185,7 @@ extern double BasketTakeProfit_25 = 0.0;
 extern bool   DrawLines = FALSE;
 extern string S5="-------News Filter-------";
 extern bool   Use_NewsFilter      = false;
-extern int    GMT_Offset          = 3;
+extern int    GMT_Offset          = 1;
 extern bool   IncludeHigh         = true;
 // mins before an event to stay out of trading
 extern int    MinsBeforeHigh      = 180;
@@ -395,7 +401,7 @@ int OnInit()
    EventSetTimer(60);
 
   //---
-  if((!IsTesting())&&(!IsOptimization())) GMT_Offset=GMTOffset();
+  if((!IsTesting())&&(!IsOptimization())) GMT_Offset=myTimeGMT();//GMT_Offset=GMTOffset();
   //---
 
 //--- Assert 0: Init Plus   
@@ -3477,7 +3483,30 @@ double getPointCoef() {
 
 //+-------------------------------------------------------------------------------------------------------------------------------------+
 
+//=================================================================================================
+//=================================================================================================
+//===================================   Timezone Functions   ======================================
+//=================================================================================================
+//=================================================================================================
+
+int TZInfoArray[43];	
+
+int myTimeGMT() 
+{
+	int DST = GetTimeZoneInformation(TZInfoArray);
+	if (DST == 1)
+		DST = 3600;
+	else 
+		DST = 2;
+
+   datetime pc_time = TimeLocal();
+	datetime my_time_GMT = ( pc_time + DST /*+ (OffsetHours * 3600)*/ + (TZInfoArray[0] + TZInfoArray[42]) * 60 );
+	
+	return(TimeHour(pc_time) - TimeHour(my_time_GMT));
+}
+
 //=================================================================================================================================================//
+/*
   int GMTOffset()
   {
       int TimeArray[4];
@@ -3495,10 +3524,11 @@ double getPointCoef() {
       nMilliSec=TimeArray[3]>>16;
   
       string LocalTimeS=FormatDateTime(nYear,nMonth,nDay,nHour,nMin,nSec);
-      double GMTdiff=TimeCurrent()-StrToTime(LocalTimeS);
+      double GMTdiff=TimeLocal()-StrToTime(LocalTimeS);
       
       return(MathRound(GMTdiff/3600.0));
   }
+*/
 //=================================================================================================================================================//
   string FormatDateTime(int nYear,int nMonth,int nDay,int nHour,int nMin,int nSec)
   {
@@ -3566,48 +3596,59 @@ bool IsNewsTime()
   
   static bool rval = false;
   static int lm = -1;
-  bool is_news = false;
+  static bool is_news = false;
   
   // uncomment next line if not global variable
   int minutesSincePrevEvent = 10080, minutesUntilNextEvent = 10080; // 1 week
   
   if (lm != Minute()) { // update news status, run every minute
+      is_news = false;
       lm = Minute();
 
      // check high impact
      if(IncludeHigh) {
-         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", IncludeHigh, false, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
-         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", IncludeHigh, false, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
-         
+         minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, false, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, false, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
+
+         //Print("["+Symbol()+"] - Checking Impacth High News: minutesSincePrevEvent = "+minutesSincePrevEvent+" / minutesUntilNextEvent = "+minutesUntilNextEvent);
          if(minutesUntilNextEvent<=MinsBeforeHigh || minutesSincePrevEvent<=MinsAfterHigh)
             is_news = true;
+         else
+            is_news = false;
      }
 
      // check medium impact
      if(IncludeMedium && !is_news) {
-        minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, IncludeMedium, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
-        minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, IncludeMedium, false, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+        minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, IncludeMedium, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
+        minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, IncludeMedium, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
   
         if(minutesUntilNextEvent<=MinsBeforeMedium || minutesSincePrevEvent<=MinsAfterMedium)
             is_news = true;
+        else
+            is_news = false;
      }
 
      // check low impact
      if(IncludeLow && !is_news) {
-         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, false, IncludeLow, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
-         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, false, IncludeLow, false, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+         minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, false, IncludeLow, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, false, IncludeLow, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
   
          if(minutesUntilNextEvent<=MinsBeforeLow || minutesSincePrevEvent<=MinsAfterLow)
             is_news = true;
+         else
+            is_news = false;
      }
    
      // check speaks
      if(IncludeSpeaks && !is_news) {
-         minutesSincePrevEvent = iCustom(NULL, 0, "FFCal", false, false, false, IncludeSpeaks, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 0);
-         minutesUntilNextEvent = iCustom(NULL, 0, "FFCal", false, false, false, IncludeSpeaks, true, GMT_Offset, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, 1, 1);
+         minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, false, IncludeSpeaks, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, false, IncludeSpeaks, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
   
+         //Print("["+Symbol()+"] - Checking Speaks: minutesSincePrevEvent = "+minutesSincePrevEvent+" / minutesUntilNextEvent = "+minutesUntilNextEvent);
          if(minutesUntilNextEvent<=MinsBeforeSpeaks || minutesSincePrevEvent<=MinsAfterSpeaks)
             is_news = true;
+         else
+            is_news = false;
      }
 
      if(is_news)
