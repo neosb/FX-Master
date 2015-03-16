@@ -1441,6 +1441,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
       }
       //---
       //Alert("B:",lots_8);
+      /*
       if(TriggerProtectionOn == FALSE && iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) > MarketInfo(Symbol(), MODE_ASK)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
@@ -1459,6 +1460,7 @@ int f0_12(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_SE
             }
          } // IF NBP TRUE  
       }
+      */
       //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
@@ -1603,6 +1605,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
       }
       //---
       //Alert("S:",lots_8);
+      /*
       if(TriggerProtectionOn == FALSE && iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0) < MarketInfo(Symbol(), MODE_BID)) {
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
@@ -1621,6 +1624,7 @@ int f0_13(bool ai_0 = FALSE, double nbp = 0.0, double lots = 0, int type = OP_BU
             }
          } // IF NBP TRUE 
       }
+      */
       //---
       g_datetime_1072 = TimeCurrent();
       if (ticket_4 != -1) {
