@@ -3627,8 +3627,8 @@ bool IsNewsTime()
 
      // check medium impact
      if(IncludeMedium && !is_news) {
-        minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, IncludeMedium, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
-        minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, IncludeMedium, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
+        minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
+        minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, false, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
   
         if(minutesUntilNextEvent<=MinsBeforeMedium || minutesSincePrevEvent<=MinsAfterMedium)
             is_news = true;
@@ -3638,8 +3638,8 @@ bool IsNewsTime()
 
      // check low impact
      if(IncludeLow && !is_news) {
-         minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, false, IncludeLow, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
-         minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", false, false, IncludeLow, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
+         minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, IncludeLow, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, IncludeLow, false, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
   
          if(minutesUntilNextEvent<=MinsBeforeLow || minutesSincePrevEvent<=MinsAfterLow)
             is_news = true;
@@ -3649,8 +3649,8 @@ bool IsNewsTime()
    
      // check speaks
      if(IncludeSpeaks && !is_news) {
-         minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, false, IncludeSpeaks, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
-         minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, false, IncludeSpeaks, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
+         minutesSincePrevEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, IncludeLow, IncludeSpeaks, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 0);
+         minutesUntilNextEvent = iCustom(NULL, PERIOD_M1, "FFCal", IncludeHigh, IncludeMedium, IncludeLow, IncludeSpeaks, true, 0, true, -1, -1, ReportAllForUSD, ReportAllForEUR, ReportAllForGBP, ReportAllForNZD, ReportAllForJPY, ReportAllForAUD, ReportAllForCHF, ReportAllForCAD, ReportAllForCNY, false, false, false, 1, 1);
   
          //Print("["+Symbol()+"] - Checking Speaks: minutesSincePrevEvent = "+minutesSincePrevEvent+" / minutesUntilNextEvent = "+minutesUntilNextEvent);
          if(minutesUntilNextEvent<=MinsBeforeSpeaks || minutesSincePrevEvent<=MinsAfterSpeaks)
