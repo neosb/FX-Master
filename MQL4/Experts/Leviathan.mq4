@@ -2460,13 +2460,15 @@ int f0_0() {
 
 double f0_1(int ai_0) {
    double ld_ret_4;
+   double balance = GhostAccountBalance();
+          balance = (balance == 0 ? -1.0 : balance);
    if (ai_0 == 2) {
-      ld_ret_4 = (GhostAccountEquity() / GhostAccountBalance() - 1.0) / (-0.010000000000000000208);
+      ld_ret_4 = (GhostAccountEquity() / balance - 1.0) / (-0.010000000000000000208);
       if (ld_ret_4 <= 0.0) return (0);
       return (ld_ret_4);
    }
    if (ai_0 == 1) {
-      ld_ret_4 = 100.0 * (GhostAccountEquity() / GhostAccountBalance() - 1.0);
+      ld_ret_4 = 100.0 * (GhostAccountEquity() / balance - 1.0);
       if (ld_ret_4 <= 0.0) return (0);
       return (ld_ret_4);
    }
