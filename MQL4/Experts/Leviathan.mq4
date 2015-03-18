@@ -1816,11 +1816,25 @@ int trigger(int pos) {
    //+------------------------------------------------------------------+
    int TriggerTimeFrame = PERIOD_H1;
    //---- input parameters
-   int             bolPrd     = 20;
-   double          bolDev     = 2.0;
-   int             keltPrd    = 20;
-   double          keltFactor = 1.5;
-   int             momPrd     = 12;
+   int       bolPrd     = 20;
+   double    bolDev     = 2.0;
+   int       keltPrd    = 20;
+   double    keltFactor = 1.5;
+   int       momPrd     = 12;
+   int       bb_period=20;
+   int       bb_deviation=2;
+   int       bb_shift=0;
+   int       k=5;
+   int       d=3;
+   int       slowing=3;
+   int       price_field=0;
+   int       stoch_shift=0;
+   int       lo_level=30;
+   int       up_level=70;
+   int       rsi_period=12;
+   int       rsi_shift=0;
+   int       lower=30;
+   int       upper=70;
    //---- indicators
    double diff     = iATR(Symbol(),TriggerTimeFrame,keltPrd,0)*keltFactor;
    double std      = iStdDev(Symbol(),TriggerTimeFrame,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
@@ -1848,6 +1862,12 @@ int trigger(int pos) {
    double bb1U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
    double bb2U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
    double bb3U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
+
+   double upBB=iBands(Symbol(),TriggerTimeFrame,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_UPPER,bb_shift);
+   double loBB=iBands(Symbol(),TriggerTimeFrame,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_LOWER,bb_shift);
+   double stoch=iStochastic(Symbol(),TriggerTimeFrame,k,d,slowing,MODE_SMA,price_field,MODE_SIGNAL,stoch_shift);
+   double rsi=iRSI(Symbol(),TriggerTimeFrame,rsi_period,PRICE_CLOSE,rsi_shift);
+
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
    //+------------------------------------------------------------------+
@@ -1855,7 +1875,8 @@ int trigger(int pos) {
    //else return(0);
    
 //----
-   if (pos == OP_BUY && MarketInfo(Symbol(), MODE_BID) > bb0L_20) return(1);
+   if (pos == OP_BUY && sma0_600 > MarketInfo(Symbol(), MODE_BID) && High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(0);
+   else if (pos == OP_BUY && MarketInfo(Symbol(), MODE_BID) > bb0L_20) return(1);
    //   (
    //      (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_BID) /*&& MarketInfo(Symbol(), MODE_BID) > bb0L_20*/) 
    //      ||
@@ -1865,7 +1886,8 @@ int trigger(int pos) {
    //   sig_trigger = 1;
    //}
 //----
-   if (pos == OP_SELL && MarketInfo(Symbol(), MODE_ASK) < bb0U_20) return(1);
+   if (pos == OP_SELL && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && Low[bb_shift]<loBB && stoch<lo_level && rsi<lower) return(0);
+   else if (pos == OP_SELL && MarketInfo(Symbol(), MODE_ASK) < bb0U_20) return(1);
    //   (
    //      (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_ASK) /*&& MarketInfo(Symbol(), MODE_ASK) < bb0U_20*/)
    //      ||
