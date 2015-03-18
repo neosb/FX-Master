@@ -719,13 +719,15 @@ int start()
 			if (ExtMapBuffer0[i] > 0 || (ExtMapBuffer0[i] == 0 && ExtMapBuffer0[i+1] > 0))
 			{
 				ExtMapBuffer1[1] = ExtMapBuffer0[i];
+				ExtMapBuffer2[1] = ImpactToNumber(mainData[i][IMPACT]);
 			}
-			ExtMapBuffer2[1] = ImpactToNumber(mainData[i][IMPACT]);
+			//ExtMapBuffer2[1] = ImpactToNumber(mainData[i][IMPACT]);
 		}
 		
 		// Also use this loop to set which information to display
 		if (i == idxOfNext)
 		{
+		   //ExtMapBuffer2[0] = ImpactToNumber(mainData[i][IMPACT]);
 			dispTitle[0]	= mainData[i][TITLE];
 			dispCountry[0] 	= mainData[i][COUNTRY];
 			dispImpact[0] 	= mainData[i][IMPACT];
@@ -736,6 +738,7 @@ int start()
 		
 		if (i == idxOfNext + 1)
 		{
+		   //ExtMapBuffer2[1] = ImpactToNumber(mainData[i][IMPACT]);
 			dispTitle[1]	= mainData[i][TITLE];
 			dispCountry[1] 	= mainData[i][COUNTRY];
 			dispImpact[1] 	= mainData[i][IMPACT];
