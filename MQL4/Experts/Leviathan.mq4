@@ -417,10 +417,12 @@ int OnInit()
    gi_1212 = FALSE;
    if (Chicken_Out == TRUE) gi_960 = TRUE;
    else gi_960 = FALSE;
-   //if (Period() != PERIOD_M30) {
-   //   Print("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-   //   Alert("ERROR -- Leviathan should be attached to " + Symbol() + " 30 minute chart window");
-   //}
+   if (Period() != PERIOD_H1) {
+      Print("ERROR -- ",EA_Name," should be attached to ",Symbol()," H1 chart window");
+      Alert("ERROR -- ",EA_Name," should be attached to ",Symbol()," H1 chart window");
+      
+      return(INIT_PARAMETERS_INCORRECT);
+   }
    //updateMagicNumber();
    MathSrand(ExecutionPoint+BasketTakeProfit*Multiplier); // Fix 0.5 for Un-synk
    gsa_92[0] = GhostAccountNumber();
@@ -1806,7 +1808,7 @@ int trigger(int pos) {
 //----
    HideTestIndicators(TRUE);
 //----
-   int sig_trigger = 0;
+   int sig_trigger = 1;
 //----
    MqlRates RatesBar[];
    ArraySetAsSeries(RatesBar,true);
@@ -1875,8 +1877,9 @@ int trigger(int pos) {
    //else return(0);
    
 //----
-   if (pos == OP_BUY && sma0_600 > MarketInfo(Symbol(), MODE_BID) && High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(0);
-   else if (pos == OP_BUY && MarketInfo(Symbol(), MODE_BID) > bb0L_20) return(1);
+   //if (pos == OP_BUY && sma0_600 > MarketInfo(Symbol(), MODE_BID) && High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(0);
+   //else 
+   if (pos == OP_BUY && MarketInfo(Symbol(), MODE_BID) > bb0L_20) return(1);
    //   (
    //      (bbs >= 1 && sma0_600 < MarketInfo(Symbol(), MODE_BID) /*&& MarketInfo(Symbol(), MODE_BID) > bb0L_20*/) 
    //      ||
@@ -1886,8 +1889,9 @@ int trigger(int pos) {
    //   sig_trigger = 1;
    //}
 //----
-   if (pos == OP_SELL && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && Low[bb_shift]<loBB && stoch<lo_level && rsi<lower) return(0);
-   else if (pos == OP_SELL && MarketInfo(Symbol(), MODE_ASK) < bb0U_20) return(1);
+   //if (pos == OP_SELL && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && Low[bb_shift]<loBB && stoch<lo_level && rsi<lower) return(0);
+   //else 
+   if (pos == OP_SELL && MarketInfo(Symbol(), MODE_ASK) < bb0U_20) return(1);
    //   (
    //      (bbs >= 1 && sma0_600 > MarketInfo(Symbol(), MODE_ASK) /*&& MarketInfo(Symbol(), MODE_ASK) < bb0U_20*/)
    //      ||
@@ -1899,7 +1903,7 @@ int trigger(int pos) {
 //----
    HideTestIndicators(TRUE);
 //----
-   return (sig_trigger);   
+   return (0);   
 }
 
 int signal() {
@@ -1978,17 +1982,17 @@ int signal() {
       double low_1  = (iClose(Symbol(),0,1)-iLow(Symbol(),0,1));
       double tolerance = 2*getPointCoef();
       if ( (sma0_600 > sma1_600 && high_1 > tolerance && MarketInfo(Symbol(),MODE_BID) < iClose(Symbol(),0,1) &&
-            (sma0_20 > sma0_200 || (sma0_20 < sma0_200 && sma0_20 > sma1_20)) &&
-            iRSI(Symbol(),0,12,PRICE_CLOSE,1)<70&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<iRSI(Symbol(),0,12,PRICE_CLOSE,0)
-            /*&& MarketInfo(Symbol(),MODE_BID) < bb0M_20*/) 
-           || (sma0_20 > sma1_20 && MarketInfo(Symbol(), MODE_ASK) > bb0U_20) ) {
+            //(sma0_20 > sma0_200 || (sma0_20 < sma0_200 && sma0_20 < sma1_20)) &&
+            iRSI(Symbol(),0,12,PRICE_CLOSE,1)<75&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<iRSI(Symbol(),0,12,PRICE_CLOSE,0)
+            && MarketInfo(Symbol(),MODE_BID) > bb0M_20)
+           /*|| (sma0_20 > sma1_20 && MarketInfo(Symbol(), MODE_ASK) > bb0U_20)*/ ) {
          return(buy);
       } else 
       if ( (sma0_600 < sma1_600 && low_1  > tolerance && MarketInfo(Symbol(),MODE_ASK) > iClose(Symbol(),0,1) && 
-            (sma0_20 < sma0_200 || (sma0_20 > sma0_200 && sma0_20 < sma1_20)) &&
-            iRSI(Symbol(),0,12,PRICE_CLOSE,1)>30&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>iRSI(Symbol(),0,12,PRICE_CLOSE,0)
-            /*&& MarketInfo(Symbol(),MODE_ASK) > bb0M_20*/) 
-           || (sma0_20 < sma1_20 && MarketInfo(Symbol(), MODE_BID) < bb0L_20) ) {
+            //(sma0_20 < sma0_200 || (sma0_20 > sma0_200 && sma0_20 > sma1_20)) &&
+            iRSI(Symbol(),0,12,PRICE_CLOSE,1)>25&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>iRSI(Symbol(),0,12,PRICE_CLOSE,0)
+            && MarketInfo(Symbol(),MODE_ASK) < bb0M_20) 
+           /*|| (sma0_20 < sma1_20 && MarketInfo(Symbol(), MODE_BID) < bb0L_20)*/ ) {
          return(sell);
       } else {
          return(0);
