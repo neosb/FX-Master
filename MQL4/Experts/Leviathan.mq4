@@ -2704,9 +2704,11 @@ double LOT()
    double LotStep = MarketInfo(Symbol(),MODE_LOTSTEP);
    double LOT = NormalizeDouble(lotMM/LotStep,0)*LotStep;*/
    
+   /*
    if (LOT>MarketInfo(Symbol(),MODE_MAXLOT)) LOT = MarketInfo(Symbol(),MODE_MAXLOT);
    if (LOT<MINLOT) LOT = MINLOT;
    if (MINLOT<0.1) LOT = NormalizeDouble(LOT,2); else LOT = NormalizeDouble(LOT,1);
+   */
    
    return(NormalizeDouble(LOT,MarketInfo(Symbol(),MODE_DIGITS)));
 }
