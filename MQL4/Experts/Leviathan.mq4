@@ -211,7 +211,7 @@ extern bool   ReportAllForCHF     = false;
 extern bool   ReportAllForCAD     = false;
 extern bool   ReportAllForCNY     = false;
 //----------------------------------------------------------------------- +
-double gd_948;
+double totalProfit;
 bool gi_956 = FALSE;
 bool gi_960 = FALSE;
 double gd_964;
@@ -1068,7 +1068,7 @@ if (DrawLines)
             if (f0_13(1)) gi_1132 = FALSE;
          }
       }
-      f0_17();
+      DisplayLeviathanInfo();
       return;
    }
    return;
@@ -1098,14 +1098,14 @@ void f0_16(string as_unused_0) {
    }
 }
 
-void f0_10() {
-   gd_948 = 0;
+void AccountTotalLossProfit() {
+   totalProfit = 0;
 //--- Assert 2: Init OrderSelect #1
    int hist_total_0 = GhostOrdersHistoryTotal();
    GhostInitSelect(true,0,SELECT_BY_POS,MODE_HISTORY);
    for (int pos_4 = 0; pos_4 < hist_total_0; pos_4++) {
       GhostOrderSelect(pos_4, SELECT_BY_POS, MODE_HISTORY);
-      if (GhostOrderMagicNumber() == MagicNumber) gd_948 += GhostOrderProfit() + GhostOrderSwap();
+      if (GhostOrderMagicNumber() == MagicNumber) totalProfit += GhostOrderProfit() + GhostOrderSwap();
    }
 //--- Assert 1: Free OrderSelect #1
    GhostFreeSelect(false);
@@ -2443,9 +2443,9 @@ int f0_4() {
    return (0);
 }
 
-void f0_17() {
-   string dbl2str_0 = DoubleToStr(f0_1(2), 2);
-   if (!IsTesting()) f0_10();
+void DisplayLeviathanInfo() {
+   string accountDD = DoubleToStr(AccountDrawDown(2), 2);
+   if (!IsTesting()) AccountTotalLossProfit();
 
    /*
    MqlDateTime currentBarTimeStruct;
@@ -2481,8 +2481,8 @@ void f0_17() {
             "\nAccount Balance = " + GhostAccountBalance() +
             "\nAccount Equity  = " + GhostAccountEquity() +
             "\nFree Margin     = " + GhostAccountFreeMargin() +
-            "\nDrawdown  :  " + dbl2str_0 + "%" +
-            "\nTotal Profit/Loss = " + gd_948 +
+            "\nDrawdown  :  " + accountDD + "%" +
+            "\nTotal Profit/Loss = " + totalProfit +
             "\nFreezeAfterTPScheduler: ON" +
             "\n\n"
          )
@@ -2513,8 +2513,8 @@ void f0_17() {
          "\nAccount Balance = " + GhostAccountBalance() +
          "\nAccount Equity  = " + GhostAccountEquity() +
          "\nFree Margin     = " + GhostAccountFreeMargin() +
-         "\nDrawdown  :  " + dbl2str_0 + "%" +
-         "\nTotal Profit/Loss = " + gd_948 +
+         "\nDrawdown  :  " + accountDD + "%" +
+         "\nTotal Profit/Loss = " + totalProfit +
          "\nFreezeAfterTPScheduler: OFF" +
          "\n\n"
       )
@@ -2525,7 +2525,7 @@ int f0_0() {
    return (1);
 }
 
-double f0_1(int ai_0) {
+double AccountDrawDown(int ai_0) {
    double ld_ret_4;
    double balance = GhostAccountBalance();
           balance = (balance == 0 ? -1.0 : balance);
@@ -2704,11 +2704,9 @@ double LOT()
    double LotStep = MarketInfo(Symbol(),MODE_LOTSTEP);
    double LOT = NormalizeDouble(lotMM/LotStep,0)*LotStep;*/
    
-   /*
    if (LOT>MarketInfo(Symbol(),MODE_MAXLOT)) LOT = MarketInfo(Symbol(),MODE_MAXLOT);
    if (LOT<MINLOT) LOT = MINLOT;
    if (MINLOT<0.1) LOT = NormalizeDouble(LOT,2); else LOT = NormalizeDouble(LOT,1);
-   */
    
    return(NormalizeDouble(LOT,MarketInfo(Symbol(),MODE_DIGITS)));
 }
