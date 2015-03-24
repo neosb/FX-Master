@@ -1889,7 +1889,8 @@ int trigger(int pos) {
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<iRSI(Symbol(),0,12,PRICE_CLOSE,0)
        &&
       (
-         ( sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_200 > sma0_600 && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
+         (MarketInfo(Symbol(), MODE_BID) > sma0_600 && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
+         //(sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_200 > sma0_600 && MarketInfo(Symbol(), MODE_BID) > bb0L_20) 
          //||
          //( iLow(Symbol(),0,1) < bb1L_20 && iOpen(Symbol(),0,0) > bb0L_20 && MarketInfo(Symbol(), MODE_BID) > bb0L_20 )
       )
@@ -1907,7 +1908,8 @@ int trigger(int pos) {
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>iRSI(Symbol(),0,12,PRICE_CLOSE,0)
        &&
       (
-         ( sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_200 < sma0_600 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
+         (MarketInfo(Symbol(), MODE_ASK) < sma0_600 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20) 
+         //(sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_200 < sma0_600 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20)
          //||
          //( iHigh(Symbol(),0,1) > bb1U_20 && iOpen(Symbol(),0,0) < bb0U_20 && MarketInfo(Symbol(), MODE_ASK) < bb0U_20 )
       )
@@ -1997,10 +1999,14 @@ int signal() {
    if ( GreedyModeOn == TRUE ) {
       double high_1 = (iHigh(Symbol(),0,1)-iClose(Symbol(),0,1));
       double low_1  = (iClose(Symbol(),0,1)-iLow(Symbol(),0,1));
-      double tolerance = 2*getPointCoef();
-      if (bbs >= 1 && 
-           sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_200 > sma0_600 &&
-            sma0_600 < MarketInfo(Symbol(), MODE_BID) //&&
+      double tolerance = 10*getPointCoef();
+      if (bbs >= 1
+            && sma0_20 > sma1_20 && sma0_50 > sma1_50 && sma0_200 > sma1_200 && sma0_600 > sma1_600
+            && sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_50 > sma0_600
+            && (MarketInfo(Symbol(), MODE_BID)-sma0_20) >  0 
+            && (MarketInfo(Symbol(), MODE_BID)-sma0_20) <= tolerance 
+          //sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_200 > sma0_600 &&
+          //sma0_600 < MarketInfo(Symbol(), MODE_BID) //&&
           // (
           //    (
           //     sma0_600 > sma1_600 && high_1 > tolerance && MarketInfo(Symbol(),MODE_BID) < iClose(Symbol(),0,1)
@@ -2016,9 +2022,13 @@ int signal() {
          ) {
          return(buy);
       } else 
-      if (bbs >= 1 && 
-            sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_200 < sma0_600 &&
-            sma0_600 > MarketInfo(Symbol(), MODE_ASK) //&&
+      if (bbs >= 1
+            && sma0_20 < sma1_20 && sma0_50 < sma1_50 && sma0_200 < sma1_200 && sma0_600 < sma1_600
+            && sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_50 < sma0_600
+            && (sma0_20-MarketInfo(Symbol(), MODE_ASK)) >  0 
+            && (sma0_20-MarketInfo(Symbol(), MODE_ASK)) <= tolerance 
+           //sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_200 < sma0_600 &&
+           //sma0_600 > MarketInfo(Symbol(), MODE_ASK) //&&
            //(
            //   (
            //    sma0_600 < sma1_600 && low_1  > tolerance && MarketInfo(Symbol(),MODE_ASK) > iClose(Symbol(),0,1)
