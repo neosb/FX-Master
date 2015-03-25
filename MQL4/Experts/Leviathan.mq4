@@ -1882,8 +1882,8 @@ int trigger(int pos) {
    //if (pos == OP_BUY && sma0_600 > MarketInfo(Symbol(), MODE_BID) && High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sig_trigger);
    //else 
    if (pos == OP_BUY
+               &&MarketInfo(Symbol(), MODE_BID) > sma0_50
                //&&sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_200 > sma0_600
-               
                //&&bbs >= 1
                //&&MarketInfo(Symbol(), MODE_BID) > bb0L_20
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<70
@@ -1902,8 +1902,8 @@ int trigger(int pos) {
    //if (pos == OP_SELL && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && Low[bb_shift]<loBB && stoch<lo_level && rsi<lower) return(sig_trigger);
    //else 
    if (pos == OP_SELL 
+               &&MarketInfo(Symbol(), MODE_ASK) < sma0_50
                //&&sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_200 < sma0_600
-               
                //&&bbs >= 1
                //&&MarketInfo(Symbol(), MODE_ASK) < bb0U_20
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>30
