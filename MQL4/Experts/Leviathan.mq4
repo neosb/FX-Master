@@ -2004,6 +2004,7 @@ int signal() {
             && iClose(Symbol(),0,0) > iOpen(Symbol(),0,0)
             && iClose(Symbol(),0,1) > iOpen(Symbol(),0,1)
             && iClose(Symbol(),0,2) > iOpen(Symbol(),0,2)
+            && MarketInfo(Symbol(), MODE_BID) > bb0M_20
             //&& sma0_20 > sma1_20 && sma0_50 > sma1_50 && 
             //&& sma0_200 > sma1_200 && sma0_600 > sma1_600
             //&& sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_50 > sma0_600
@@ -2018,8 +2019,7 @@ int signal() {
           //     &&(sma0_20 > sma0_200 || (sma0_20 < sma0_200 && sma0_20 < sma1_20))
           //     &&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<70
           //     &&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<iRSI(Symbol(),0,12,PRICE_CLOSE,0)
-          //     && MarketInfo(Symbol(), MODE_BID) > bb0M_20
-          //     //&& MarketInfo(Symbol(), MODE_ASK) > bb0M_20
+          //     && MarketInfo(Symbol(), MODE_ASK) > bb0M_20
           //     && MarketInfo(Symbol(), MODE_ASK) < bb0U_20
           //    )
           //    //|| (sma0_20 > sma1_20 && MarketInfo(Symbol(), MODE_ASK) > bb0U_20) 
@@ -2031,6 +2031,7 @@ int signal() {
             && iClose(Symbol(),0,0) < iOpen(Symbol(),0,0)
             && iClose(Symbol(),0,1) < iOpen(Symbol(),0,1)
             && iClose(Symbol(),0,2) < iOpen(Symbol(),0,2)
+            && MarketInfo(Symbol(), MODE_BID) < bb0M_20
             //&& sma0_20 < sma1_20 && sma0_50 < sma1_50 && 
             //&& sma0_200 < sma1_200 && sma0_600 < sma1_600
             //&& sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_50 < sma0_600
@@ -2046,7 +2047,6 @@ int signal() {
            //    &&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>30
            //    &&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>iRSI(Symbol(),0,12,PRICE_CLOSE,0)
            //    && MarketInfo(Symbol(), MODE_ASK) < bb0M_20
-           //    //&& MarketInfo(Symbol(), MODE_BID) < bb0M_20
            //    && MarketInfo(Symbol(), MODE_BID) > bb0L_20
            //   )
            //   //||(sma0_20 < sma1_20 && MarketInfo(Symbol(), MODE_BID) < bb0L_20) 
