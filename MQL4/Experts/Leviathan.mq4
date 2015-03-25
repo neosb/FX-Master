@@ -2002,11 +2002,11 @@ int signal() {
    int       bollinger_delta = 10;
    int       MinADX = 40;
    
-   demarker = iDeMarker(NULL,0,20,1);
-   highboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
-   midboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_MAIN,1);
-   lowboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_LOWER,1);
-   adx = iADX(NULL,0,14,PRICE_TYPICAL,MODE_MAIN,1);
+   demarker = iDeMarker(NULL,0,20,0);
+   highboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
+   midboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
+   lowboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
+   adx = iADX(NULL,0,14,PRICE_TYPICAL,MODE_MAIN,0);
       
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
