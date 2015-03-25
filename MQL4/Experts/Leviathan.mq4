@@ -1699,7 +1699,7 @@ void f0_15(int ai_0, int ai_unused_4) {
    if (li_60 < 0) li_60 = 0;
    gd_1016 = NormalizeDouble(base_lot * MathPow(gd_964, li_60), gi_1084);
    if (li_60 == 0 && signal() == 1) {
-      if (Month() == 12 && Day() >= 15) return;
+      //if (Month() == 12 && Day() >= 15) return;
       if (FreezeAfterTP == FALSE && gi_956 == FALSE) f0_12();
       else
          if (ai_0 > 0) f0_12();
@@ -1884,7 +1884,8 @@ int trigger(int pos) {
    if (pos == OP_BUY
                //&&sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_200 > sma0_600
                
-               &&bbs >= 1&&MarketInfo(Symbol(), MODE_BID) > bb0L_20
+               //&&bbs >= 1
+               //&&MarketInfo(Symbol(), MODE_BID) > bb0L_20
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<70
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)<iRSI(Symbol(),0,12,PRICE_CLOSE,0)
       // &&
@@ -1903,7 +1904,8 @@ int trigger(int pos) {
    if (pos == OP_SELL 
                //&&sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_200 < sma0_600
                
-               &&bbs >= 1&&MarketInfo(Symbol(), MODE_ASK) < bb0U_20
+               //&&bbs >= 1
+               //&&MarketInfo(Symbol(), MODE_ASK) < bb0U_20
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>30
                //&&iRSI(Symbol(),0,12,PRICE_CLOSE,1)>iRSI(Symbol(),0,12,PRICE_CLOSE,0)
       // &&
@@ -2001,11 +2003,12 @@ int signal() {
       double low_1  = (iClose(Symbol(),0,1)-iLow(Symbol(),0,1));
       double tolerance = 5*getPointCoef();
       if (bbs >= 1
-            && iClose(Symbol(),0,0) > iOpen(Symbol(),0,0)
+            && iHigh(Symbol(),0,1) > iHigh(Symbol(),0,2)
             && iClose(Symbol(),0,1) > iOpen(Symbol(),0,1)
             && iClose(Symbol(),0,2) > iOpen(Symbol(),0,2)
-            && MarketInfo(Symbol(), MODE_BID) > bb0M_20
-            //&& sma0_20 > sma1_20 && sma0_50 > sma1_50 && 
+            //&& MarketInfo(Symbol(), MODE_BID) > bb0M_20
+            && sma0_600 > sma1_600
+            //&& sma0_50 > sma1_50
             //&& sma0_200 > sma1_200 && sma0_600 > sma1_600
             //&& sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_50 > sma0_600
             //&& (MarketInfo(Symbol(), MODE_BID)-sma0_20) >  0 
@@ -2028,11 +2031,12 @@ int signal() {
          return(buy);
       } else 
       if (bbs >= 1
-            && iClose(Symbol(),0,0) < iOpen(Symbol(),0,0)
+            && iLow(Symbol(),0,1) < iLow(Symbol(),0,2)
             && iClose(Symbol(),0,1) < iOpen(Symbol(),0,1)
             && iClose(Symbol(),0,2) < iOpen(Symbol(),0,2)
-            && MarketInfo(Symbol(), MODE_BID) < bb0M_20
-            //&& sma0_20 < sma1_20 && sma0_50 < sma1_50 && 
+            //&& MarketInfo(Symbol(), MODE_BID) < bb0M_20
+            && sma0_600 < sma1_600
+            //&& sma0_50 < sma1_50
             //&& sma0_200 < sma1_200 && sma0_600 < sma1_600
             //&& sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_50 < sma0_600
             //&& (sma0_20-MarketInfo(Symbol(), MODE_ASK)) >  0 
