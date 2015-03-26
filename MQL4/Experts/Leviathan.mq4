@@ -277,9 +277,9 @@ double StartingBalance;
 //--------------------------------- SPIKES ----
 /*extern*/ double ATR_Slow_Period = 60;
 /*extern*/ double ATR_Fast_Period = 1;
-/*extern*/ int MinutesToSleep = PERIOD_H1;
-/*extern*/ int LittleSpikeMultiplier = 3;
-/*extern*/ int BigSpikeMultiplier = 5;
+/*extern*/ int MinutesToSleep = 3*PERIOD_H1;
+/*extern*/ double LittleSpikeMultiplier = 1;
+/*extern*/ double BigSpikeMultiplier = 2.2;
 bool spikeAlert=false;
 datetime lastSpikeAlertTime;
 //--------------------------------- PIVOTS ----
@@ -653,43 +653,38 @@ if (DrawLines)
 
 //-----------------------------------
 //--- SPIKE ALERT
-//   bool spikeDetected = false;
-//
-//   //---
-//   //double ATRfast = iATR(Symbol(), PERIOD_M15, ATR_Fast_Period, 0);
-//   //double ATRslow = iATR(Symbol(), PERIOD_M15, ATR_Slow_Period, 0);   
-//   //if ( ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
-//   //---
-//   double ATRfast = iATR(Symbol(), 0, ATR_Fast_Period, 0);
-//   double ATRslow = iATR(Symbol(), 0, ATR_Slow_Period, 0);   
-//   if ( !spikeDetected && ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
-//   //---
-//   ATRfast = iATR(Symbol(), PERIOD_H1, ATR_Fast_Period, 0);
-//   ATRslow = iATR(Symbol(), PERIOD_H1, ATR_Slow_Period, 0);   
-//   if ( !spikeDetected && ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
-//   //---
-//   
-//   if( !spikeAlert && spikeDetected && (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60)
-//   {
-//      Alert("Spike on " + Symbol() + "!");
-//      Log("[SPIKE ALERT] - (Fast = " + ATRfast + ", Slow = " + ATRslow + ") - Sleep for "+MinutesToSleep+" minutes ...");
-//      CloseAllOrders();
-//      spikeAlert = true;
-//      lastSpikeAlertTime = TimeCurrent();
-//   }
-//
-//   if( spikeAlert )
-//   {
-//      if( (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60 ) 
-//      {
-//         Log("[SPIKE ALERT] - Wake up after ",IntegerToString(MinutesToSleep)," minutes...");
-//         spikeAlert = false;
-//      }
-//      else
-//      {
-//         return;
-//      }
-//   }
+   bool spikeDetected = false;
+
+   //---
+   double ATRfast = iATR(Symbol(), 0, ATR_Fast_Period, 0);
+   double ATRslow = iATR(Symbol(), 0, ATR_Slow_Period, 0);
+   
+   //Print("ATRfast / ATRslow - ",ATRfast," / ",ATRslow);
+   
+   if ( !spikeDetected && ATRfast >= (BigSpikeMultiplier *  ATRslow) ) spikeDetected = true;
+   //---
+   
+   if( !spikeAlert && spikeDetected && (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60)
+   {
+      Alert("Spike on " + Symbol() + "!");
+      Log("[SPIKE ALERT] - (Fast = " + ATRfast + ", Slow = " + ATRslow + ") - Sleep for "+MinutesToSleep+" minutes ...");
+      CloseAllOrders();
+      spikeAlert = true;
+      lastSpikeAlertTime = TimeCurrent();
+   }
+
+   if( spikeAlert )
+   {
+      if( (TimeCurrent() - lastSpikeAlertTime) >= MinutesToSleep*60 ) 
+      {
+         Log("[SPIKE ALERT] - Wake up after ",IntegerToString(MinutesToSleep)," minutes...");
+         spikeAlert = false;
+      }
+      else
+      {
+         return;
+      }
+   }
 //-----------------------------------  
    if (gi_960 == TRUE) {
       ChickenOutClose(Symbol());
