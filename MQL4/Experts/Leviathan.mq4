@@ -279,7 +279,7 @@ double StartingBalance;
 /*extern*/ double ATR_Fast_Period = 1;
 /*extern*/ int MinutesToSleep = 4*PERIOD_H1;
 /*extern*/ double LittleSpikeMultiplier = 1;
-/*extern*/ double BigSpikeMultiplier = 3.8;
+/*extern*/ double BigSpikeMultiplier = 3.2;
 bool spikeAlert=false;
 datetime lastSpikeAlertTime;
 //--------------------------------- PIVOTS ----
