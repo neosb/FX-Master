@@ -1997,7 +1997,7 @@ int signal() {
    int       bollinger_delta = 10;
    int       MinADX = 40;
    
-   demarker = iDeMarker(NULL,0,20,0);
+   demarker = iDeMarker(NULL,0,14,0);
    highboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
    midboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
    lowboll = iBands(NULL,0,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
@@ -2013,7 +2013,12 @@ int signal() {
       double low_1  = (iClose(Symbol(),0,1)-iLow(Symbol(),0,1));
       double tolerance = 2*getPointCoef();
       if (//bbs >= 1
-        ( sma0_20 > sma1_20 && sma0_20 - sma1_20 >= 2.5*getPointCoef() && (Bid - bollinger_delta * getPointCoef() >= highboll) && 
+        ( //sma0_20 > sma1_20 && //sma0_20 - sma1_20 >= 2.5*getPointCoef() && 
+          /*( 
+            ( (Bid - bollinger_delta * getPointCoef() >= highboll) && (demarker <= 0.7) ) ||
+            ( (iClose(Symbol(),0,1) > iOpen(Symbol(),0,1) && iHigh(Symbol(),0,1) < midboll) && (Bid - bollinger_delta * getPointCoef() >= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (iDeMarker(NULL,0,14,0) > iDeMarker(NULL,0,14,1)) )
+          )&&*/
+          (demarker < 0.5) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) &&
           (Bid - bollinger_delta * getPointCoef() > sma0_600 || sma0_600 - Bid > 60*getPointCoef()) )
         //||
         //( sma0_20 > sma1_20 && (Bid - bollinger_delta * getPointCoef() <= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
@@ -2046,7 +2051,12 @@ int signal() {
          return(buy);
       } else 
       if (//bbs >= 1
-        ( sma0_20 < sma1_20 && sma1_20 - sma0_20 >= 2.5*getPointCoef() && (Ask + bollinger_delta * getPointCoef() <= lowboll) &&
+        ( //sma0_20 < sma1_20 && //sma1_20 - sma0_20 >= 2.5*getPointCoef() &&
+          /*( 
+            ( (Ask + bollinger_delta * getPointCoef() <= lowboll) && (demarker >= 0.3) ) ||
+            ( (iClose(Symbol(),0,1) < iOpen(Symbol(),0,1) && iLow(Symbol(),0,1) > midboll) && (Ask + bollinger_delta * getPointCoef() <= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (iDeMarker(NULL,0,14,0) < iDeMarker(NULL,0,14,1)) )
+          )&&*/
+          (demarker > 0.5) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) && 
          (Ask + bollinger_delta * getPointCoef() < sma0_600 || Ask - sma0_600 > 60*getPointCoef()) )
         //||
         //( sma0_20 < sma1_20 && (Ask + bollinger_delta * getPointCoef() >= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
