@@ -277,9 +277,9 @@ double StartingBalance;
 //--------------------------------- SPIKES ----
 /*extern*/ double ATR_Slow_Period = 60;
 /*extern*/ double ATR_Fast_Period = 1;
-/*extern*/ int MinutesToSleep = 3*PERIOD_H1;
+/*extern*/ int MinutesToSleep = 4*PERIOD_H1;
 /*extern*/ double LittleSpikeMultiplier = 1;
-/*extern*/ double BigSpikeMultiplier = 3.5;
+/*extern*/ double BigSpikeMultiplier = 3.8;
 bool spikeAlert=false;
 datetime lastSpikeAlertTime;
 //--------------------------------- PIVOTS ----
@@ -1937,8 +1937,8 @@ int signal() {
    //double std      = iStdDev(Symbol(),0,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
    //double bbs      = bolDev * std / diff;
    //----
-   double sma0_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,1);
-   double sma1_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,2);
+   double sma0_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_SMA,PRICE_CLOSE,1);
+   double sma1_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_SMA,PRICE_CLOSE,2);
 //   double sma7_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,7);
 //   double sma14_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,14);
 //   double sma21_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,21);
@@ -2013,7 +2013,7 @@ int signal() {
       double low_1  = (iClose(Symbol(),0,1)-iLow(Symbol(),0,1));
       double tolerance = 2*getPointCoef();
       if (//bbs >= 1
-        ( sma0_20 > sma1_20 && (Bid - bollinger_delta * getPointCoef() >= highboll) && 
+        ( sma0_20 > sma1_20 && sma0_20 - sma1_20 >= 2.5*getPointCoef() && (Bid - bollinger_delta * getPointCoef() >= highboll) && 
           (Bid - bollinger_delta * getPointCoef() > sma0_600 || sma0_600 - Bid > 60*getPointCoef()) )
         //||
         //( sma0_20 > sma1_20 && (Bid - bollinger_delta * getPointCoef() <= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
@@ -2046,7 +2046,7 @@ int signal() {
          return(buy);
       } else 
       if (//bbs >= 1
-        ( sma0_20 < sma1_20 && (Ask + bollinger_delta * getPointCoef() <= lowboll) &&
+        ( sma0_20 < sma1_20 && sma1_20 - sma0_20 >= 2.5*getPointCoef() && (Ask + bollinger_delta * getPointCoef() <= lowboll) &&
          (Ask + bollinger_delta * getPointCoef() < sma0_600 || Ask - sma0_600 > 60*getPointCoef()) )
         //||
         //( sma0_20 < sma1_20 && (Ask + bollinger_delta * getPointCoef() >= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
