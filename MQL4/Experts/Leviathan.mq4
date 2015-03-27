@@ -2030,6 +2030,7 @@ int signal() {
           //( (Bid - bollinger_delta * getPointCoef() > sma0_600 || sma0_600 - Bid > 30*getPointCoef()) ) &&
           //Bid > sma0_200 &&
           //sma0_600 < sma0_200 //&& sma1_600 - Bid > 36*getPointCoef()
+          iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,0)>0&&
           iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,0)>iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_SIGNAL,0)
         )
         //||
@@ -2072,6 +2073,7 @@ int signal() {
          //( (Ask + bollinger_delta * getPointCoef() < sma0_600 || Ask - sma0_600 > 30*getPointCoef()) ) &&
          //Ask < sma0_200 &&
          //sma0_600 > sma0_200 //&& Ask - sma1_600 > 36*getPointCoef()
+         iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,0)<0&&
          iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,0)<iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_SIGNAL,0)
         )
         //||
