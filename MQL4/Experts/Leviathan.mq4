@@ -279,7 +279,7 @@ double StartingBalance;
 /*extern*/ double ATR_Fast_Period = 1;
 /*extern*/ int MinutesToSleep = 4*PERIOD_H1;
 /*extern*/ double LittleSpikeMultiplier = 1;
-/*extern*/ double BigSpikeMultiplier = 3.2;
+/*extern*/ double BigSpikeMultiplier = 3.6;
 bool spikeAlert=false;
 datetime lastSpikeAlertTime;
 //--------------------------------- PIVOTS ----
@@ -1837,35 +1837,35 @@ int trigger(int pos) {
    double std      = iStdDev(Symbol(),TriggerTimeFrame,bolPrd,MODE_SMA,0,PRICE_CLOSE,0);
    double bbs      = (diff != 0 ? bolDev * std / diff : 1);
    //----
-//   double sma0_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,0);
-//   double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,0);
-//   double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,0);
-//   double sma0_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0);
-//   double sma1_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,1);
-//   double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,1);
-//   double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,1);
-//   double sma1_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,1);
-//   //----
-//   // 0 - MODE_MAIN, 1 - MODE_UPPER, 2 - MODE_LOWER
-//   double bb0L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
-//   double bb1L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,1);
-//   double bb2L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,2);
-//   double bb3L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,3);
-//
-//   double bb0M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
-//   double bb1M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,1);
-//   double bb2M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,2);
-//   double bb3M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,3);
-//
-//   double bb0U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
-//   double bb1U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
-//   double bb2U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
-//   double bb3U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
-//
+   double sma0_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,0);
+   double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,0);
+   double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,0);
+   double sma0_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0);
+   double sma1_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,1);
+   double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,1);
+   double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,1);
+   double sma1_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,1);
+   //----
+   // 0 - MODE_MAIN, 1 - MODE_UPPER, 2 - MODE_LOWER
+   double bb0L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,0);
+   double bb1L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,1);
+   double bb2L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,2);
+   double bb3L_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_LOWER,3);
+
+   double bb0M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,0);
+   double bb1M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,1);
+   double bb2M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,2);
+   double bb3M_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_MAIN,3);
+
+   double bb0U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,0);
+   double bb1U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,1);
+   double bb2U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,2);
+   double bb3U_20 = iBands(Symbol(),TriggerTimeFrame,20,2,0,PRICE_CLOSE,MODE_UPPER,3);
+
 //   double upBB=iBands(Symbol(),TriggerTimeFrame,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_UPPER,bb_shift);
 //   double loBB=iBands(Symbol(),TriggerTimeFrame,bb_period,bb_deviation,0,PRICE_CLOSE,MODE_LOWER,bb_shift);
 //   double stoch=iStochastic(Symbol(),TriggerTimeFrame,k,d,slowing,MODE_SMA,price_field,MODE_SIGNAL,stoch_shift);
-   double rsi=iRSI(Symbol(),TriggerTimeFrame,rsi_period,PRICE_CLOSE,rsi_shift);
+//   double rsi=iRSI(Symbol(),TriggerTimeFrame,rsi_period,PRICE_CLOSE,rsi_shift);
 
    //+------------------------------------------------------------------+
    //| Variable End                                                     |
@@ -1877,7 +1877,7 @@ int trigger(int pos) {
    //if (pos == OP_BUY && sma0_600 > MarketInfo(Symbol(), MODE_BID) && High[bb_shift]>upBB && stoch>up_level && rsi>upper) return(sig_trigger);
    //else 
    if (pos == OP_BUY
-               //&&MarketInfo(Symbol(), MODE_BID) > sma0_50
+               //&&MarketInfo(Symbol(), MODE_BID) > sma0_200
                //&&sma0_20 > sma0_50 && sma0_50 > sma0_200 && sma0_200 > sma0_600
                //&&bbs >= 1
               // &&MarketInfo(Symbol(), MODE_BID) > bb0L_20
@@ -1897,7 +1897,7 @@ int trigger(int pos) {
    //if (pos == OP_SELL && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && Low[bb_shift]<loBB && stoch<lo_level && rsi<lower) return(sig_trigger);
    //else 
    if (pos == OP_SELL 
-               //&&MarketInfo(Symbol(), MODE_ASK) < sma0_50
+               //&&MarketInfo(Symbol(), MODE_ASK) < sma0_200
                //&&sma0_20 < sma0_50 && sma0_50 < sma0_200 && sma0_200 < sma0_600
                //&&bbs >= 1
               // &&MarketInfo(Symbol(), MODE_ASK) < bb0U_20
@@ -1944,10 +1944,10 @@ int signal() {
 //   double sma21_20  = iMA(Symbol(),SignalPeriod,20,0,MODE_EMA,PRICE_CLOSE,21);
 //   //----
 //   double sma0_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,0);
-//   double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,0);
+   double sma0_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,0);
    double sma0_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,0);
 //   double sma1_50  = iMA(Symbol(),SignalPeriod,50,0,MODE_EMA,PRICE_CLOSE,1);
-//   double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,1);
+   double sma1_200 = iMA(Symbol(),SignalPeriod,200,0,MODE_EMA,PRICE_CLOSE,1);
    double sma1_600 = iMA(Symbol(),SignalPeriod,600,0,MODE_EMA,PRICE_CLOSE,1);
 //   //----
 //   // 0 - MODE_MAIN, 1 - MODE_UPPER, 2 - MODE_LOWER
@@ -1993,7 +1993,7 @@ int signal() {
    //double bbSMA_0             = iBands(Symbol(), SignalPeriod, 20,2,0, PRICE_CLOSE, MODE_MAIN, 0);
    //double bbSMA_1             = iBands(Symbol(), SignalPeriod, 20,2,0, PRICE_CLOSE, MODE_MAIN, 1);
    double demarker, highboll, lowboll, midboll, adx;
-   double    demarker_delta = 0.20;
+   double    demarker_delta = 0.15;
    int       bollinger_delta = 10;
    int       MinADX = 40;
    
@@ -2018,8 +2018,10 @@ int signal() {
             ( (Bid - bollinger_delta * getPointCoef() >= highboll) && (demarker <= 0.7) ) ||
             ( (iClose(Symbol(),0,1) > iOpen(Symbol(),0,1) && iHigh(Symbol(),0,1) < midboll) && (Bid - bollinger_delta * getPointCoef() >= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (iDeMarker(NULL,0,14,0) > iDeMarker(NULL,0,14,1)) )
           )&&*/
-          (demarker < 0.5) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) &&
-          (Bid - bollinger_delta * getPointCoef() > sma0_600 || sma0_600 - Bid > 60*getPointCoef()) )
+          (demarker < 0.7) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) &&
+          ( (Bid - bollinger_delta * getPointCoef() > sma0_600 || sma0_600 - Bid > 30*getPointCoef()) ) &&
+          sma0_600 < sma0_200 //&& sma1_600 - Bid > 36*getPointCoef()
+        )
         //||
         //( sma0_20 > sma1_20 && (Bid - bollinger_delta * getPointCoef() <= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
         //(Ask - bollinger_delta * getPointCoef() >= highboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX)
@@ -2056,8 +2058,10 @@ int signal() {
             ( (Ask + bollinger_delta * getPointCoef() <= lowboll) && (demarker >= 0.3) ) ||
             ( (iClose(Symbol(),0,1) < iOpen(Symbol(),0,1) && iLow(Symbol(),0,1) > midboll) && (Ask + bollinger_delta * getPointCoef() <= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (iDeMarker(NULL,0,14,0) < iDeMarker(NULL,0,14,1)) )
           )&&*/
-          (demarker > 0.5) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) && 
-         (Ask + bollinger_delta * getPointCoef() < sma0_600 || Ask - sma0_600 > 60*getPointCoef()) )
+          (demarker > 0.2) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) && 
+         ( (Ask + bollinger_delta * getPointCoef() < sma0_600 || Ask - sma0_600 > 30*getPointCoef()) ) &&
+         sma0_600 > sma0_200 //&& Ask - sma1_600 > 36*getPointCoef()
+        )
         //||
         //( sma0_20 < sma1_20 && (Ask + bollinger_delta * getPointCoef() >= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
         //(Bid + bollinger_delta * getPointCoef() <= lowboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX)
