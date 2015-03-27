@@ -1699,7 +1699,7 @@ void f0_15(int ai_0, int ai_unused_4) {
       else
          if (ai_0 > 0) f0_12();
    } else {
-      if (trigger(OP_BUY) > 0 && order_open_price_12 - Ask > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
+      if (trigger(OP_BUY, count_AA) > 0 && order_open_price_12 - Ask > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumBuyLevels) {
           if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Ask + gi_take_profit * getPointCoef();
@@ -1795,7 +1795,7 @@ void f0_15(int ai_0, int ai_unused_4) {
    }
 }
 //------------------------------------------------------------------------ +
-int trigger(int pos) {
+int trigger(int pos, int count_AA) {
 //----
    if (TriggerProtectionOn==FALSE) return(1);
 //----
@@ -1893,6 +1893,10 @@ int trigger(int pos) {
    ) {
       sig_trigger = 1;
    }
+   
+   /*if (pos == OP_BUY && count_AA <= 3 && MarketInfo(Symbol(), MODE_BID) < sma0_200) {
+      sig_trigger = 0;
+   }*/
 //----
    //if (pos == OP_SELL && sma0_600 < MarketInfo(Symbol(), MODE_ASK) && Low[bb_shift]<loBB && stoch<lo_level && rsi<lower) return(sig_trigger);
    //else 
@@ -1913,6 +1917,10 @@ int trigger(int pos) {
    ) {
       sig_trigger = 1;
    }
+   
+   /*if (pos == OP_SELL && count_AA <= 3 && MarketInfo(Symbol(), MODE_ASK) > sma0_200) {
+      sig_trigger = 0;
+   }*/
 //----
    HideTestIndicators(TRUE);
 //----
@@ -2018,9 +2026,11 @@ int signal() {
             ( (Bid - bollinger_delta * getPointCoef() >= highboll) && (demarker <= 0.7) ) ||
             ( (iClose(Symbol(),0,1) > iOpen(Symbol(),0,1) && iHigh(Symbol(),0,1) < midboll) && (Bid - bollinger_delta * getPointCoef() >= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (iDeMarker(NULL,0,14,0) > iDeMarker(NULL,0,14,1)) )
           )&&*/
-          (demarker < 0.7) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) &&
-          ( (Bid - bollinger_delta * getPointCoef() > sma0_600 || sma0_600 - Bid > 30*getPointCoef()) ) &&
-          sma0_600 < sma0_200 //&& sma1_600 - Bid > 36*getPointCoef()
+          //(demarker < 0.7) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) &&
+          //( (Bid - bollinger_delta * getPointCoef() > sma0_600 || sma0_600 - Bid > 30*getPointCoef()) ) &&
+          //Bid > sma0_200 &&
+          //sma0_600 < sma0_200 //&& sma1_600 - Bid > 36*getPointCoef()
+          iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,0)>iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_SIGNAL,0)
         )
         //||
         //( sma0_20 > sma1_20 && (Bid - bollinger_delta * getPointCoef() <= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
@@ -2058,9 +2068,11 @@ int signal() {
             ( (Ask + bollinger_delta * getPointCoef() <= lowboll) && (demarker >= 0.3) ) ||
             ( (iClose(Symbol(),0,1) < iOpen(Symbol(),0,1) && iLow(Symbol(),0,1) > midboll) && (Ask + bollinger_delta * getPointCoef() <= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) && (iDeMarker(NULL,0,14,0) < iDeMarker(NULL,0,14,1)) )
           )&&*/
-          (demarker > 0.2) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) && 
-         ( (Ask + bollinger_delta * getPointCoef() < sma0_600 || Ask - sma0_600 > 30*getPointCoef()) ) &&
-         sma0_600 > sma0_200 //&& Ask - sma1_600 > 36*getPointCoef()
+          //(demarker > 0.2) && (MathAbs(demarker - 0.5) >= demarker_delta) && (adx >= MinADX) && 
+         //( (Ask + bollinger_delta * getPointCoef() < sma0_600 || Ask - sma0_600 > 30*getPointCoef()) ) &&
+         //Ask < sma0_200 &&
+         //sma0_600 > sma0_200 //&& Ask - sma1_600 > 36*getPointCoef()
+         iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,0)<iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_SIGNAL,0)
         )
         //||
         //( sma0_20 < sma1_20 && (Ask + bollinger_delta * getPointCoef() >= midboll) && (MathAbs(demarker - 0.5) >= demarker_delta) )
@@ -2247,7 +2259,7 @@ void f0_14(int ai_unused_0, int ai_4) {
       else
          if (ai_4 > 0) f0_13();
    } else {
-      if(trigger(OP_SELL) > 0 && Bid - order_open_price_12 > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
+      if(trigger(OP_SELL, count_AA) > 0 && Bid - order_open_price_12 > gi_execution_point * gd_1076 && order_open_price_12 > 0.0 && count_56 < MaximumSellLevels){ 
          if (Negative_Basket_Protection == TRUE) {
             double std_TP, nbp_TP, tmp_TP;
             std_TP = Bid - gi_take_profit * getPointCoef();
